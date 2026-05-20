@@ -1489,10 +1489,11 @@ section.block{ padding:100px 0; position:relative }
 .admin-card .ac-body{ padding:20px 22px }
 
 .stat-grid{
-  display:grid; grid-template-columns:repeat(3, 1fr);
+  display:grid; grid-template-columns:repeat(4, 1fr);
   gap:16px;
   margin-bottom:28px;
 }
+@media (max-width:1024px){ .stat-grid{ grid-template-columns:repeat(2,1fr) } }
 .stat-card{
   background:var(--white);
   border:1px solid var(--line);
@@ -1735,6 +1736,56 @@ section.block{ padding:100px 0; position:relative }
   .admin-card .ac-body{ padding:14px 12px; overflow-x:auto }
   .admin-table thead th, .admin-table tbody td{ padding:10px 12px; font-size:13px }
   .auth-card{ padding:36px 24px }
+}
+
+/* ============ Search bar ============ */
+.search-bar{
+  display:flex; align-items:center; gap:0;
+  border:1px solid var(--line); background:var(--white);
+  max-width:420px; width:100%;
+}
+.search-bar input[type=search]{
+  flex:1; min-width:0;
+  padding:10px 14px;
+  border:0; outline:0;
+  font:inherit; font-size:14px; color:var(--ink);
+  background:transparent;
+}
+.search-bar input[type=search]::placeholder{ color:var(--mute); font-size:13px }
+.search-bar .clear{
+  padding:6px 10px;
+  color:var(--mute); font-size:18px; line-height:1;
+}
+.search-bar .clear:hover{ color:var(--burgundy) }
+.search-bar .go{
+  padding:10px 18px;
+  background:var(--navy); color:var(--white);
+  font-family:var(--serif); font-size:14px; font-weight:500;
+}
+.search-bar .go:hover{ background:var(--burgundy) }
+
+/* ============ Pagination ============ */
+.pagination{
+  display:flex; justify-content:center; align-items:center;
+  gap:4px; margin:36px 0 8px;
+  font-family:var(--sans); font-size:14px;
+}
+.pagination a, .pagination span{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:36px; height:36px; padding:0 10px;
+  border:1px solid var(--line);
+  background:var(--white); color:var(--body);
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.pagination a:hover{ border-color:var(--gold); color:var(--navy); background:var(--ivory) }
+.pagination .current{
+  background:var(--navy); color:var(--white); border-color:var(--navy);
+  font-weight:600;
+}
+.pagination .disabled{ color:var(--line); cursor:not-allowed }
+@media (max-width:560px){
+  .pagination{ gap:2px; font-size:13px }
+  .pagination a, .pagination span{ min-width:32px; height:32px; padding:0 6px }
 }
 
 /* utility helpers */

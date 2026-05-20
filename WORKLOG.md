@@ -4,6 +4,94 @@
 
 ---
 
+## 2026-05-21 (4) — 50건 시드 · 페이지네이션 · 검색 · 이미지 사이클 · 베타
+
+### 한 줄 요약
+
+게시판/공지/새가족 각 50건을 service role로 직접 시드해 large-list 환경을
+만들고, 페이지네이션 + 검색 + 이미지 업로드 사이클 + 베타 페르소나 10개
+시뮬레이션까지 한 번에 끝냈다. 새로 추가된 기능과 데이터 50+ 환경에서도
+콘솔 에러 0건, 평균 응답 95ms.
+
+### 1. 데이터 시드 (각 50건)
+
+- `web/scripts/seed-50.mjs` 작성: dotenv 의존 없이 `.env.local` 파싱,
+  SERVICE_ROLE_KEY로 supabase-js 직접 호출.
+- 이전 자동 CRUD 데이터(`CRUD_AUTO%`, `[자동]%`)는 같이 정리.
+- 50건씩 모두 6개월 균등 분포로 created_at 배치. 공지 상위 5건은 pinned.
+- 결과: notices 50, board_posts 50, new_members 50 (1초 안에 완료).
+
+### 2. 페이지네이션 (Pagination 컴포넌트)
+
+- 신규 `components/pagination.tsx` — 첫·이전·5개 윈도우·다음·마지막,
+  query string 보존(검색어 등).
+- 적용: `/notices`, `/board`, `/admin/notices`, `/admin/board`,
+  `/admin/new-members` — 모두 페이지당 20건.
+- 효과: `/notices` 응답 214ms(50건 일괄) → 91ms(20건), 게시판 149ms → 92ms.
+- CSS: `.pagination` 박스 스타일 + 모바일 축소 미디어쿼리.
+
+### 3. 검색 (SearchBar 컴포넌트)
+
+- 신규 `components/search-bar.tsx` (클라이언트):
+  - `?q=...` URL 쿼리 연동, 폼 submit 시 `page` 파라미터는 자동 제거.
+  - 검색어 ‘×’ 버튼으로 즉시 클리어.
+  - 글로벌 `/` 키로 검색창 포커스 (input/textarea 안에선 무동작).
+- 적용:
+  - 공개: `/board`(제목), `/notices`(제목)
+  - 어드민: `/admin/notices`(제목), `/admin/board`(제목·작성자),
+    `/admin/new-members`(이름·연락처·초청자) — Supabase `or()` ilike.
+- 페이지네이션·검색이 결합되어도 query 보존(예: `/board?q=시드&page=2`).
+
+### 4. 게시판 글쓰기 UX
+
+- `board/new/board-form.tsx`:
+  - localStorage 기반 임시저장(`board-draft-v1`): 입력 800ms 후 자동 저장,
+    재진입 시 confirm으로 복구 여부 묻고, 등록 성공 시 자동 삭제,
+    "임시 글 비우기" 버튼 제공.
+  - 입력 단계에서 "자동 저장됨" / "임시 글을 불러왔습니다." 우측 상단 안내.
+
+### 5. 빈 상태 CTA 보강
+
+- `/board` empty: "첫 글 작성하기 →" 링크.
+- 검색 결과 0건 시: "전체 보기" 링크.
+
+### 6. 게시판 이미지 업로드 + 조회 사이클 10회
+
+- 신규 `web/scripts/image-cycle-10.mjs`: 1×1 빨강 PNG 70바이트를
+  `board-images` 버킷에 업로드 → public URL → board_posts insert → public URL GET → 해당 detail 페이지 GET까지 한 사이클.
+- 결과: **10 / 10 fully successful**.
+  - Storage 업로드 200, public URL 다운로드 200(70 bytes),
+    HTML에 image_urls 포함 200. 평균 약 950ms/회.
+
+### 7. Admin 사용성
+
+- 신규 stat 카드: "THIS WEEK · 최근 7일 신규 등록".
+  - `.stat-grid`를 3열 → 4열, 1024px 이하 2열로 변경.
+- Admin 3개 목록 페이지에 페이지네이션 + 검색 일괄 적용.
+
+### 8. 베타 테스터 10명 시나리오
+
+`web/src/...` 코드 변경 없이 fetch 기반으로 10개 페르소나(P1~P10) 동선을
+시뮬레이션. 모든 페르소나 모든 단계 2xx 통과. 평균 응답 100~150ms.
+
+발견된 friction:
+- F1: `/board/new` 첫 진입 319ms — dev 컴파일이며 prod에선 무시.
+- F2: 어르신 페르소나 본문 17px / line-height 1.7 → 큰 글씨 토글은
+  디자인 톤 영향이 커 별도 도입 보류.
+- 결론: 코드 변경 0, 기존 IA로 충분히 동선 흡수됨.
+
+### 변경 파일
+
+- 신규: `scripts/seed-50.mjs`, `scripts/image-cycle-10.mjs`,
+  `components/pagination.tsx`, `components/search-bar.tsx`
+- 수정: `app/notices/page.tsx`, `app/board/page.tsx`,
+  `app/board/new/board-form.tsx`,
+  `app/admin/page.tsx`, `app/admin/notices/page.tsx`,
+  `app/admin/board/page.tsx`, `app/admin/new-members/page.tsx`,
+  `app/globals.css`
+
+---
+
 ## 2026-05-21 (3) — 빈 페이지 콘텐츠 채움 · CRUD 자동 검증 · 기획개선 · 속도 QA
 
 ### 한 줄 요약

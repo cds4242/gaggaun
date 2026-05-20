@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { createBoardPost } from "../actions";
 
 const BUCKET = "board-images";
+const DRAFT_KEY = "board-draft-v1";
 
 export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: string; defaultEmail?: string }) {
   const router = useRouter();
@@ -16,6 +17,43 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [draftMsg, setDraftMsg] = useState<string | null>(null);
+  const restoredRef = useRef(false);
+
+  // 마운트 시 임시저장 복구
+  useEffect(() => {
+    if (restoredRef.current) return;
+    restoredRef.current = true;
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (d.title || d.content || d.authorName) {
+        const ok = window.confirm("저장된 임시 글이 있습니다. 이어서 작성하시겠습니까?");
+        if (ok) {
+          if (d.title) setTitle(d.title);
+          if (d.content) setContent(d.content);
+          if (d.authorName) setAuthorName(d.authorName);
+          setDraftMsg("임시 글을 불러왔습니다.");
+        } else {
+          localStorage.removeItem(DRAFT_KEY);
+        }
+      }
+    } catch {}
+  }, []);
+
+  // 자동 저장
+  useEffect(() => {
+    const id = setTimeout(() => {
+      try {
+        if (title || content || authorName) {
+          localStorage.setItem(DRAFT_KEY, JSON.stringify({ title, content, authorName, ts: Date.now() }));
+          setDraftMsg("자동 저장됨");
+        }
+      } catch {}
+    }, 800);
+    return () => clearTimeout(id);
+  }, [title, content, authorName]);
 
   async function onUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
@@ -64,10 +102,17 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
         author_email: defaultEmail,
         image_urls: images.map((i) => i.url),
       });
+      try { localStorage.removeItem(DRAFT_KEY); } catch {}
     } catch (e: unknown) {
       setErr(e instanceof Error ? e.message : "오류");
       setSubmitting(false);
     }
+  }
+
+  function clearDraft() {
+    try { localStorage.removeItem(DRAFT_KEY); } catch {}
+    setTitle(""); setContent(""); setAuthorName(defaultAuthor ?? "");
+    setDraftMsg("임시 글을 비웠습니다.");
   }
 
   return (
@@ -107,11 +152,13 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
         </div>
       </div>
       {err && <p style={{ color: "var(--burgundy)", fontSize: 13 }}>{err}</p>}
+      {draftMsg && <p style={{ color: "var(--mute)", fontSize: 12, textAlign: "right" }}>{draftMsg}</p>}
       <div className="form-actions" style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
         <button type="submit" disabled={submitting || uploading} className="btn-primary">
           {submitting ? "등록 중..." : "등록"}
         </button>
         <button type="button" className="more-link" onClick={() => router.back()}>취소</button>
+        <button type="button" className="more-link" onClick={clearDraft} style={{ borderColor: "var(--burgundy)", color: "var(--burgundy)" }}>임시 글 비우기</button>
       </div>
     </form>
   );

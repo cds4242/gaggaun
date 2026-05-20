@@ -2,17 +2,30 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
+import { Pagination } from "@/components/pagination";
+import { SearchBar } from "@/components/search-bar";
 
 export const metadata = { title: "새가족 관리 | 가까운교회" };
 
-export default async function Page() {
+const PAGE_SIZE = 20;
+
+export default async function Page({ searchParams }: { searchParams: Promise<{ page?: string; q?: string }> }) {
   await requireAdmin("/admin/new-members");
+  const sp = await searchParams;
+  const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
+  const q = (sp.q ?? "").trim();
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
   const supabase = await createClient();
-  const { data: members } = await supabase
+  let qb = supabase
     .from("new_members")
-    .select("*")
+    .select("*", { count: "exact" })
     .order("created_at", { ascending: false });
+  if (q) qb = qb.or(`name.ilike.%${q}%,phone.ilike.%${q}%,invited_by.ilike.%${q}%`);
+  const { data: members, count } = await qb.range(from, to);
   const rows = members ?? [];
+  const total = count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <>
@@ -25,12 +38,17 @@ export default async function Page() {
       </div>
 
       <div className="admin-card">
-        <div className="ac-head">
-          <h3>전체 등록 ({rows.length})</h3>
+        <div className="ac-head" style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+          <h3>전체 등록 ({total}) · {page} / {totalPages}</h3>
+          <div style={{ marginLeft: "auto", minWidth: 240, flex: "0 1 320px" }}>
+            <SearchBar placeholder="이름·연락처·초청자 검색" />
+          </div>
         </div>
         <div className="ac-body" style={{ padding: 0 }}>
           {rows.length === 0 ? (
-            <div className="admin-empty">아직 새가족 등록이 없습니다.</div>
+            <div className="admin-empty">
+              {q ? <>‘{q}’ 검색 결과가 없습니다. <Link href="/admin/new-members" className="a-link" style={{ marginLeft: 8 }}>전체 보기</Link></> : <>아직 새가족 등록이 없습니다.</>}
+            </div>
           ) : (
             <table className="admin-table">
               <thead>
@@ -63,6 +81,7 @@ export default async function Page() {
           )}
         </div>
       </div>
+      <Pagination basePath="/admin/new-members" page={page} totalPages={totalPages} searchParams={q ? { q } : undefined} />
     </>
   );
 }

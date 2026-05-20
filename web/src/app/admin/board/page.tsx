@@ -2,18 +2,31 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
+import { Pagination } from "@/components/pagination";
+import { SearchBar } from "@/components/search-bar";
 import { deleteBoardPost } from "@/app/board/[id]/actions";
 
 export const metadata = { title: "게시판 관리 | 가까운교회" };
 
-export default async function Page() {
+const PAGE_SIZE = 20;
+
+export default async function Page({ searchParams }: { searchParams: Promise<{ page?: string; q?: string }> }) {
   await requireAdmin("/admin/board");
+  const sp = await searchParams;
+  const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
+  const q = (sp.q ?? "").trim();
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
   const supabase = await createClient();
-  const { data: posts } = await supabase
+  let qb = supabase
     .from("board_posts")
-    .select("id, title, author_name, created_at, views, image_urls")
+    .select("id, title, author_name, created_at, views, image_urls", { count: "exact" })
     .order("created_at", { ascending: false });
+  if (q) qb = qb.or(`title.ilike.%${q}%,author_name.ilike.%${q}%`);
+  const { data: posts, count } = await qb.range(from, to);
   const rows = posts ?? [];
+  const total = count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <>
@@ -26,15 +39,20 @@ export default async function Page() {
       </div>
 
       <div className="admin-card">
-        <div className="ac-head">
-          <h3>전체 게시글 ({rows.length})</h3>
+        <div className="ac-head" style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+          <h3>전체 게시글 ({total}) · {page} / {totalPages}</h3>
+          <div style={{ marginLeft: "auto", minWidth: 240, flex: "0 1 320px" }}>
+            <SearchBar placeholder="제목·작성자 검색" />
+          </div>
           <Link href="/board/new" target="_blank" style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--navy)" }}>
             새 글 작성 ↗
           </Link>
         </div>
         <div className="ac-body" style={{ padding: 0 }}>
           {rows.length === 0 ? (
-            <div className="admin-empty">등록된 게시글이 없습니다.</div>
+            <div className="admin-empty">
+              {q ? <>‘{q}’ 검색 결과가 없습니다. <Link href="/admin/board" className="a-link" style={{ marginLeft: 8 }}>전체 보기</Link></> : <>등록된 게시글이 없습니다.</>}
+            </div>
           ) : (
             <table className="admin-table">
               <thead>
@@ -52,7 +70,7 @@ export default async function Page() {
                   const hasImg = (p.image_urls?.length ?? 0) > 0;
                   return (
                     <tr key={p.id}>
-                      <td className="muted">{rows.length - i}</td>
+                      <td className="muted">{total - from - i}</td>
                       <td>
                         <Link href={`/board/${p.id}`} className="a-link" target="_blank">
                           {p.title}
@@ -77,6 +95,7 @@ export default async function Page() {
           )}
         </div>
       </div>
+      <Pagination basePath="/admin/board" page={page} totalPages={totalPages} searchParams={q ? { q } : undefined} />
     </>
   );
 }

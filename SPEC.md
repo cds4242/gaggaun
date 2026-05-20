@@ -252,6 +252,56 @@ Playwright 결과물(`.playwright-mcp/`, `playwright-report/`, `test-results/`)�
 
 ---
 
+## 7.8 목록 페이지 — 페이지네이션 / 검색
+
+### 공통 규칙
+
+- 페이지당 20건(`PAGE_SIZE = 20`).
+- URL 쿼리: `?page=N&q=검색어`. 검색어 입력 시 `page` 파라미터는 자동 제거.
+- 페이지네이션 컴포넌트(`components/pagination.tsx`):
+  첫·이전·5개 윈도우·다음·마지막. query string은 그대로 보존.
+- 검색 컴포넌트(`components/search-bar.tsx`):
+  URL `?q=`와 양방향 동기화. 글로벌 `/` 키로 입력창에 포커스.
+
+### 적용 페이지
+
+| 페이지 | 검색 컬럼 (ilike) |
+| --- | --- |
+| `/notices`, `/admin/notices` | title |
+| `/board`, `/admin/board`(어드민은 author_name까지) | title (어드민은 title \| author_name) |
+| `/admin/new-members` | name \| phone \| invited_by |
+
+### 빈 상태
+
+- 일반 빈 상태: 안내문 + 다음 행동 CTA(예: "첫 글 작성하기").
+- 검색 결과 0건: 안내 + "전체 보기" 링크.
+
+## 7.9 게시판 글쓰기 임시저장
+
+- `localStorage` 키: `board-draft-v1`.
+- 입력 800ms 이후 자동 저장, 다음 진입 시 confirm으로 복구.
+- 등록 성공 시 자동 삭제. 사용자가 "임시 글 비우기"로 즉시 폐기 가능.
+
+## 7.10 시드 / 운영 스크립트
+
+`web/scripts/` 디렉터리에 service role key로 동작하는 운영 스크립트가 있다.
+.env.local을 자체 파서로 읽어 dotenv 의존성 없이 동작한다.
+
+| 스크립트 | 용도 |
+| --- | --- |
+| `seed-50.mjs` | notices / board_posts / new_members 각 50건 시드 (`[시드]` 접두). 이전 자동 데이터 정리 포함 |
+| `image-cycle-10.mjs` | board-images 버킷에 1×1 PNG 업로드 → 게시글 등록 → public URL · detail 페이지 검증 10회 사이클 |
+
+운영 시 사용 예:
+
+```bash
+cd web
+node scripts/seed-50.mjs        # 시연용 데이터 50건씩 채우기
+node scripts/image-cycle-10.mjs # 이미지 업로드 + 게시글 사이클 10회
+```
+
+---
+
 ## 8. 데이터 의존성 (현재)
 
 | 페이지 | Supabase 테이블 | 폴백 |
