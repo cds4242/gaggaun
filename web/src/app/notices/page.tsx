@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 
 export const metadata = { title: "공지사항 | 가까운교회" };
-export const revalidate = 0;
+export const revalidate = 60;
 
 type Notice = { id: number; title: string; pinned: boolean; created_at: string; author_email: string | null };
 

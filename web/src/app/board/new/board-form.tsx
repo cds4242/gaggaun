@@ -74,15 +74,18 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
     <form onSubmit={onSubmit} className="form-card">
       <div className="form-row">
         <label htmlFor="author">작성자<span className="req">*</span></label>
-        <input id="author" value={authorName} onChange={(e) => setAuthorName(e.target.value)} required />
+        <input id="author" value={authorName} onChange={(e) => setAuthorName(e.target.value)} required maxLength={20} placeholder="이름 또는 닉네임" />
       </div>
       <div className="form-row">
         <label htmlFor="title">제목<span className="req">*</span></label>
-        <input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+        <input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required maxLength={120} placeholder="제목을 입력하세요 (최대 120자)" />
       </div>
       <div className="form-row">
-        <label htmlFor="content">내용<span className="req">*</span></label>
-        <textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} rows={12} required />
+        <label htmlFor="content">
+          내용<span className="req">*</span>
+          <span style={{ float: "right", fontSize: 12, color: "var(--mute)", fontWeight: 400 }}>{content.length}자</span>
+        </label>
+        <textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} rows={12} required maxLength={5000} placeholder="이웃에게 따뜻한 마음을 나누어 보세요." />
       </div>
       <div className="form-row">
         <label>이미지 첨부 (선택)</label>

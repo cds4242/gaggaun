@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 
 export const metadata = { title: "게시판 | 가까운교회" };
-export const revalidate = 0;
+export const revalidate = 30;
 
 type Post = {
   id: number;

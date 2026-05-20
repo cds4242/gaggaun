@@ -21,6 +21,23 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const admin = await isAdminEmail(userData.user?.email);
   const postId = post.id;
 
+  const [{ data: prevRow }, { data: nextRow }] = await Promise.all([
+    supabase
+      .from("board_posts")
+      .select("id, title")
+      .lt("created_at", post.created_at)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from("board_posts")
+      .select("id, title")
+      .gt("created_at", post.created_at)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle(),
+  ]);
+
   return (
     <section className="block">
       <div className="wrap" style={{ maxWidth: 920 }}>
@@ -50,10 +67,32 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             </div>
           )}
 
-          <div style={{ marginTop: 40, paddingTop: 24, borderTop: "1px solid var(--line)", display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <nav style={{ marginTop: 40, borderTop: "1px solid var(--line)" }} aria-label="이전·다음 글">
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              <li style={{ display: "grid", gridTemplateColumns: "80px 1fr", padding: "14px 4px", borderBottom: "1px solid var(--line)", alignItems: "center", gap: 12 }}>
+                <span style={{ fontSize: 12, color: "var(--mute)", fontFamily: "var(--sans)", letterSpacing: ".05em" }}>↑ 다음 글</span>
+                {nextRow ? (
+                  <Link href={`/board/${nextRow.id}`} className="a-link" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nextRow.title}</Link>
+                ) : (
+                  <span style={{ color: "var(--mute)" }}>최신 글입니다.</span>
+                )}
+              </li>
+              <li style={{ display: "grid", gridTemplateColumns: "80px 1fr", padding: "14px 4px", alignItems: "center", gap: 12 }}>
+                <span style={{ fontSize: 12, color: "var(--mute)", fontFamily: "var(--sans)", letterSpacing: ".05em" }}>↓ 이전 글</span>
+                {prevRow ? (
+                  <Link href={`/board/${prevRow.id}`} className="a-link" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prevRow.title}</Link>
+                ) : (
+                  <span style={{ color: "var(--mute)" }}>가장 오래된 글입니다.</span>
+                )}
+              </li>
+            </ul>
+          </nav>
+
+          <div style={{ marginTop: 24, paddingTop: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
             <Link href="/board" className="more-link">목록</Link>
+            <Link href="/board/new" className="more-link">글쓰기</Link>
             {admin && (
-              <form action={async () => { "use server"; await deleteBoardPost(postId); }} style={{ display: "inline" }}>
+              <form action={async () => { "use server"; await deleteBoardPost(postId); }} style={{ display: "inline", marginLeft: "auto" }}>
                 <button type="submit" className="more-link" style={{ borderColor: "var(--burgundy)", color: "var(--burgundy)", background: "transparent" }}>
                   삭제
                 </button>

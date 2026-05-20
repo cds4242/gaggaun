@@ -203,6 +203,55 @@ Playwright 결과물(`.playwright-mcp/`, `playwright-report/`, `test-results/`)�
 
 ---
 
+## 7.6 페이지 콘텐츠 / 캐시 정책
+
+### 콘텐츠 표준 구조 (예배·사역·공동체·미디어)
+
+리프 페이지(`/worship/sunday`, `/ministry/youth`, `/community/cell`, `/media/sermon` 등)는
+모두 다음 구조를 따른다:
+
+1. `<PageHeader>` — title / eyebrow / subtitle
+2. `prose-box` — eyebrow + h2 + deco + 안내 본문 2 문단
+3. `simple-table` — 시간 / 모임 / 부서 등 데이터 표 (4열 grid, 모바일에서 1열 스택)
+4. 하단 안내 1줄(연락처·장소·주의사항 등)
+
+콘텐츠는 운양동 · 한강신도시 컨텍스트를 반영하고, 과장된 표현보다
+구체적인 시간/장소/대상을 명시한다.
+
+### 캐시 / revalidate
+
+| 라우트 | revalidate | 비고 |
+| --- | --- | --- |
+| `/` | 60 | 홈 — 공지 6건 폴백 포함 |
+| `/notices` | 60 | revalidatePath로 작성·수정·삭제 후 즉시 갱신 |
+| `/notices/[id]` | 0 | 매 요청 fetch (read by id, 1회만) |
+| `/board` | 30 | revalidatePath로 작성·삭제 후 즉시 갱신 |
+| `/board/[id]` | 동적 | 조회수 증가 + 인접 글 fetch |
+| 그 외 정적 페이지 | 빌드 시점 | 정적 콘텐츠만 |
+
+## 7.7 게시판 / 새가족 폼 정책
+
+### 게시판 글쓰기 (`/board/new`)
+- 작성자 최대 20자, 제목 최대 120자, 본문 최대 5000자.
+- 본문 라벨 우측에 실시간 글자수 표시.
+- 이미지 첨부: Supabase Storage `board-images` 버킷에 업로드, public URL 저장.
+
+### 게시판 상세 (`/board/[id]`)
+- 진입 시 `incrementBoardView`를 fire-and-forget로 호출(응답 지연 없음).
+- 본문 하단에 이전/다음 글 네비게이션(created_at 기준 인접 글).
+- 하단 액션바: 목록 / 글쓰기 / (관리자만) 삭제.
+
+### 새가족 등록 (`/new-member`)
+- 필수: 이름, 연락처.
+- server action(`registerNewMember`)에서 전화번호 정규화:
+  - 11자리 숫자 → `010-1234-5678`
+  - 10자리 숫자 → `010-123-4567`
+  - 그 외 → 원본 trim
+- 등록 성공 시 `/new-member/thanks`로 redirect.
+- thanks 페이지: 홈으로 / 예배 시간 보기 / 오시는 길 3개 출구.
+
+---
+
 ## 8. 데이터 의존성 (현재)
 
 | 페이지 | Supabase 테이블 | 폴백 |

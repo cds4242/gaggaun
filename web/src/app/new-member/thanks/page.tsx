@@ -14,7 +14,11 @@ export default function Page() {
         <p style={{ color: "var(--body)", lineHeight: 1.9 }}>
           새가족 등록이 완료되었습니다.<br />담당자가 곧 따뜻하게 연락드리겠습니다.
         </p>
-        <Link href="/" className="btn-primary" style={{ marginTop: 36 }}>홈으로</Link>
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 36, flexWrap: "wrap" }}>
+          <Link href="/" className="btn-primary">홈으로</Link>
+          <Link href="/worship/sunday" className="more-link">예배 시간 보기</Link>
+          <Link href="/about/location" className="more-link">오시는 길</Link>
+        </div>
       </div>
     </section>
   );

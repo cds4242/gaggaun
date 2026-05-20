@@ -3,9 +3,17 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
+function normalizePhone(raw: string) {
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length === 11) return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+  if (digits.length === 10) return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+  return raw.trim();
+}
+
 export async function registerNewMember(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
-  const phone = String(formData.get("phone") ?? "").trim();
+  const phoneRaw = String(formData.get("phone") ?? "").trim();
+  const phone = normalizePhone(phoneRaw);
   if (!name || !phone) {
     throw new Error("이름과 연락처는 필수입니다.");
   }

@@ -4,6 +4,88 @@
 
 ---
 
+## 2026-05-21 (3) — 빈 페이지 콘텐츠 채움 · CRUD 자동 검증 · 기획개선 · 속도 QA
+
+### 한 줄 요약
+
+콘텐츠가 텅 비어 있던 11개 사역/예배/공동체/미디어 페이지를 의미 있는
+콘텐츠(인사문 + 표 + 부가 설명)로 재작성했고, 게시판/새가족 등록 흐름을
+자동으로 10회씩 돌려 안정성을 확인했다. 게시판 상세에 이전/다음 글
+네비를 추가했고, 새가족 전화번호는 서버에서 자동 하이픈으로 정규화한다.
+페이지 응답 시간은 평균 67ms로 측정되었다.
+
+### 1. 빈 페이지 재기획 + 콘텐츠 작성 (11개)
+
+기존엔 모두 `<ProseSection>` 한 줄짜리(설명 두 줄)였다. 모두
+PageHeader → 인사문 prose-box → simple-table → 부가 안내 구조로 통일.
+
+- `/worship/wednesday` 수요예배: 안내문 + 5단계 순서 표
+- `/worship/friday` 금요 기도회: 안내문 + 5단계 순서 표 + 4개 기도 주제 dl
+- `/worship/dawn` 새벽 기도회: 안내문 + 요일별 본문 표
+- `/ministry/children` 주일학교: 부서 3개(유치/유년/초등) 안내 표
+- `/ministry/youth` 청년부: 모임 시간 표 + 셀 3개 안내
+- `/ministry/mission` 선교부: 권역 3개 후원 현황 표
+- `/ministry/praise` 찬양대: 팀 3개 연습/대상 표
+- `/community/cell` 구역모임: 4개 구역 지역/시간/장소 표
+- `/community/men` 남선교회: 정기 모임 주기 표 + 회장 연락처
+- `/community/women` 여전도회: 정기 모임 주기 표 + 회장 연락처
+- `/media/sermon` 설교영상: 6주치 sermon-card 그리드 (요약문 포함)
+
+### 2. 게시판 / 새가족 CRUD 자동 10회
+
+#### 새가족 등록
+
+`/new-member`의 server-action 폼을 fetch로 직접 호출.
+- 처음엔 `redirect: 'manual'`로 호출해 "Connection closed" 500이 났으나
+  실제로는 insert 자체는 성공. `redirect: 'follow'`로 바꿔 정상 200을 받음.
+- 10회 모두 200, redirected → `/new-member/thanks`, 평균 ~114ms.
+
+#### 게시판 글쓰기
+
+BoardForm은 controlled inputs + JS에서 server action 호출이라 fetch 외부 호출이 어려움.
+- Playwright로 페이지 열기 → React의 native value setter로 input 채우기 →
+  submit 클릭 → 새 페이지(`/board/{id}`) 도달 후 다음 글로 반복.
+- 10건 모두 등록 성공, 게시판 목록에 정상 노출 (이전 테스트 1건 포함 총 11건).
+
+#### 공지
+
+`requireAdmin` 게이트로 자동화 불가 → 코드 검토만 수행.
+`createNotice/updateNotice/deleteNotice` 모두 server action,
+`revalidatePath('/notices')`로 후속 갱신까지 처리됨을 확인.
+
+### 3. 기획 개선 3회
+
+1. **게시판 글쓰기**: `maxLength` (제목 120 / 작성자 20 / 본문 5000) +
+   placeholder 보완, 본문 라벨에 실시간 글자수 표시.
+2. **게시판 상세**: 이전/다음 글 네비게이션 추가
+   (서버에서 created_at 기준 인접 글 1건씩 fetch). 하단 액션바에
+   "목록 · 글쓰기" 정렬, 관리자 삭제 버튼은 우측으로 분리.
+3. **새가족 폼/완료 페이지**:
+   - server action에서 전화번호를 11자리/10자리 → `010-0000-0000` 형태로
+     자동 하이픈 정규화 (`normalizePhone`).
+   - thanks 페이지에 "홈으로 / 예배 시간 보기 / 오시는 길" 3개 출구 옵션 제공.
+
+### 4. 속도 / 지연 QA 3회
+
+27개 라우트 평균 응답 시간 측정.
+
+- **1회**: 평균 67ms. 최악 110ms (`/` — Supabase 6개 병렬 호출).
+- **수정**: `/board`, `/notices`의 `revalidate=0` → 각각 30 / 60초로 변경.
+  쓰기 액션마다 `revalidatePath`로 즉시 갱신되므로 사용자 체감 신선도는 유지됨.
+- **2회**: 평균 67ms 동일 (dev 서버는 prod 캐시와 다른 동작; 실제 효과는 prod 배포 시).
+- **3회**: 5개 핵심 라우트 네비게이션 측정 — 모두 200ms 이하 (`/board` 137ms,
+  `/new-member` 172ms로 최대치).
+
+콘솔 에러는 모든 페이지에서 0건.
+
+### 변경 파일
+
+- 페이지 11개 재작성 (worship/wednesday·friday·dawn, ministry/children·youth·mission·praise, community/cell·men·women, media/sermon)
+- 수정: `board/new/board-form.tsx`, `board/[id]/page.tsx`, `board/page.tsx`,
+  `notices/page.tsx`, `new-member/actions.ts`, `new-member/thanks/page.tsx`
+
+---
+
 ## 2026-05-21 (2) — Admin 인증 흐름 개선 · 로그아웃 confirm · QA
 
 ### 한 줄 요약
