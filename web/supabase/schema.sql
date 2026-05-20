@@ -1,0 +1,132 @@
+-- 가까운교회 사이트 스키마
+-- Supabase SQL Editor에서 그대로 실행하면 됩니다.
+
+-- 1) 관리자 화이트리스트
+create table if not exists public.admins (
+  id uuid primary key default gen_random_uuid(),
+  email text unique not null,
+  created_at timestamptz not null default now()
+);
+
+-- 관리자 판별 헬퍼
+create or replace function public.is_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.admins a
+    join auth.users u on lower(u.email) = lower(a.email)
+    where u.id = auth.uid()
+  );
+$$;
+
+-- 2) 공지사항
+create table if not exists public.notices (
+  id bigserial primary key,
+  title text not null,
+  content text not null,
+  pinned boolean not null default false,
+  author_email text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists notices_created_at_idx on public.notices (created_at desc);
+
+-- 3) 자유 게시판
+create table if not exists public.board_posts (
+  id bigserial primary key,
+  title text not null,
+  content text not null,
+  author_name text not null,
+  author_email text,
+  image_urls text[] not null default '{}',
+  views integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists board_posts_created_at_idx on public.board_posts (created_at desc);
+
+-- 4) 새가족 등록
+create table if not exists public.new_members (
+  id bigserial primary key,
+  name text not null,
+  phone text not null,
+  birth_date date,
+  address text,
+  gender text check (gender in ('M', 'F')),
+  invited_by text,
+  introduction text,
+  marital_status text,
+  prayer_request text,
+  visited_at date,
+  status text not null default 'pending',  -- pending / contacted / settled
+  created_at timestamptz not null default now()
+);
+
+create index if not exists new_members_created_at_idx on public.new_members (created_at desc);
+
+-- ───────────────────────────────────────────────────────────────
+-- RLS 정책
+-- ───────────────────────────────────────────────────────────────
+alter table public.admins enable row level security;
+alter table public.notices enable row level security;
+alter table public.board_posts enable row level security;
+alter table public.new_members enable row level security;
+
+-- admins: 본인이 admin일 때만 조회 가능
+drop policy if exists admins_select on public.admins;
+create policy admins_select on public.admins
+  for select using (public.is_admin());
+
+-- notices: 누구나 조회, 작성/수정/삭제는 관리자만
+drop policy if exists notices_select on public.notices;
+create policy notices_select on public.notices for select using (true);
+
+drop policy if exists notices_modify on public.notices;
+create policy notices_modify on public.notices
+  for all using (public.is_admin()) with check (public.is_admin());
+
+-- board_posts: 누구나 조회/작성. 수정/삭제는 관리자만 (간단화)
+drop policy if exists board_select on public.board_posts;
+create policy board_select on public.board_posts for select using (true);
+
+drop policy if exists board_insert on public.board_posts;
+create policy board_insert on public.board_posts for insert with check (true);
+
+drop policy if exists board_modify on public.board_posts;
+create policy board_modify on public.board_posts
+  for update using (public.is_admin()) with check (public.is_admin());
+
+drop policy if exists board_delete on public.board_posts;
+create policy board_delete on public.board_posts
+  for delete using (public.is_admin());
+
+-- new_members: 누구나 등록(insert), 조회/수정/삭제는 관리자만
+drop policy if exists new_members_insert on public.new_members;
+create policy new_members_insert on public.new_members for insert with check (true);
+
+drop policy if exists new_members_select on public.new_members;
+create policy new_members_select on public.new_members
+  for select using (public.is_admin());
+
+drop policy if exists new_members_modify on public.new_members;
+create policy new_members_modify on public.new_members
+  for update using (public.is_admin()) with check (public.is_admin());
+
+drop policy if exists new_members_delete on public.new_members;
+create policy new_members_delete on public.new_members
+  for delete using (public.is_admin());
+
+-- ───────────────────────────────────────────────────────────────
+-- Storage 버킷 (게시판 이미지)
+-- 대시보드에서 "board-images" 버킷을 public 으로 만들어두세요.
+-- 또는 아래 SQL 실행:
+-- insert into storage.buckets (id, name, public) values ('board-images', 'board-images', true)
+--   on conflict do nothing;
+-- ───────────────────────────────────────────────────────────────

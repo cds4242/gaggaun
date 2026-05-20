@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>가까운교회 | 김포 한강신도시 운양동</title>
+<meta name="description" content="김포 한강신도시 운양동에 위치한 가까운교회 공식 홈페이지입니다." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Serif+KR:wght@400;500;600;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#f8f3e8;
+    --paper-2:#f1e9d4;
+    --ivory:#fbf8f1;
+    --white:#ffffff;
+    --navy:#1c2a4a;
+    --navy-2:#2a3a5e;
+    --navy-deep:#121b34;
+    --gold:#b08648;
+    --gold-2:#c79e5f;
+    --gold-soft:#e6d2a6;
+    --burgundy:#6b1f2a;
+    --ink:#1a1a1a;
+    --body:#3a3a3a;
+    --mute:#6e6a62;
+    --line:#e3d8bd;
+    --line-2:#ecdfc1;
+    --shadow: 0 6px 24px -10px rgba(28,42,74,0.18), 0 2px 6px -2px rgba(28,42,74,0.10);
+    --shadow-lg: 0 24px 60px -30px rgba(28,42,74,0.35);
+
+    --serif:"Noto Serif KR", "Times New Roman", serif;
+    --sans:"Noto Sans KR", -apple-system, system-ui, sans-serif;
+    --display:"Cormorant Garamond", "Noto Serif KR", serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--serif);
+    font-size:17px;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{display:block;max-width:100%}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+  ul{list-style:none}
+
+  .wrap{max-width:1240px; margin:0 auto; padding:0 32px}
+  @media (max-width:720px){ .wrap{padding:0 20px} }
+
+  /* ============ Utility bar ============ */
+  .util{
+    background:var(--navy-deep);
+    color:rgba(255,255,255,0.78);
+    font-family:var(--sans);
+    font-size:13px;
+  }
+  .util-row{
+    display:flex; justify-content:space-between; align-items:center;
+    height:38px;
+    max-width:1240px; margin:0 auto; padding:0 32px;
+  }
+  .util .left{ display:flex; gap:24px; align-items:center }
+  .util .left .verse{ color:var(--gold-2); font-family:var(--serif) }
+  .util .right{ display:flex; gap:8px; align-items:center }
+  .util .right a{
+    padding:6px 12px;
+    color:rgba(255,255,255,0.8);
+    transition:color .2s;
+  }
+  .util .right a:hover{ color:var(--gold-2) }
+  .util .right .sep{ color:rgba(255,255,255,0.25) }
+  @media (max-width:820px){ .util .left .verse{display:none} }
+
+  /* ============ Header ============ */
+  .header{
+    background:var(--white);
+    border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:40;
+    box-shadow: 0 2px 0 var(--gold);
+  }
+  .nav-row{
+    display:flex; align-items:center; justify-content:space-between;
+    height:96px;
+    max-width:1240px; margin:0 auto; padding:0 32px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:14px;
+  }
+  .brand .cross{
+    width:44px; height:44px;
+    background:var(--navy);
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+  .brand .cross::before{
+    content:""; position:absolute; left:50%; top:22%; bottom:22%; width:3px;
+    background:var(--gold-2); transform:translateX(-50%);
+  }
+  .brand .cross::after{
+    content:""; position:absolute; top:42%; left:22%; right:22%; height:3px;
+    background:var(--gold-2);
+  }
+  .brand .text .ko{
+    display:block;
+    font-family:var(--serif); font-weight:700;
+    font-size:26px; color:var(--navy);
+    letter-spacing:-0.04em; line-height:1;
+  }
+  .brand .text .en{
+    display:block;
+    font-family:var(--display); font-style:italic;
+    font-size:13px; color:var(--gold);
+    margin-top:6px; letter-spacing:.04em;
+  }
+
+  /* Main menu */
+  .mainmenu{ display:flex; align-items:center; height:100%; }
+  .mainmenu > li{ position:relative; height:100% }
+  .mainmenu > li > a{
+    display:flex; align-items:center;
+    padding: 0 22px;
+    height:100%;
+    font-family:var(--serif);
+    font-size:18px;
+    font-weight:500;
+    color:var(--ink);
+    letter-spacing:-0.02em;
+    transition: color .2s;
+  }
+  .mainmenu > li:hover > a,
+  .mainmenu > li.active > a{
+    color:var(--navy);
+  }
+  .mainmenu > li > a::after{
+    content:""; position:absolute; left:22px; right:22px; bottom:18px; height:2px;
+    background:var(--gold);
+    transform:scaleX(0); transform-origin:left;
+    transition:transform .25s ease;
+  }
+  .mainmenu > li:hover > a::after,
+  .mainmenu > li.active > a::after{ transform:scaleX(1) }
+  .submenu{
+    position:absolute; left:50%; top:100%;
+    transform:translateX(-50%) translateY(8px);
+    background:var(--white);
+    border:1px solid var(--line);
+    border-top:2px solid var(--gold);
+    box-shadow:var(--shadow);
+    min-width:180px;
+    padding:14px 0;
+    opacity:0; visibility:hidden;
+    transition:all .22s ease;
+  }
+  .mainmenu > li:hover .submenu{
+    opacity:1; visibility:visible;
+    transform:translateX(-50%) translateY(0);
+  }
+  .submenu li a{
+    display:block;
+    padding:9px 22px;
+    font-family:var(--serif); font-size:15px;
+    color:var(--body);
+    white-space:nowrap;
+  }
+  .submenu li a:hover{ color:var(--navy); background:var(--paper) }
+
+  .nav-actions{ display:flex; align-items:center; gap:10px }
+  .btn-primary{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:14px 24px;
+    background:var(--navy);
+    color:var(--white);
+    font-family:var(--serif); font-size:16px; font-weight:500;
+    letter-spacing:-0.02em;
+    transition: background .2s;
+  }
+  .btn-primary:hover{ background:var(--burgundy) }
+  .btn-primary::after{ content:"→"; font-family:var(--sans); font-weight:400 }
+
+  .burger{ display:none; padding:8px; flex-direction:column; gap:6px }
+  .burger span{ display:block; width:26px; height:2px; background:var(--navy) }
+
+  @media (max-width:1080px){
+    .mainmenu{display:none}
+    .burger{display:flex}
+    .nav-actions .btn-primary{display:none}
+  }
+
+  /* ============ Hero ============ */
+  .hero{
+    position:relative;
+    height:640px;
+    background:var(--navy-deep);
+    overflow:hidden;
+  }
+  .hero-bg{
+    position:absolute; inset:0;
+    background:
+      linear-gradient(180deg, rgba(18,27,52,0.55) 0%, rgba(18,27,52,0.78) 100%),
+      repeating-linear-gradient(135deg, #1a2440 0 28px, #1f2a4a 28px 29px),
+      linear-gradient(180deg, #1c2a4a, #121b34);
+  }
+  /* Stained glass ornament */
+  .hero-glass{
+    position:absolute; right:6%; top:50%; transform:translateY(-50%);
+    width:380px; height:520px;
+    opacity:.7;
+    pointer-events:none;
+  }
+  .hero-glass svg{ width:100%; height:100% }
+
+  .hero-inner{
+    position:relative;
+    height:100%;
+    max-width:1240px;
+    margin:0 auto;
+    padding:0 32px;
+    display:flex; align-items:center;
+  }
+  .hero-content{ max-width:680px; color:var(--white) }
+  .hero-eyebrow{
+    display:inline-flex; align-items:center; gap:14px;
+    margin-bottom:28px;
+    color:var(--gold-2);
+    font-family:var(--sans); font-size:14px; font-weight:500;
+    letter-spacing:.18em;
+  }
+  .hero-eyebrow .line{ width:48px; height:1px; background:var(--gold) }
+  .hero h1{
+    font-family:var(--serif);
+    font-weight:700;
+    font-size:clamp(38px, 5vw, 64px);
+    line-height:1.25;
+    letter-spacing:-0.045em;
+    margin-bottom:28px;
+    color:var(--white);
+  }
+  .hero h1 .gold{ color:var(--gold-2); font-weight:600 }
+  .hero .verse{
+    border-left:3px solid var(--gold);
+    padding-left:22px;
+    margin-bottom:36px;
+    font-family:var(--serif);
+    font-size:19px;
+    line-height:1.85;
+    color:rgba(255,255,255,0.92);
+    max-width:560px;
+  }
+  .hero .verse cite{
+    display:block; margin-top:10px;
+    font-family:var(--display); font-style:italic;
+    color:var(--gold-2); font-size:15px;
+    letter-spacing:.04em;
+  }
+  .hero-ctas{ display:flex; gap:14px; flex-wrap:wrap }
+  .hero-ctas .btn-gold{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:16px 30px;
+    background:var(--gold);
+    color:var(--navy-deep);
+    font-family:var(--serif); font-size:17px; font-weight:600;
+    letter-spacing:-0.02em;
+    transition: background .2s;
+  }
+  .hero-ctas .btn-gold:hover{ background:var(--gold-2) }
+  .hero-ctas .btn-line{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:16px 30px;
+    background:transparent; color:var(--white);
+    border:1px solid rgba(255,255,255,0.45);
+    font-family:var(--serif); font-size:17px; font-weight:500;
+    transition:all .2s;
+  }
+  .hero-ctas .btn-line:hover{ background:var(--white); color:var(--navy) }
+  .hero-ctas .btn-gold::after, .hero-ctas .btn-line::after{ content:"→"; font-family:var(--sans) }
+
+  /* Hero bottom info strip */
+  .hero-strip{
+    position:absolute; left:0; right:0; bottom:0;
+    background:rgba(18,27,52,0.92);
+    border-top:1px solid rgba(199,158,95,0.30);
+    backdrop-filter:blur(6px);
+  }
+  .hero-strip-inner{
+    max-width:1240px; margin:0 auto; padding:0 32px;
+    display:grid; grid-template-columns:repeat(4, 1fr);
+    color:rgba(255,255,255,0.92);
+  }
+  .hero-strip .col{
+    padding:22px 28px;
+    border-left:1px solid rgba(199,158,95,0.18);
+    display:flex; flex-direction:column; gap:4px;
+  }
+  .hero-strip .col:first-child{ border-left:0 }
+  .hero-strip .k{
+    font-family:var(--sans); font-size:13px; color:var(--gold-2);
+    letter-spacing:.05em;
+  }
+  .hero-strip .v{
+    font-family:var(--serif); font-size:20px; font-weight:600;
+    color:var(--white); letter-spacing:-0.02em;
+  }
+  @media (max-width:860px){
+    .hero{height:auto; padding:120px 0 0}
+    .hero-glass{display:none}
+    .hero-strip{position:relative; margin-top:60px}
+    .hero-strip-inner{grid-template-columns:repeat(2,1fr)}
+    .hero-strip .col{padding:18px 20px}
+  }
+
+  /* ============ Quick access ============ */
+  .quick{
+    background:var(--paper);
+    padding:80px 0;
+  }
+  .quick-grid{
+    display:grid; grid-template-columns:repeat(4, 1fr);
+    gap:20px;
+  }
+  .quick-card{
+    background:var(--white);
+    border:1px solid var(--line);
+    padding:36px 30px 32px;
+    position:relative;
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    cursor:pointer;
+    display:flex; flex-direction:column; align-items:flex-start; gap:18px;
+  }
+  .quick-card::before{
+    content:""; position:absolute; left:0; top:0; right:0; height:3px;
+    background:var(--gold);
+    transform:scaleX(0); transform-origin:left;
+    transition: transform .3s ease;
+  }
+  .quick-card:hover{
+    transform:translateY(-4px);
+    box-shadow:var(--shadow-lg);
+    border-color:var(--gold-soft);
+  }
+  .quick-card:hover::before{ transform:scaleX(1) }
+
+  .quick-icon{
+    width:60px; height:60px;
+    background:var(--paper-2);
+    color:var(--navy);
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%;
+  }
+  .quick-icon svg{ width:30px; height:30px }
+  .quick-card h3{
+    font-family:var(--serif); font-weight:700;
+    font-size:22px; color:var(--navy);
+    letter-spacing:-0.03em;
+  }
+  .quick-card p{ font-size:15px; color:var(--mute); line-height:1.7 }
+  .quick-card .more{
+    margin-top:auto;
+    font-family:var(--serif); font-size:14px;
+    color:var(--gold); font-weight:600;
+    display:inline-flex; gap:6px; align-items:center;
+  }
+  .quick-card .more::after{ content:"→" }
+
+  @media (max-width:980px){ .quick-grid{grid-template-columns:repeat(2,1fr)} }
+  @media (max-width:520px){ .quick-grid{grid-template-columns:1fr} }
+
+  /* ============ Section base ============ */
+  section.block{ padding:100px 0; position:relative }
+  .sec-title{
+    text-align:center;
+    margin-bottom:60px;
+  }
+  .sec-title .eyebrow{
+    font-family:var(--display); font-style:italic;
+    font-size:18px; color:var(--gold);
+    letter-spacing:.08em;
+    display:inline-block;
+    margin-bottom:14px;
+  }
+  .sec-title h2{
+    font-family:var(--serif);
+    font-weight:700;
+    font-size:clamp(32px, 3.5vw, 44px);
+    color:var(--navy);
+    letter-spacing:-0.04em;
+    line-height:1.3;
+  }
+  .sec-title .deco{
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    margin-top:18px;
+    color:var(--gold);
+  }
+  .sec-title .deco .line{ width:48px; height:1px; background:var(--gold) }
+  .sec-title .deco .dot{
+    width:8px; height:8px;
+    background:var(--gold);
+    transform:rotate(45deg);
+  }
+  .sec-title p{
+    margin-top:18px;
+    color:var(--mute);
+    font-size:17px;
+  }
+
+  /* ============ Worship schedule ============ */
+  .worship-block{ background:var(--ivory) }
+  .schedule{
+    background:var(--white);
+    border:1px solid var(--line);
+    overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  .sched-row{
+    display:grid;
+    grid-template-columns: 140px 1.4fr 1fr 1.4fr 140px;
+    align-items:center;
+    border-bottom:1px solid var(--line);
+    transition: background .2s;
+  }
+  .sched-row:last-child{ border-bottom:0 }
+  .sched-row.head{
+    background:var(--navy);
+    color:var(--gold-2);
+  }
+  .sched-row.head .cell{
+    padding:18px 24px;
+    font-family:var(--serif); font-size:15px; font-weight:600;
+    letter-spacing:.05em;
+    text-align:left;
+    border-right:1px solid rgba(199,158,95,0.18);
+  }
+  .sched-row.head .cell:last-child{ border-right:0 }
+  .sched-row.head .cell.c-day, .sched-row.head .cell.c-act{ text-align:center }
+
+  .sched-row.body{ background:var(--white) }
+  .sched-row.body:hover{ background:var(--paper) }
+  .sched-row.body .cell{
+    padding:26px 24px;
+    border-right:1px solid var(--line);
+  }
+  .sched-row.body .cell:last-child{ border-right:0 }
+  .sched-row.body .c-day{
+    text-align:center;
+    background:var(--paper);
+    border-right:1px solid var(--line);
+  }
+  .sched-row.body .c-day .ko{
+    font-family:var(--serif); font-weight:700;
+    font-size:24px; color:var(--navy);
+    letter-spacing:-0.03em;
+  }
+  .sched-row.body .c-day .en{
+    display:block; font-family:var(--display); font-style:italic;
+    font-size:13px; color:var(--gold); margin-top:4px;
+  }
+  .sched-row.body .c-name{
+    font-family:var(--serif); font-weight:600;
+    font-size:20px; color:var(--ink);
+    letter-spacing:-0.025em;
+  }
+  .sched-row.body .c-name small{
+    display:block; font-weight:400; font-size:13px;
+    color:var(--mute); margin-top:4px;
+  }
+  .sched-row.body .c-time{
+    text-align:center;
+    font-family:var(--serif); font-size:24px; font-weight:700;
+    color:var(--burgundy);
+    letter-spacing:-0.02em;
+  }
+  .sched-row.body .c-time small{
+    display:block; font-size:13px; color:var(--mute); font-weight:400; margin-top:4px;
+  }
+  .sched-row.body .c-pastor{
+    font-size:16px;
+    color:var(--body);
+  }
+  .sched-row.body .c-pastor small{ display:block; font-size:13px; color:var(--mute); margin-top:2px }
+  .sched-row.body .c-act{ text-align:center }
+  .sched-row.body .c-act a{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:10px 16px;
+    border:1px solid var(--navy);
+    color:var(--navy);
+    font-family:var(--serif); font-size:14px; font-weight:500;
+    transition:all .2s;
+  }
+  .sched-row.body .c-act a:hover{ background:var(--navy); color:var(--white) }
+
+  @media (max-width:900px){
+    .sched-row{grid-template-columns:1fr; padding:18px 0}
+    .sched-row.head{display:none}
+    .sched-row.body{display:grid; grid-template-columns:120px 1fr; row-gap:6px; padding:20px 18px; gap:10px 18px}
+    .sched-row.body .cell{padding:0; border-right:0}
+    .sched-row.body .c-day{grid-row:span 2; background:var(--paper); padding:14px}
+    .sched-row.body .c-time{text-align:left}
+    .sched-row.body .c-act{text-align:left; grid-column:1/-1; margin-top:6px}
+  }
+
+  /* ============ Pastor greeting ============ */
+  .pastor-block{
+    padding:100px 0;
+    background:var(--paper);
+    position:relative;
+  }
+  .pastor-grid{
+    display:grid;
+    grid-template-columns: 380px 1fr;
+    gap:80px;
+    align-items:center;
+  }
+  .pastor-photo{
+    position:relative;
+    aspect-ratio:4/5;
+    border:8px solid var(--white);
+    box-shadow:var(--shadow-lg);
+    background:var(--paper-2);
+    overflow:hidden;
+  }
+  .pastor-photo .ph{
+    position:absolute; inset:0;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.4), rgba(28,42,74,0.10)),
+      repeating-linear-gradient(45deg, #ddd0b1 0 24px, #c8b993 24px 25px);
+  }
+  .pastor-photo .ph-label{
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    font-family:var(--sans); font-size:11px; letter-spacing:.3em;
+    color:var(--mute); background:rgba(255,255,255,0.9); padding:8px 14px;
+    border:1px solid var(--line);
+  }
+  .pastor-photo::before{
+    content:""; position:absolute; left:-18px; top:-18px;
+    width:80px; height:80px;
+    border:1px solid var(--gold);
+    z-index:-1;
+  }
+  .pastor-photo::after{
+    content:""; position:absolute; right:-18px; bottom:-18px;
+    width:80px; height:80px;
+    background:var(--navy);
+    z-index:-1;
+  }
+  .pastor-info .eyebrow{
+    font-family:var(--display); font-style:italic;
+    font-size:18px; color:var(--gold);
+    letter-spacing:.08em;
+    margin-bottom:14px; display:block;
+  }
+  .pastor-info h2{
+    font-family:var(--serif); font-weight:700;
+    font-size:clamp(32px, 3.5vw, 44px);
+    color:var(--navy);
+    letter-spacing:-0.045em;
+    line-height:1.3;
+    margin-bottom:30px;
+  }
+  .pastor-info .lead{
+    font-family:var(--serif); font-size:19px;
+    color:var(--ink);
+    line-height:1.95;
+    margin-bottom:22px;
+    font-weight:500;
+  }
+  .pastor-info p{
+    font-size:16.5px; line-height:1.95; color:var(--body);
+    margin-bottom:18px;
+  }
+  .pastor-sign{
+    display:flex; align-items:center; gap:18px;
+    margin-top:36px; padding-top:30px;
+    border-top:1px solid var(--line);
+  }
+  .pastor-sign .name-block .role{
+    font-family:var(--sans); font-size:14px;
+    color:var(--mute); margin-bottom:4px;
+  }
+  .pastor-sign .name-block .name{
+    font-family:var(--serif); font-weight:700;
+    font-size:22px; color:var(--navy);
+    letter-spacing:-0.02em;
+  }
+  .pastor-sign .seal{
+    width:74px; height:74px;
+    border:2px solid var(--burgundy);
+    color:var(--burgundy);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--serif); font-weight:700; font-size:22px;
+    border-radius:8px;
+    margin-left:auto;
+    background:rgba(255,255,255,0.5);
+  }
+  @media (max-width:900px){
+    .pastor-grid{grid-template-columns:1fr; gap:50px}
+    .pastor-photo{max-width:340px; margin:0 auto}
+    .pastor-sign .seal{margin-left:0}
+  }
+
+  /* ============ Sermons ============ */
+  .sermons-block{ background:var(--ivory) }
+  .sermons-head{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    margin-bottom:50px; flex-wrap:wrap; gap:20px;
+  }
+  .sermons-head .title-side .eyebrow{
+    font-family:var(--display); font-style:italic;
+    font-size:18px; color:var(--gold);
+    letter-spacing:.08em;
+    margin-bottom:10px; display:block;
+  }
+  .sermons-head h2{
+    font-family:var(--serif); font-weight:700;
+    font-size:clamp(28px, 3vw, 40px);
+    color:var(--navy);
+    letter-spacing:-0.04em;
+  }
+  .more-link{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:12px 22px;
+    border:1px solid var(--navy);
+    color:var(--navy);
+    font-family:var(--serif); font-size:15px; font-weight:500;
+    transition:all .2s;
+  }
+  .more-link:hover{ background:var(--navy); color:var(--white) }
+  .more-link::after{ content:"→" }
+
+  .sermons-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:28px;
+  }
+  .sermon-card{
+    background:var(--white);
+    border:1px solid var(--line);
+    transition: box-shadow .25s, transform .25s;
+    overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .sermon-card:hover{ box-shadow:var(--shadow-lg); transform:translateY(-4px) }
+  .sermon-thumb{
+    position:relative;
+    aspect-ratio:16/9;
+    background:var(--navy-deep);
+    overflow:hidden;
+  }
+  .sermon-thumb .ph{
+    position:absolute; inset:0;
+    background:
+      linear-gradient(135deg, rgba(28,42,74,0.4), rgba(18,27,52,0.85)),
+      repeating-linear-gradient(45deg, #1f2a4a 0 22px, #1a2440 22px 23px);
+  }
+  .sermon-thumb .play{
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:64px; height:64px; border-radius:50%;
+    background:rgba(255,255,255,0.95);
+    color:var(--navy);
+    display:flex; align-items:center; justify-content:center;
+    transition: transform .2s, background .2s;
+  }
+  .sermon-card:hover .sermon-thumb .play{ transform:translate(-50%,-50%) scale(1.08); background:var(--gold) }
+  .sermon-thumb .play svg{ width:24px; height:24px; margin-left:3px }
+  .sermon-thumb .badge{
+    position:absolute; left:14px; top:14px;
+    background:var(--gold); color:var(--navy-deep);
+    font-family:var(--sans); font-size:12px; font-weight:700;
+    padding:6px 12px;
+    letter-spacing:.05em;
+  }
+  .sermon-thumb .duration{
+    position:absolute; right:14px; bottom:14px;
+    background:rgba(18,27,52,0.85); color:var(--white);
+    font-family:var(--sans); font-size:12px;
+    padding:4px 10px;
+  }
+  .sermon-body{ padding:24px 26px 28px }
+  .sermon-body .date{
+    font-family:var(--display); font-style:italic;
+    font-size:15px; color:var(--gold);
+    letter-spacing:.04em;
+    margin-bottom:10px;
+  }
+  .sermon-body h3{
+    font-family:var(--serif); font-weight:700;
+    font-size:21px; color:var(--ink);
+    letter-spacing:-0.03em;
+    line-height:1.4;
+    margin-bottom:10px;
+  }
+  .sermon-body .verse{
+    font-family:var(--serif); font-size:15px;
+    color:var(--burgundy);
+    margin-bottom:14px;
+  }
+  .sermon-body .preacher{
+    font-size:14px; color:var(--mute);
+    padding-top:14px;
+    border-top:1px dashed var(--line);
+  }
+  @media (max-width:900px){ .sermons-grid{grid-template-columns:1fr} }
+
+  /* ============ Notices + Calendar ============ */
+  .info-grid{
+    display:grid; grid-template-columns: 1.4fr 1fr; gap:40px;
+  }
+  .panel{
+    background:var(--white);
+    border:1px solid var(--line);
+    box-shadow:var(--shadow);
+  }
+  .panel-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:24px 28px;
+    background:var(--navy);
+    color:var(--white);
+  }
+  .panel-head h3{
+    font-family:var(--serif); font-weight:700;
+    font-size:22px; color:var(--gold-2);
+    letter-spacing:-0.02em;
+    display:flex; align-items:center; gap:12px;
+  }
+  .panel-head h3::before{
+    content:""; display:inline-block;
+    width:14px; height:14px;
+    background:var(--gold);
+    transform:rotate(45deg);
+  }
+  .panel-head .all{
+    font-family:var(--sans); font-size:13px;
+    color:rgba(255,255,255,0.8);
+  }
+  .panel-head .all:hover{ color:var(--gold-2) }
+
+  .notice-list li{
+    display:grid;
+    grid-template-columns: 88px 1fr 110px;
+    align-items:center;
+    gap:18px;
+    padding:18px 28px;
+    border-bottom:1px solid var(--line);
+    transition: background .15s;
+  }
+  .notice-list li:hover{ background:var(--paper) }
+  .notice-list li:last-child{ border-bottom:0 }
+  .notice-list .tag{
+    display:inline-block;
+    padding:5px 10px;
+    background:var(--paper-2);
+    color:var(--navy);
+    font-family:var(--sans); font-size:12px; font-weight:700;
+    text-align:center;
+    border-radius:2px;
+  }
+  .notice-list .tag.notice{ background:var(--burgundy); color:var(--gold-2) }
+  .notice-list .tag.event{ background:var(--gold); color:var(--navy-deep) }
+  .notice-list .tag.news{ background:var(--navy); color:var(--gold-2) }
+  .notice-list .ttl{
+    font-family:var(--serif); font-size:17px;
+    color:var(--ink); font-weight:500;
+    letter-spacing:-0.02em;
+  }
+  .notice-list .ttl .new{
+    display:inline-block;
+    background:var(--burgundy); color:var(--white);
+    font-family:var(--sans); font-size:10px; font-weight:700;
+    padding:2px 6px; vertical-align:middle;
+    margin-left:8px; border-radius:2px;
+  }
+  .notice-list .date{
+    font-family:var(--display); font-style:italic;
+    color:var(--mute); font-size:15px;
+    text-align:right;
+  }
+  @media (max-width:720px){
+    .notice-list li{grid-template-columns:auto 1fr; row-gap:6px}
+    .notice-list .date{grid-column:1/-1; text-align:left; font-style:italic}
+  }
+
+  /* Side panel - this week */
+  .week-list .item{
+    display:grid;
+    grid-template-columns: 88px 1fr;
+    gap:18px;
+    padding:20px 28px;
+    border-bottom:1px solid var(--line);
+    align-items:center;
+  }
+  .week-list .item:last-child{ border-bottom:0 }
+  .week-list .day{
+    text-align:center;
+    background:var(--paper);
+    padding:10px 8px;
+    border:1px solid var(--line);
+  }
+  .week-list .day .d{
+    font-family:var(--serif); font-weight:700; font-size:22px; color:var(--navy);
+    line-height:1; letter-spacing:-0.02em;
+  }
+  .week-list .day .w{
+    font-family:var(--sans); font-size:12px; color:var(--gold);
+    margin-top:6px; letter-spacing:.1em;
+  }
+  .week-list .info .title{
+    font-family:var(--serif); font-weight:600; font-size:17px;
+    color:var(--ink); letter-spacing:-0.02em;
+    margin-bottom:4px;
+  }
+  .week-list .info .time{
+    font-family:var(--display); font-style:italic;
+    color:var(--burgundy); font-size:15px;
+  }
+
+  @media (max-width:980px){ .info-grid{grid-template-columns:1fr} }
+
+  /* ============ Gallery ============ */
+  .gallery-block{ background:var(--paper) }
+  .gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(12, 1fr);
+    grid-auto-rows:120px;
+    gap:14px;
+  }
+  .gtile{
+    position:relative;
+    overflow:hidden;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    transition: transform .25s;
+    cursor:pointer;
+  }
+  .gtile:hover{ transform:scale(1.01) }
+  .gtile .ph{ position:absolute; inset:0 }
+  .gtile .ovl{
+    position:absolute; left:0; right:0; bottom:0;
+    padding:14px 18px;
+    background:linear-gradient(180deg, transparent, rgba(18,27,52,0.92));
+    color:var(--white);
+  }
+  .gtile .ovl .t{
+    font-family:var(--serif); font-weight:600; font-size:16px;
+    letter-spacing:-0.02em;
+  }
+  .gtile .ovl .d{
+    font-family:var(--display); font-style:italic; font-size:13px;
+    color:var(--gold-2);
+    margin-top:2px;
+  }
+  .gtile.t1{ grid-column: span 6; grid-row: span 3 }
+  .gtile.t2{ grid-column: span 3; grid-row: span 3 }
+  .gtile.t3{ grid-column: span 3; grid-row: span 3 }
+  .gtile.t4{ grid-column: span 4; grid-row: span 2 }
+  .gtile.t5{ grid-column: span 4; grid-row: span 2 }
+  .gtile.t6{ grid-column: span 4; grid-row: span 2 }
+  .gtile.t1 .ph{ background: repeating-linear-gradient(45deg, #d9c89b 0 26px, #c9b787 26px 27px) }
+  .gtile.t2 .ph{ background: repeating-linear-gradient(115deg, #ddd0b1 0 22px, #c8b993 22px 23px) }
+  .gtile.t3 .ph{ background: repeating-linear-gradient(75deg, #efe5cb 0 22px, #ddd0b1 22px 23px) }
+  .gtile.t4 .ph{ background: repeating-linear-gradient(15deg, #2c3a5a 0 22px, #1c2a4a 22px 23px) }
+  .gtile.t5 .ph{ background: repeating-linear-gradient(-30deg, #c9b787 0 26px, #b8a572 26px 27px) }
+  .gtile.t6 .ph{ background: repeating-linear-gradient(60deg, #ece2c5 0 24px, #d9caa1 24px 25px) }
+  @media (max-width:820px){
+    .gallery-grid{grid-template-columns:repeat(6,1fr); grid-auto-rows:100px}
+    .gtile.t1{grid-column:span 6; grid-row:span 3}
+    .gtile.t2,.gtile.t3{grid-column:span 3; grid-row:span 2}
+    .gtile.t4,.gtile.t5,.gtile.t6{grid-column:span 2; grid-row:span 2}
+  }
+
+  /* ============ Location ============ */
+  .loc-block{ background:var(--ivory); padding-bottom:0 }
+  .loc-grid{
+    display:grid; grid-template-columns: 1fr 1fr; gap:0;
+    border:1px solid var(--line);
+    background:var(--white);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .map-box{
+    position:relative;
+    aspect-ratio: 5/4;
+    background:var(--paper-2);
+    overflow:hidden;
+  }
+  .map-box .ph{
+    position:absolute; inset:0;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.5), transparent 60%),
+      repeating-linear-gradient(0deg, rgba(28,42,74,0.08) 0 1px, transparent 1px 60px),
+      repeating-linear-gradient(90deg, rgba(28,42,74,0.08) 0 1px, transparent 1px 60px),
+      var(--paper-2);
+  }
+  .map-box .road{
+    position:absolute; left:0; right:0; top:60%; height:36px;
+    background:rgba(176,134,72,0.10);
+    border-top:1px dashed rgba(176,134,72,0.40);
+    border-bottom:1px dashed rgba(176,134,72,0.40);
+  }
+  .map-box .pin{
+    position:absolute; left:48%; top:46%;
+    width:22px; height:22px; background:var(--burgundy); border-radius:50%;
+    box-shadow:0 0 0 8px rgba(107,31,42,0.18), 0 0 0 18px rgba(107,31,42,0.08);
+  }
+  .map-box .pin-label{
+    position:absolute; left:48%; top:46%; transform:translate(28px, -32px);
+    font-family:var(--serif); font-weight:600; font-size:17px; color:var(--navy);
+    background:var(--white); padding:8px 14px;
+    border:1px solid var(--gold);
+    box-shadow:var(--shadow);
+  }
+  .loc-info{ padding:60px 56px; display:flex; flex-direction:column; gap:8px }
+  .loc-info .eyebrow{
+    font-family:var(--display); font-style:italic;
+    font-size:17px; color:var(--gold);
+    letter-spacing:.08em;
+    margin-bottom:10px;
+  }
+  .loc-info h3{
+    font-family:var(--serif); font-weight:700;
+    font-size:34px; color:var(--navy);
+    letter-spacing:-0.04em;
+    margin-bottom:10px;
+  }
+  .loc-info .sub{
+    font-size:15px; color:var(--mute);
+    margin-bottom:32px;
+  }
+  .loc-info dl{ display:grid; grid-template-columns:96px 1fr; row-gap:18px; column-gap:24px }
+  .loc-info dt{
+    font-family:var(--sans); font-size:13px; font-weight:700;
+    color:var(--navy);
+    padding-top:4px;
+    border-left:3px solid var(--gold);
+    padding-left:10px;
+  }
+  .loc-info dd{
+    font-family:var(--serif); font-size:16.5px;
+    color:var(--ink); font-weight:500;
+    letter-spacing:-0.02em;
+  }
+  .loc-info dd .small{ display:block; font-size:13.5px; color:var(--mute); font-weight:400; margin-top:4px }
+  .loc-info .actions{ display:flex; gap:12px; flex-wrap:wrap; margin-top:32px }
+  .loc-info .actions .btn-primary{ padding:13px 22px; font-size:15px }
+  .loc-info .actions .more-link{ padding:13px 22px; font-size:15px }
+
+  @media (max-width:920px){
+    .loc-grid{grid-template-columns:1fr}
+    .loc-info{padding:40px 28px}
+  }
+
+  /* ============ Footer ============ */
+  footer{
+    background:var(--navy-deep);
+    color:rgba(255,255,255,0.78);
+    padding:80px 0 0;
+    margin-top:100px;
+  }
+  .foot-top{
+    display:grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap:60px;
+    padding-bottom:60px;
+    border-bottom:1px solid rgba(199,158,95,0.20);
+  }
+  .foot-brand{ display:flex; flex-direction:column; gap:14px }
+  .foot-brand-row{ display:flex; align-items:center; gap:14px }
+  .foot-brand .cross-mini{
+    width:36px; height:36px; background:var(--gold); position:relative;
+  }
+  .foot-brand .cross-mini::before{
+    content:""; position:absolute; left:50%; top:22%; bottom:22%; width:2.5px;
+    background:var(--navy-deep); transform:translateX(-50%);
+  }
+  .foot-brand .cross-mini::after{
+    content:""; position:absolute; top:42%; left:22%; right:22%; height:2.5px;
+    background:var(--navy-deep);
+  }
+  .foot-brand .name-ko{
+    font-family:var(--serif); font-weight:700;
+    font-size:24px; color:var(--white); letter-spacing:-0.03em;
+  }
+  .foot-brand .name-en{
+    font-family:var(--display); font-style:italic;
+    color:var(--gold-2); font-size:16px;
+    margin-top:2px; display:block;
+  }
+  .foot-brand p{ font-size:14px; line-height:1.9; max-width:360px; margin-top:6px }
+
+  .foot-col h4{
+    font-family:var(--serif); font-weight:700;
+    font-size:17px; color:var(--gold-2);
+    margin-bottom:22px; letter-spacing:-0.02em;
+    padding-bottom:12px;
+    border-bottom:1px solid rgba(199,158,95,0.20);
+  }
+  .foot-col ul{ display:grid; gap:12px }
+  .foot-col a, .foot-col li{ font-family:var(--serif); font-size:15px; color:rgba(255,255,255,0.80); letter-spacing:-0.01em }
+  .foot-col a:hover{ color:var(--gold-2) }
+  .foot-col .row{ display:flex; justify-content:space-between; gap:14px }
+  .foot-col .row .t{ font-family:var(--display); font-style:italic; color:var(--gold-2) }
+
+  .foot-bottom{
+    padding:30px 0;
+    display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap;
+    font-size:13.5px;
+    color:rgba(255,255,255,0.6);
+  }
+  .foot-bottom .verse{
+    font-family:var(--serif); font-size:14.5px;
+    color:var(--gold-2);
+    font-style:normal;
+  }
+  @media (max-width:820px){ .foot-top{grid-template-columns:1fr 1fr; gap:40px} }
+  @media (max-width:520px){ .foot-top{grid-template-columns:1fr} }
+
+</style>
+</head>
+<body>
+
+<!-- ============ Utility bar ============ -->
+<div class="util">
+  <div class="util-row">
+    <div class="left">
+      <span class="verse">“여호와는 나의 목자시니 내게 부족함이 없으리로다” &nbsp;— 시편 23:1</span>
+    </div>
+    <div class="right">
+      <a href="#">로그인</a>
+      <span class="sep">|</span>
+      <a href="#">새가족등록</a>
+      <span class="sep">|</span>
+      <a href="#">교회력</a>
+      <span class="sep">|</span>
+      <a href="#">주보</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Header ============ -->
+<header class="header">
+  <div class="nav-row">
+    <a class="brand" href="#top" aria-label="가까운교회 홈">
+      <span class="cross" aria-hidden="true"></span>
+      <span class="text">
+        <span class="ko">가까운교회</span>
+        <span class="en">The Near Church · Gimpo</span>
+      </span>
+    </a>
+
+    <ul class="mainmenu" role="menubar">
+      <li>
+        <a href="#about">교회소개</a>
+        <ul class="submenu">
+          <li><a href="#about">인사말</a></li>
+          <li><a href="#">비전과 사명</a></li>
+          <li><a href="#">교회 연혁</a></li>
+          <li><a href="#location">오시는 길</a></li>
+        </ul>
+      </li>
+      <li class="active">
+        <a href="#worship">예배안내</a>
+        <ul class="submenu">
+          <li><a href="#worship">주일예배</a></li>
+          <li><a href="#worship">수요예배</a></li>
+          <li><a href="#worship">새벽예배</a></li>
+          <li><a href="#worship">금요철야</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#sermons">설교말씀</a>
+        <ul class="submenu">
+          <li><a href="#sermons">주일 설교</a></li>
+          <li><a href="#sermons">수요 강해</a></li>
+          <li><a href="#sermons">목회 칼럼</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#notice">교회소식</a>
+        <ul class="submenu">
+          <li><a href="#notice">공지사항</a></li>
+          <li><a href="#notice">주간 일정</a></li>
+          <li><a href="#gallery">사진 갤러리</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#">공동체</a>
+        <ul class="submenu">
+          <li><a href="#">구역모임</a></li>
+          <li><a href="#">남선교회</a></li>
+          <li><a href="#">여전도회</a></li>
+          <li><a href="#">청년부</a></li>
+          <li><a href="#">주일학교</a></li>
+        </ul>
+      </li>
+    </ul>
+
+    <div class="nav-actions">
+      <a class="btn-primary" href="#newfam">새가족 등록</a>
+      <button class="burger" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ Hero ============ -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-glass" aria-hidden="true">
+      <svg viewBox="0 0 380 520" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gg" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stop-color="#c79e5f" stop-opacity=".55"/>
+            <stop offset="1" stop-color="#b08648" stop-opacity=".15"/>
+          </linearGradient>
+        </defs>
+        <!-- Arch -->
+        <path d="M40 520 V200 a150 150 0 0 1 300 0 V520 Z" fill="none" stroke="url(#gg)" stroke-width="1.5"/>
+        <path d="M70 520 V215 a120 120 0 0 1 240 0 V520 Z" fill="none" stroke="url(#gg)" stroke-width="1"/>
+        <path d="M100 520 V230 a90 90 0 0 1 180 0 V520 Z" fill="none" stroke="url(#gg)" stroke-width="1"/>
+        <!-- Cross -->
+        <g stroke="url(#gg)" stroke-width="2" fill="none">
+          <line x1="190" y1="240" x2="190" y2="380"/>
+          <line x1="150" y1="280" x2="230" y2="280"/>
+        </g>
+        <!-- Rays -->
+        <g stroke="url(#gg)" stroke-width="0.6" opacity=".7">
+          <line x1="190" y1="100" x2="190" y2="180"/>
+          <line x1="110" y1="160" x2="160" y2="200"/>
+          <line x1="270" y1="160" x2="220" y2="200"/>
+        </g>
+        <!-- Inner panels -->
+        <g stroke="url(#gg)" stroke-width="0.5" opacity=".5">
+          <line x1="100" y1="320" x2="280" y2="320"/>
+          <line x1="100" y1="400" x2="280" y2="400"/>
+          <line x1="100" y1="460" x2="280" y2="460"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <span class="line"></span>
+          <span>WELCOME · 김포 한강신도시 운양동</span>
+        </div>
+        <h1>
+          가깝게, 따뜻하게<br/>
+          <span class="gold">함께 걸어가는 교회</span>
+        </h1>
+        <blockquote class="verse">
+          “수고하고 무거운 짐 진 자들아 다 내게로 오라<br/>내가 너희를 쉬게 하리라.”
+          <cite>— 마태복음 11:28</cite>
+        </blockquote>
+        <div class="hero-ctas">
+          <a class="btn-gold" href="#worship">예배 시간 안내</a>
+          <a class="btn-line" href="#newfam">처음 오시는 분</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- bottom strip -->
+    <div class="hero-strip">
+      <div class="hero-strip-inner">
+        <div class="col">
+          <span class="k">금주 주일</span>
+          <span class="v">2026. 5. 24 (주일)</span>
+        </div>
+        <div class="col">
+          <span class="k">주일 예배</span>
+          <span class="v">오전 9:00 · 11:00</span>
+        </div>
+        <div class="col">
+          <span class="k">설교 본문</span>
+          <span class="v">요한복음 13:34-35</span>
+        </div>
+        <div class="col">
+          <span class="k">설교자</span>
+          <span class="v">김요한 담임목사</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Quick access ============ -->
+  <section class="quick">
+    <div class="wrap">
+      <div class="quick-grid">
+        <a class="quick-card" href="#worship">
+          <div class="quick-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <h3>예배안내</h3>
+          <p>주일·수요·새벽예배 시간과 본당 안내를 확인하세요.</p>
+          <span class="more">바로가기</span>
+        </a>
+
+        <a class="quick-card" href="#sermons">
+          <div class="quick-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4Z"/><path d="M4 4v12a4 4 0 0 0 4 4"/><path d="M8 8h8M8 12h8"/></svg>
+          </div>
+          <h3>설교말씀</h3>
+          <p>매주 선포된 말씀을 영상과 글로 다시 들으실 수 있습니다.</p>
+          <span class="more">바로가기</span>
+        </a>
+
+        <a class="quick-card" href="#notice">
+          <div class="quick-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M4 9h16"/><path d="M8 13h8M8 16h5"/></svg>
+          </div>
+          <h3>교회소식</h3>
+          <p>공지사항, 주간 일정, 행사 소식을 한눈에 확인하세요.</p>
+          <span class="more">바로가기</span>
+        </a>
+
+        <a class="quick-card" href="#newfam">
+          <div class="quick-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3"/><path d="M3 19a6 6 0 0 1 12 0"/><path d="M17 7v6M14 10h6"/></svg>
+          </div>
+          <h3>새가족등록</h3>
+          <p>처음 오신 분, 등록하실 분은 이곳에서 안내받으세요.</p>
+          <span class="more">바로가기</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Worship schedule ============ -->
+  <section id="worship" class="block worship-block">
+    <div class="wrap">
+      <div class="sec-title">
+        <span class="eyebrow">Worship Service</span>
+        <h2>한 주의 예배를 안내해 드립니다</h2>
+        <div class="deco"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
+        <p>예배는 한 주의 가장 깊은 자리에 놓이는 시간입니다.<br/>온 가족이 한 자리에 모여 주님 앞에 나아갑니다.</p>
+      </div>
+
+      <div class="schedule" role="table">
+        <div class="sched-row head" role="row">
+          <div class="cell c-day" role="columnheader">요일</div>
+          <div class="cell c-name" role="columnheader">예배명</div>
+          <div class="cell c-time" role="columnheader">시간</div>
+          <div class="cell c-pastor" role="columnheader">설교 · 장소</div>
+          <div class="cell c-act" role="columnheader">안내</div>
+        </div>
+
+        <div class="sched-row body" role="row">
+          <div class="cell c-day"><span class="ko">주일</span><span class="en">Sunday · 1부</span></div>
+          <div class="cell c-name">주일 1부 예배<small>조용히 시작하는 이른 아침 예배</small></div>
+          <div class="cell c-time">09 : 00<small>약 70분</small></div>
+          <div class="cell c-pastor">김요한 담임목사<small>본당 · 2층</small></div>
+          <div class="cell c-act"><a href="#">자세히</a></div>
+        </div>
+
+        <div class="sched-row body" role="row">
+          <div class="cell c-day"><span class="ko">주일</span><span class="en">Sunday · 2부</span></div>
+          <div class="cell c-name">주일 2부 예배<small>온 가족이 함께 드리는 본 예배</small></div>
+          <div class="cell c-time">11 : 00<small>약 80분</small></div>
+          <div class="cell c-pastor">김요한 담임목사<small>본당 · 2층 / 영상 송출 · 3층</small></div>
+          <div class="cell c-act"><a href="#">자세히</a></div>
+        </div>
+
+        <div class="sched-row body" role="row">
+          <div class="cell c-day"><span class="ko">수요일</span><span class="en">Wednesday</span></div>
+          <div class="cell c-name">수요 강해예배<small>말씀과 기도의 자리</small></div>
+          <div class="cell c-time">19 : 30<small>약 60분</small></div>
+          <div class="cell c-pastor">이은혜 부목사<small>본당 · 2층</small></div>
+          <div class="cell c-act"><a href="#">자세히</a></div>
+        </div>
+
+        <div class="sched-row body" role="row">
+          <div class="cell c-day"><span class="ko">금요일</span><span class="en">Friday</span></div>
+          <div class="cell c-name">금요 기도회<small>한 주를 정돈하는 합심 기도</small></div>
+          <div class="cell c-time">20 : 00<small>약 90분</small></div>
+          <div class="cell c-pastor">교역자 순번<small>본당 · 2층</small></div>
+          <div class="cell c-act"><a href="#">자세히</a></div>
+        </div>
+
+        <div class="sched-row body" role="row">
+          <div class="cell c-day"><span class="ko">평일</span><span class="en">Weekday</span></div>
+          <div class="cell c-name">새벽 기도회<small>하루를 주님과 함께 여는 자리</small></div>
+          <div class="cell c-time">05 : 30<small>약 60분</small></div>
+          <div class="cell c-pastor">담임 · 부목사<small>본당 · 2층</small></div>
+          <div class="cell c-act"><a href="#">자세히</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Pastor greeting ============ -->
+  <section id="about" class="pastor-block">
+    <div class="wrap">
+      <div class="pastor-grid">
+        <div class="pastor-photo">
+          <div class="ph"></div>
+          <span class="ph-label">담임목사 · PORTRAIT</span>
+        </div>
+        <div class="pastor-info">
+          <span class="eyebrow">Pastor's Greeting</span>
+          <h2>인사말 — 한 분, 한 분을<br/>마음 다해 환영합니다.</h2>
+          <p class="lead">“우리 교회는 큰 교회가 되기를 구하지 않습니다.<br/>다만, 우리 동네에서 가장 ‘가까운’ 교회가 되기를 기도합니다.”</p>
+          <p>가까운교회는 2015년, 김포 한강신도시 운양동의 작은 상가 한 칸에서 일곱 가정으로 시작되었습니다. 화려한 무대보다 한 사람의 영혼을 더 귀하게 여기며, 매주 예배 안에서 하나님과 가까이, 이웃과 가까이 살아가는 길을 함께 걷고자 합니다.</p>
+          <p>지친 마음, 무거운 짐을 안고 오시는 분께 따뜻한 차 한 잔과 함께 자리를 내어 드리는 교회 — 그것이 저희가 바라는 작고 분명한 모습입니다. 언제든 편안한 마음으로 한 발 가까이 와 주십시오.</p>
+
+          <div class="pastor-sign">
+            <div class="name-block">
+              <div class="role">담임목사 · Senior Pastor</div>
+              <div class="name">김 요 한 목사</div>
+            </div>
+            <div class="seal">印</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Sermons ============ -->
+  <section id="sermons" class="block sermons-block">
+    <div class="wrap">
+      <div class="sermons-head">
+        <div class="title-side">
+          <span class="eyebrow">Recent Sermons</span>
+          <h2>최근 설교말씀</h2>
+        </div>
+        <a class="more-link" href="#">전체 설교 보기</a>
+      </div>
+
+      <div class="sermons-grid">
+        <article class="sermon-card">
+          <div class="sermon-thumb">
+            <div class="ph"></div>
+            <span class="badge">주일 2부</span>
+            <span class="duration">38:21</span>
+            <div class="play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg></div>
+          </div>
+          <div class="sermon-body">
+            <div class="date">2026. 05. 19 · 주일</div>
+            <h3>서로 사랑하라 — 새 계명의 자리</h3>
+            <div class="verse">요한복음 13:34-35</div>
+            <div class="preacher">김요한 담임목사</div>
+          </div>
+        </article>
+
+        <article class="sermon-card">
+          <div class="sermon-thumb">
+            <div class="ph"></div>
+            <span class="badge">수요 강해</span>
+            <span class="duration">42:07</span>
+            <div class="play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg></div>
+          </div>
+          <div class="sermon-body">
+            <div class="date">2026. 05. 15 · 수요일</div>
+            <h3>광야의 만나 — 오늘의 양식</h3>
+            <div class="verse">출애굽기 16:1-21</div>
+            <div class="preacher">이은혜 부목사</div>
+          </div>
+        </article>
+
+        <article class="sermon-card">
+          <div class="sermon-thumb">
+            <div class="ph"></div>
+            <span class="badge">주일 1부</span>
+            <span class="duration">35:54</span>
+            <div class="play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg></div>
+          </div>
+          <div class="sermon-body">
+            <div class="date">2026. 05. 12 · 주일</div>
+            <h3>여호와는 나의 목자시니</h3>
+            <div class="verse">시편 23:1-6</div>
+            <div class="preacher">김요한 담임목사</div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Notice + Weekly ============ -->
+  <section id="notice" class="block">
+    <div class="wrap">
+      <div class="info-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>교회 공지사항</h3>
+            <a class="all" href="#">전체보기 →</a>
+          </div>
+          <ul class="notice-list">
+            <li>
+              <span class="tag notice">공지</span>
+              <span class="ttl">2026년 상반기 전교인 수련회 안내 <span class="new">N</span></span>
+              <span class="date">05. 18</span>
+            </li>
+            <li>
+              <span class="tag event">행사</span>
+              <span class="ttl">어버이주일 — 부모님 점심 식사 초청</span>
+              <span class="date">05. 12</span>
+            </li>
+            <li>
+              <span class="tag news">소식</span>
+              <span class="ttl">새가족부 정기 모임 (매월 둘째 주일)</span>
+              <span class="date">05. 09</span>
+            </li>
+            <li>
+              <span class="tag notice">공지</span>
+              <span class="ttl">교회력 5월호 발간 — 입구 데스크에서</span>
+              <span class="date">05. 04</span>
+            </li>
+            <li>
+              <span class="tag event">행사</span>
+              <span class="ttl">청년부 야외 예배 (자전거 라이딩 · 한강길)</span>
+              <span class="date">04. 28</span>
+            </li>
+            <li>
+              <span class="tag news">소식</span>
+              <span class="ttl">선교부 동남아 단기선교 보고회 안내</span>
+              <span class="date">04. 21</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>이번 주 일정</h3>
+            <a class="all" href="#">교회력 →</a>
+          </div>
+          <ul class="week-list">
+            <li class="item">
+              <div class="day"><div class="d">21</div><div class="w">WED</div></div>
+              <div class="info"><div class="title">수요 강해예배</div><div class="time">저녁 7:30 · 본당</div></div>
+            </li>
+            <li class="item">
+              <div class="day"><div class="d">23</div><div class="w">FRI</div></div>
+              <div class="info"><div class="title">금요 합심 기도회</div><div class="time">저녁 8:00 · 본당</div></div>
+            </li>
+            <li class="item">
+              <div class="day"><div class="d">24</div><div class="w">SUN</div></div>
+              <div class="info"><div class="title">주일 1부 · 2부 예배</div><div class="time">오전 9:00 · 11:00</div></div>
+            </li>
+            <li class="item">
+              <div class="day"><div class="d">24</div><div class="w">SUN</div></div>
+              <div class="info"><div class="title">새가족 환영 점심</div><div class="time">낮 12:30 · 친교실</div></div>
+            </li>
+            <li class="item">
+              <div class="day"><div class="d">25</div><div class="w">MON</div></div>
+              <div class="info"><div class="title">여전도회 월례모임</div><div class="time">오전 10:30 · 2층</div></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Gallery ============ -->
+  <section id="gallery" class="block gallery-block">
+    <div class="wrap">
+      <div class="sec-title">
+        <span class="eyebrow">Photo Gallery</span>
+        <h2>가까운교회의 순간들</h2>
+        <div class="deco"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
+        <p>함께 드린 예배, 함께 나눈 식탁, 함께 걸은 골목.<br/>우리 교회의 작은 이야기를 담았습니다.</p>
+      </div>
+
+      <div class="gallery-grid">
+        <div class="gtile t1">
+          <div class="ph"></div>
+          <div class="ovl"><div class="t">주일 본당 — 봄 부활절 예배</div><div class="d">2026. 04. 05</div></div>
+        </div>
+        <div class="gtile t2">
+          <div class="ph"></div>
+          <div class="ovl"><div class="t">찬양대 연습</div><div class="d">2026. 04. 12</div></div>
+        </div>
+        <div class="gtile t3">
+          <div class="ph"></div>
+          <div class="ovl"><div class="t">주일학교 봄소풍</div><div class="d">2026. 04. 20</div></div>
+        </div>
+        <div class="gtile t4">
+          <div class="ph"></div>
+          <div class="ovl"><div class="t">금요 합심기도회</div><div class="d">2026. 05. 02</div></div>
+        </div>
+        <div class="gtile t5">
+          <div class="ph"></div>
+          <div class="ovl"><div class="t">어버이주일 점심 나눔</div><div class="d">2026. 05. 12</div></div>
+        </div>
+        <div class="gtile t6">
+          <div class="ph"></div>
+          <div class="ovl"><div class="t">단기선교 보고회</div><div class="d">2026. 05. 18</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Location ============ -->
+  <section id="location" class="block loc-block">
+    <div class="wrap">
+      <div class="sec-title">
+        <span class="eyebrow">Visit Us</span>
+        <h2>오시는 길</h2>
+        <div class="deco"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
+      </div>
+
+      <div class="loc-grid">
+        <div class="map-box">
+          <div class="ph"></div>
+          <div class="road"></div>
+          <span class="pin"></span>
+          <span class="pin-label">가까운교회</span>
+        </div>
+        <div class="loc-info">
+          <span class="eyebrow">Address & Contact</span>
+          <h3>가까운교회</h3>
+          <div class="sub">경기도 김포시 운양동 · 한강신도시</div>
+          <dl>
+            <dt>주소</dt>
+            <dd>경기도 김포시 운양동 0000-0<span class="small">한강신도시 운양로 인근</span></dd>
+            <dt>전화</dt>
+            <dd>031 — 000 — 0000<span class="small">평일 오전 9:00 – 오후 6:00</span></dd>
+            <dt>이메일</dt>
+            <dd><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ce3eaeae5efe9cce2e9edfeefe4f9feefe4a2e7fe">[email&#160;protected]</a></dd>
+            <dt>대중교통</dt>
+            <dd>김포골드라인 운양역<span class="small">3번 출구 · 도보 약 10분</span></dd>
+            <dt>주차</dt>
+            <dd>교회 지하 주차장<span class="small">주일 예배 시 인근 공영주차장 무료</span></dd>
+          </dl>
+          <div class="actions">
+            <a class="btn-primary" href="#">길찾기 안내</a>
+            <a class="more-link" href="#">지도 크게 보기</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ Footer ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <div class="foot-brand-row">
+          <span class="cross-mini" aria-hidden="true"></span>
+          <div>
+            <div class="name-ko">가까운교회</div>
+            <span class="name-en">The Near Church · Gimpo</span>
+          </div>
+        </div>
+        <p>예수 그리스도의 사랑 안에서<br/>이웃과 가까이, 하나님과 가까이.<br/>김포 한강신도시 운양동의 작은 공동체입니다.</p>
+      </div>
+
+      <div class="foot-col">
+        <h4>예배 안내</h4>
+        <ul>
+          <li class="row"><span>주일 1부</span><span class="t">09:00</span></li>
+          <li class="row"><span>주일 2부</span><span class="t">11:00</span></li>
+          <li class="row"><span>수요예배</span><span class="t">19:30</span></li>
+          <li class="row"><span>금요기도회</span><span class="t">20:00</span></li>
+          <li class="row"><span>새벽예배</span><span class="t">05:30</span></li>
+        </ul>
+      </div>
+
+      <div class="foot-col">
+        <h4>연락처</h4>
+        <ul>
+          <li>경기도 김포시 운양동</li>
+          <li>(한강신도시)</li>
+          <li>Tel. 031-000-0000</li>
+          <li><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5f303939363c3a1f313a3e2d3c372a2d3c3771342d">[email&#160;protected]</a></li>
+        </ul>
+      </div>
+
+      <div class="foot-col">
+        <h4>바로가기</h4>
+        <ul>
+          <li><a href="#about">인사말</a></li>
+          <li><a href="#worship">예배안내</a></li>
+          <li><a href="#sermons">설교말씀</a></li>
+          <li><a href="#notice">공지사항</a></li>
+          <li><a href="#newfam">새가족 등록</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="foot-bottom">
+      <div>© 2026 가까운교회 · The Near Church. All rights reserved.</div>
+      <div class="verse">“너희가 서로 사랑하면 이로써 모든 사람이 너희가 내 제자인 줄 알리라” — 요 13:35</div>
+    </div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script></body>
+</html>
