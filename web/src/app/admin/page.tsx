@@ -12,15 +12,17 @@ export default async function AdminHome() {
   const supabase = await createClient();
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  const [{ count: nc }, { count: bc }, { count: mc }, { count: mc7 }, latestNotices, latestBoard, latestMembers] = await Promise.all([
+  const [{ count: nc }, { count: bc }, { count: mc }, { count: mc7 }, gcRes, latestNotices, latestBoard, latestMembers] = await Promise.all([
     supabase.from("notices").select("*", { count: "exact", head: true }),
     supabase.from("board_posts").select("*", { count: "exact", head: true }),
     supabase.from("new_members").select("*", { count: "exact", head: true }),
     supabase.from("new_members").select("*", { count: "exact", head: true }).gte("created_at", sevenDaysAgo),
+    supabase.from("gallery_photos").select("*", { count: "exact", head: true }),
     supabase.from("notices").select("id, title, pinned, created_at").order("created_at", { ascending: false }).limit(5),
     supabase.from("board_posts").select("id, title, author_name, created_at").order("created_at", { ascending: false }).limit(5),
     supabase.from("new_members").select("id, name, phone, created_at").order("created_at", { ascending: false }).limit(5),
   ]);
+  const gc = gcRes.error ? 0 : (gcRes.count ?? 0);
 
   const notices = (latestNotices.data as Recent[]) ?? [];
   const board = (latestBoard.data as (Recent & { author_name: string })[]) ?? [];
@@ -39,6 +41,7 @@ export default async function AdminHome() {
       <div className="stat-grid">
         <StatCard label="NOTICES" value={nc ?? 0} sub="공지사항" href="/admin/notices" />
         <StatCard label="BOARD POSTS" value={bc ?? 0} sub="자유 게시판" href="/admin/board" />
+        <StatCard label="GALLERY" value={gc} sub="사진첩" href="/admin/gallery" />
         <StatCard label="NEW FAMILY" value={mc ?? 0} sub="새가족 등록" href="/admin/new-members" />
         <StatCard label="THIS WEEK" value={mc7 ?? 0} sub="최근 7일 신규" href="/admin/new-members" />
       </div>

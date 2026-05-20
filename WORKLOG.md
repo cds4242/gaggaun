@@ -4,6 +4,112 @@
 
 ---
 
+## 2026-05-21 (5) — 1시간 라운드 R1~R6 + 메뉴 자동 닫힘 + 사진첩 + QA/베타
+
+### 한 줄 요약
+
+한 세션에서 (a) 1시간 라운드 작업으로 SEO/접근성/폼/메뉴 6라운드 개선,
+(b) 메뉴 외부 클릭/Esc/라우트 변경 시 자동 닫힘, (c) 사진첩 기능
+(공개 라이트박스 + admin 업로드/삭제), (d) QA 3회 + 베타 3회까지 모두 완료.
+
+### 1. 1시간 라운드 (R1~R6)
+
+- **R1 — 첫인상/접근성**
+  - 홈 hero CTA 3개로 확장: 예배 시간 / 처음 오시는 분 / 이번 주 공지
+  - 모바일 햄버거 열렸을 때 `body { overflow:hidden }` 잠금
+  - `Esc`로 모바일 드로어 닫기
+  - 글로벌 `:focus-visible { outline:2px solid var(--gold) }`로 키보드 접근성
+- **R2 — Detail/메타**
+  - `app/not-found.tsx` 글로벌 404 페이지 (홈/공지/게시판/오시는 길 출구)
+  - `/board/[id]`, `/notices/[id]`에 `generateMetadata` 동적 title/description
+  - 게시판 본문 이미지 클릭 시 새 탭 원본 보기(`<a target=_blank>`)
+- **R3 — 폼**
+  - 신규 `components/phone-input.tsx` — 클라이언트에서 입력하자마자 010-xxxx-xxxx 포맷
+  - 새가족 폼에 적용 (서버 정규화는 그대로 유지)
+- **R4 — SEO/OG**
+  - `app/layout.tsx`에 `metadataBase`, OpenGraph, Twitter card, robots 추가
+- **R5 — 베타 v2**
+  - P11~P13(권한 거부 / 검색 빈 결과 / 모바일 햄거버) 시뮬레이션 통과
+  - 첫 호출 컴파일 외 평균 75~120ms
+- **R6 — 모바일 회귀**
+  - sw=360 < vw=375 유지, 게시판 detail 모바일 정상 확인
+
+### 2. 메뉴 외부 클릭 시 자동 닫힘
+
+- `site-header.tsx`:
+  - `usePathname()` 변경 감지로 라우트 이동 시 `setOpen(false)`
+  - `document.click` 외부 영역 감지 → 헤더 영역 밖이면 닫힘
+  - `Escape` 키 닫힘 (기존 유지)
+  - body 스크롤 잠금 (기존 유지)
+- 결과: 모바일에서 햄버거 열고 다른 곳 탭 → 자동 닫힘 (QA에서 openBefore=true → openAfter=false 확인)
+
+### 3. 사진첩 기능 (신규)
+
+#### 기획
+
+- 공개 페이지 `/media/gallery` — 카테고리 필터(전체/예배/행사/교제/봉사/기타) +
+  12장 카드 그리드 + 페이지네이션 + **라이트박스** (Esc/←/→/× 지원)
+- Admin 페이지 `/admin/gallery` + `/admin/gallery/new` — 여러 장 동시 업로드,
+  공통 메타데이터(제목/카테고리/촬영일) 적용, 삭제 시 Storage 파일도 함께 제거
+
+#### 데이터
+
+- 테이블: `public.gallery_photos`
+  (id, title, category check, image_url, image_path, taken_at, created_at)
+- 인덱스: `created_at desc`, `category`
+- RLS: SELECT 모두 / 그 외 `is_admin()`만
+- Storage 버킷: `gallery` (public)
+- `web/supabase/schema.sql`의 ‘5) 사진첩’ 블록 추가 — 운영자가 SQL Editor에서 1회 실행 필요
+
+#### 신규 파일
+
+- 공개: `app/media/gallery/page.tsx` (재작성), `app/media/gallery/gallery-grid.tsx`
+- 어드민: `app/admin/gallery/page.tsx`, `app/admin/gallery/actions.ts`,
+  `app/admin/gallery/new/page.tsx`, `app/admin/gallery/new/upload-form.tsx`
+- 운영: `scripts/apply-gallery-migration.mjs` (gallery 버킷 자동 생성 + 12장 시드 시도)
+- CSS: `.gallery-filter`, `.photo-grid`, `.photo-card`, `.lightbox`,
+  Admin stat-grid 4→5열로 변경 (1200px 이하 3열, 720px 이하 2열)
+- `components/admin-side.tsx` — "사진첩" 메뉴 항목 추가
+
+#### 폴백 동작
+
+- 테이블이 없으면 공개 페이지는 "사진첩이 아직 준비 중입니다." 안내,
+  admin은 schema.sql 실행 안내 배너 표시 (콘솔 에러 없이 graceful).
+
+### 4. QA 3회
+
+1. **메뉴 자동 닫힘 검증**: 모바일에서 햄버거 클릭 → openBefore=true,
+   외부 click → openAfter=false. 정상.
+2. **34개 라우트 회귀** (홈/about/worship/ministry/community/media + 갤러리 카테고리 2개 + 페이지네이션/검색 + /does-not-exist): 모두 적정, 600ms 이상 0건, 404 페이지 정상.
+3. **콘솔 에러 0건** (`/media/gallery` 포함).
+
+### 5. 베타 3회
+
+- B1 사진 보러 온 성도: home → gallery → cat=예배 → cat=행사 (모두 88~192ms)
+- B2 모바일 햄버거 사용자: home → board → notices (98~274ms)
+- B3 빈 결과 사용자: cat=봉사(0건 안내) → 전체 보기 (79~86ms)
+
+모두 정상 동선, friction 없음.
+
+### 변경 파일
+
+- 신규: `app/not-found.tsx`, `app/media/gallery/gallery-grid.tsx`,
+  `app/admin/gallery/page.tsx`, `app/admin/gallery/actions.ts`,
+  `app/admin/gallery/new/page.tsx`, `app/admin/gallery/new/upload-form.tsx`,
+  `components/phone-input.tsx`, `scripts/apply-gallery-migration.mjs`
+- 수정: `app/page.tsx`(hero CTA), `app/layout.tsx`(OG), `app/globals.css`(focus-visible + gallery + lightbox + stat-grid 5열), `app/board/[id]/page.tsx`(메타+이미지 새 탭), `app/notices/[id]/page.tsx`(메타), `app/new-member/page.tsx`(PhoneInput),
+  `app/admin/page.tsx`(GALLERY stat), `app/media/gallery/page.tsx`(재작성),
+  `components/site-header.tsx`(외부 클릭/라우트 변경 자동 닫힘),
+  `components/admin-side.tsx`(사진첩 메뉴), `supabase/schema.sql`(gallery 블록)
+
+### 운영자 작업 (필요)
+
+Supabase SQL Editor에서 `web/supabase/schema.sql`의 ‘5) 사진첩 (gallery)’
+블록을 한 번 실행하면, `/media/gallery`와 `/admin/gallery`가 즉시 동작합니다.
+그 후 `node web/scripts/apply-gallery-migration.mjs`로 12장 샘플을 자동 시드할 수 있습니다.
+
+---
+
 ## 2026-05-21 (4) — 50건 시드 · 페이지네이션 · 검색 · 이미지 사이클 · 베타
 
 ### 한 줄 요약

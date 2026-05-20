@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/page-header";
+import { PhoneInput } from "@/components/phone-input";
 import { registerNewMember } from "./actions";
 
 export const metadata = { title: "새가족 등록 | 가까운교회" };
@@ -15,7 +16,10 @@ export default function Page() {
           <form action={registerNewMember} className="form-card">
             <div className="grid2">
               <Field name="name" label="이름" required />
-              <Field name="phone" label="연락처" placeholder="010-0000-0000" required />
+              <div className="form-row">
+                <label htmlFor="phone">연락처<span className="req">*</span></label>
+                <PhoneInput id="phone" name="phone" required />
+              </div>
               <div className="form-row">
                 <label>성별</label>
                 <div className="radios">

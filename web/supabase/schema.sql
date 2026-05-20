@@ -124,9 +124,33 @@ create policy new_members_delete on public.new_members
   for delete using (public.is_admin());
 
 -- ───────────────────────────────────────────────────────────────
--- Storage 버킷 (게시판 이미지)
--- 대시보드에서 "board-images" 버킷을 public 으로 만들어두세요.
+-- 5) 사진첩 (gallery)
+-- ───────────────────────────────────────────────────────────────
+create table if not exists public.gallery_photos (
+  id bigserial primary key,
+  title text,
+  category text not null default '기타' check (category in ('예배','행사','교제','봉사','기타')),
+  image_url text not null,
+  image_path text not null,
+  taken_at date,
+  created_at timestamptz not null default now()
+);
+create index if not exists gallery_photos_created_at_idx on public.gallery_photos (created_at desc);
+create index if not exists gallery_photos_category_idx on public.gallery_photos (category);
+
+alter table public.gallery_photos enable row level security;
+
+drop policy if exists gallery_select on public.gallery_photos;
+create policy gallery_select on public.gallery_photos for select using (true);
+
+drop policy if exists gallery_modify on public.gallery_photos;
+create policy gallery_modify on public.gallery_photos
+  for all using (public.is_admin()) with check (public.is_admin());
+
+-- ───────────────────────────────────────────────────────────────
+-- Storage 버킷
+-- 대시보드에서 "board-images", "gallery" 버킷을 public 으로 만들어두세요.
 -- 또는 아래 SQL 실행:
--- insert into storage.buckets (id, name, public) values ('board-images', 'board-images', true)
---   on conflict do nothing;
+-- insert into storage.buckets (id, name, public) values ('board-images', 'board-images', true) on conflict do nothing;
+-- insert into storage.buckets (id, name, public) values ('gallery', 'gallery', true) on conflict do nothing;
 -- ───────────────────────────────────────────────────────────────

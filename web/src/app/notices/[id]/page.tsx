@@ -1,9 +1,23 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient, isAdminEmail } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 
 export const revalidate = 0;
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase.from("notices").select("title, content").eq("id", id).maybeSingle();
+    if (data) {
+      const desc = (data.content ?? "").toString().replace(/\s+/g, " ").slice(0, 80);
+      return { title: `${data.title} | 가까운교회 공지`, description: desc };
+    }
+  } catch {}
+  return { title: "공지 | 가까운교회" };
+}
 
 export default async function NoticeDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

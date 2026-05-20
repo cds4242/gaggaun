@@ -302,6 +302,66 @@ node scripts/image-cycle-10.mjs # 이미지 업로드 + 게시글 사이클 10�
 
 ---
 
+## 7.11 사진첩 (Gallery)
+
+### 데이터
+
+- 테이블 `public.gallery_photos`:
+  - `id bigserial`, `title text`, `category text check (in 5개)`,
+    `image_url text`, `image_path text`, `taken_at date`, `created_at timestamptz`
+- 인덱스: `created_at desc`, `category`
+- RLS: SELECT 모두 / 그 외 `is_admin()`만
+- Storage 버킷: `gallery` (public)
+
+### 카테고리
+
+| 키 | 비고 |
+| --- | --- |
+| 예배 | 주일 1·2부, 수요, 새벽 등 예배 사진 |
+| 행사 | 절기 행사, 수련회, 단기선교, 칸타타 등 |
+| 교제 | 점심 나눔, 모임 등 친교 |
+| 봉사 | 김장, 환경 정비, 도시락 나눔 등 |
+| 기타 | 위 분류에 안 들어가는 사진 |
+
+### 공개 페이지 (`/media/gallery`)
+
+- 페이지당 12장, 카테고리 필터 chips, 페이지네이션.
+- 카드 클릭 → 라이트박스 (Esc 닫기, ← / → 키 네비, 배경 클릭 닫기,
+  body 스크롤 잠금).
+- 테이블이 없으면 graceful 폴백: "사진첩이 아직 준비 중입니다."
+
+### Admin (`/admin/gallery`)
+
+- 그리드 뷰 + 각 카드 하단 "삭제" 버튼 (Storage 파일 동시 제거).
+- `/admin/gallery/new`: 여러 장 업로드 → 공통 메타데이터(제목/카테고리/촬영일)로 일괄 등록.
+- 제목을 비우면 파일명을 자동 사용.
+- 테이블 없을 때 "schema.sql의 사진첩 블록을 실행해 주세요" 배너 노출.
+
+## 7.12 헤더 / 네비게이션 정책
+
+- 데스크톱: 메인 메뉴 hover 시 `.submenu` 페이드인 (CSS만).
+- 모바일 햄버거 드로어 `.mobile-menu.open`:
+  - 라우트 변경(`usePathname` 변경) 시 자동 닫힘
+  - 헤더 영역 밖 click 시 자동 닫힘
+  - `Escape` 키 닫힘
+  - 열려 있는 동안 `body { overflow:hidden }` 잠금
+
+## 7.13 메타데이터 / SEO
+
+- 루트 `metadataBase`: `NEXT_PUBLIC_SITE_URL` 또는 `https://gaggaun.vercel.app`
+- OpenGraph: type=website, ko_KR, siteName "가까운교회"
+- Twitter card: summary
+- robots: index=true, follow=true
+- `/board/[id]`, `/notices/[id]`는 `generateMetadata`로 동적 title + 본문 80자 description
+
+## 7.14 접근성
+
+- 키보드 포커스: `:focus-visible { outline:2px solid var(--gold); outline-offset:2px }` 전역
+- 마우스 포커스에는 영향 없음 (`:focus-visible`만 적용)
+- 모바일 드로어 / 라이트박스에 `aria-modal`, `aria-label`, `role="dialog"`
+
+---
+
 ## 8. 데이터 의존성 (현재)
 
 | 페이지 | Supabase 테이블 | 폴백 |

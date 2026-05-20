@@ -4,8 +4,25 @@ import { SiteShell } from "@/components/site-shell";
 import { createClient, isAdminEmail } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "가까운교회 | 김포 한강신도시 운양동",
-  description: "김포 한강신도시 운양동에 위치한 가까운교회 공식 홈페이지입니다.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://gaggaun.vercel.app"),
+  title: {
+    default: "가까운교회 | 김포 한강신도시 운양동",
+    template: "%s",
+  },
+  description: "김포 한강신도시 운양동에 위치한 가까운교회 공식 홈페이지입니다. 매주 주일·수요·새벽 예배와 다음 세대 사역, 따뜻한 공동체를 소개합니다.",
+  openGraph: {
+    type: "website",
+    siteName: "가까운교회",
+    title: "가까운교회 | 김포 한강신도시 운양동",
+    description: "이웃과 가까이, 하나님과 가까이. 가까운교회 공식 홈페이지.",
+    locale: "ko_KR",
+  },
+  twitter: {
+    card: "summary",
+    title: "가까운교회",
+    description: "김포 한강신도시 운양동 가까운교회.",
+  },
+  robots: { index: true, follow: true },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

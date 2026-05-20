@@ -1,9 +1,23 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient, isAdminEmail } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { incrementBoardView } from "../actions";
 import { deleteBoardPost } from "./actions";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase.from("board_posts").select("title, content").eq("id", id).maybeSingle();
+    if (data) {
+      const desc = (data.content ?? "").toString().replace(/\s+/g, " ").slice(0, 80);
+      return { title: `${data.title} | 가까운교회 게시판`, description: desc };
+    }
+  } catch {}
+  return { title: "게시글 | 가까운교회" };
+}
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -61,8 +75,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           {post.image_urls && post.image_urls.length > 0 && (
             <div style={{ marginTop: 32, display: "grid", gap: 16 }}>
               {post.image_urls.map((url: string, i: number) => (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img key={i} src={url} alt={`첨부 ${i + 1}`} style={{ width: "100%", height: "auto", border: "1px solid var(--line)" }} />
+                <a key={i} href={url} target="_blank" rel="noopener noreferrer" title="새 탭에서 원본 보기" style={{ display: "block" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt={`첨부 ${i + 1}`} style={{ width: "100%", height: "auto", border: "1px solid var(--line)", display: "block" }} />
+                </a>
               ))}
             </div>
           )}

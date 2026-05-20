@@ -1,33 +1,95 @@
+import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import { Pagination } from "@/components/pagination";
+import { GalleryGrid } from "./gallery-grid";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "사진갤러리 | 가까운교회" };
+export const revalidate = 60;
 
-const tiles = [
-  { cls: "t1", t: "주일 본당 — 봄 부활절 예배", d: "2026. 04. 05" },
-  { cls: "t2", t: "찬양대 연습", d: "2026. 04. 12" },
-  { cls: "t3", t: "주일학교 봄소풍", d: "2026. 04. 20" },
-  { cls: "t4", t: "금요 합심기도회", d: "2026. 05. 02" },
-  { cls: "t5", t: "어버이주일 점심 나눔", d: "2026. 05. 12" },
-  { cls: "t6", t: "단기선교 보고회", d: "2026. 05. 18" },
-];
+const PAGE_SIZE = 12;
 
-export default function Page() {
+type Photo = {
+  id: number;
+  title: string | null;
+  category: string;
+  image_url: string;
+  taken_at: string | null;
+  created_at: string;
+};
+
+const CATEGORIES = ["전체", "예배", "행사", "교제", "봉사", "기타"] as const;
+
+export default async function Page({ searchParams }: { searchParams: Promise<{ page?: string; cat?: string }> }) {
+  const sp = await searchParams;
+  const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
+  const cat = sp.cat && CATEGORIES.includes(sp.cat as (typeof CATEGORIES)[number]) ? sp.cat : "전체";
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
+  let photos: Photo[] = [];
+  let total = 0;
+  let tableMissing = false;
+  try {
+    const supabase = await createClient();
+    let qb = supabase
+      .from("gallery_photos")
+      .select("id, title, category, image_url, taken_at, created_at", { count: "exact" })
+      .order("created_at", { ascending: false });
+    if (cat !== "전체") qb = qb.eq("category", cat);
+    const res = await qb.range(from, to);
+    if (res.error) {
+      if (res.error.message?.includes("gallery_photos")) tableMissing = true;
+    } else {
+      photos = (res.data as Photo[]) ?? [];
+      total = res.count ?? 0;
+    }
+  } catch {
+    tableMissing = true;
+  }
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const extra = cat !== "전체" ? { cat } : undefined;
+
   return (
     <>
       <PageHeader title="사진갤러리" eyebrow="PHOTO GALLERY" subtitle="가까운교회의 순간들" />
-      <section className="block gallery-block" style={{ background: "transparent" }}>
+      <section className="block" style={{ background: "transparent" }}>
         <div className="wrap">
-          <div className="gallery-grid">
-            {tiles.map((g, i) => (
-              <div key={i} className={`gtile ${g.cls}`}>
-                <div className="ph" />
-                <div className="ovl">
-                  <div className="t">{g.t}</div>
-                  <div className="d">{g.d}</div>
-                </div>
+          {tableMissing ? (
+            <div className="prose-box" style={{ textAlign: "center", color: "var(--mute)" }}>
+              <p>사진첩이 아직 준비 중입니다. 곧 업데이트됩니다.</p>
+            </div>
+          ) : (
+            <>
+              <div className="gallery-filter" role="tablist" aria-label="카테고리 필터">
+                {CATEGORIES.map((c) => {
+                  const isActive = cat === c;
+                  const href = c === "전체" ? "/media/gallery" : `/media/gallery?cat=${encodeURIComponent(c)}`;
+                  return (
+                    <Link key={c} href={href} className={"chip" + (isActive ? " active" : "")} aria-current={isActive ? "page" : undefined}>
+                      {c}
+                    </Link>
+                  );
+                })}
               </div>
-            ))}
-          </div>
+
+              <div style={{ fontSize: 14, color: "var(--mute)", margin: "18px 0" }}>
+                {cat === "전체" ? <>전체 <strong style={{ color: "var(--navy)" }}>{total}</strong>장</> : <><strong style={{ color: "var(--navy)" }}>{cat}</strong> {total}장</>}
+                {totalPages > 1 && <> · {page} / {totalPages}</>}
+              </div>
+
+              {photos.length === 0 ? (
+                <div className="prose-box" style={{ textAlign: "center", color: "var(--mute)" }}>
+                  {cat === "전체" ? "아직 등록된 사진이 없습니다." : <>‘{cat}’ 카테고리에 사진이 없습니다. <Link href="/media/gallery" className="a-link" style={{ marginLeft: 8 }}>전체 보기</Link></>}
+                </div>
+              ) : (
+                <GalleryGrid photos={photos} />
+              )}
+
+              <Pagination basePath="/media/gallery" page={page} totalPages={totalPages} searchParams={extra} />
+            </>
+          )}
         </div>
       </section>
     </>

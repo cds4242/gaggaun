@@ -108,6 +108,7 @@ export default async function Home() {
             <div className="hero-ctas">
               <Link className="btn-gold" href="/worship/sunday">예배 시간 안내</Link>
               <Link className="btn-line" href="/new-member">처음 오시는 분</Link>
+              <Link className="btn-line" href="/notices">이번 주 공지</Link>
             </div>
           </div>
         </div>
