@@ -19,29 +19,31 @@ export default async function NoticeDetail({ params }: { params: Promise<{ id: s
   const admin = await isAdminEmail(userData.user?.email);
 
   return (
-    <div className="bg-paper pt-32">
-      <div className="container-narrow pb-24">
-        <Link href="/notices" className="text-[11px] tracking-[0.25em] text-muted hover:text-ink">
-          ← NOTICES
+    <section className="py-20 bg-[var(--paper)]">
+      <div className="max-w-[920px] mx-auto px-8">
+        <Link href="/notices" className="font-sans text-[13px] text-[var(--mute)] hover:text-[var(--navy)]">
+          ← 공지사항 목록
         </Link>
-        <div className="eyebrow mt-8">— Notice</div>
-        <h1 className="h-display text-4xl sm:text-5xl text-ink mt-6">{notice.title}</h1>
-        <div className="mt-6 flex items-center gap-4 text-[12px] tracking-[0.15em] text-muted">
-          <span>관리자</span>
-          <span className="h-px w-8 bg-[var(--line-soft)]" />
-          <span>{formatDate(notice.created_at)}</span>
-        </div>
-
-        <div className="mt-16 prose-quiet text-[15px] whitespace-pre-wrap">
-          {notice.content}
-        </div>
-
-        {admin && (
-          <div className="mt-20 pt-8 border-t border-[var(--line-soft)]">
-            <Link href={`/admin/notices/${notice.id}/edit`} className="btn-ink">수정</Link>
+        <div className="bg-white border border-[var(--line)] card-shadow mt-6 px-10 py-12">
+          <span className="font-display italic text-[17px] text-[var(--gold)] tracking-[0.08em] block mb-3">— Notice</span>
+          <h1 className="font-serif font-bold text-[32px] text-[var(--navy)] tracking-[-0.04em] leading-[1.35]">
+            {notice.title}
+          </h1>
+          <div className="mt-5 flex items-center gap-4 text-[13px] text-[var(--mute)] pb-6 border-b border-[var(--line)]">
+            <span>관리자</span>
+            <span className="w-px h-3 bg-[var(--line)]" />
+            <span className="font-display italic">{formatDate(notice.created_at)}</span>
           </div>
-        )}
+
+          <div className="mt-10 prose-quiet whitespace-pre-wrap">{notice.content}</div>
+
+          {admin && (
+            <div className="mt-12 pt-8 border-t border-[var(--line)]">
+              <Link href={`/admin/notices/${notice.id}/edit`} className="btn-primary">수정</Link>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

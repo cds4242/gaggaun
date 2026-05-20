@@ -10,11 +10,18 @@ const items = [
 ];
 export default function Page() {
   return (
-    <div className="bg-paper">
-      <PageHeader title="사역" eyebrow="— Ministry" subtitle="우리 교회의 다양한 사역" image={IMG.ministry} />
-      <div className="container-wide section">
-        <SectionGrid items={items} />
-      </div>
-    </div>
+    <>
+      <PageHeader title="사역" eyebrow="Ministry" subtitle="우리 교회의 다양한 사역" image={IMG.ministry} />
+      <section className="py-24">
+        <div className="max-w-[1240px] mx-auto px-8">
+          <div className="sec-title">
+            <span className="eyebrow">Ministry</span>
+            <h2>함께 만들어가는 사역</h2>
+            <div className="deco"><span className="line"></span><span className="dot"></span><span className="line"></span></div>
+          </div>
+          <SectionGrid items={items} />
+        </div>
+      </section>
+    </>
   );
 }

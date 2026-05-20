@@ -26,32 +26,39 @@ export default async function NoticesPage() {
   }
 
   return (
-    <div className="bg-paper">
-      <PageHeader title="공지사항" eyebrow="— News" subtitle="교회의 소식을 전합니다" image={IMG.notice} />
-      <div className="container-narrow section">
-        {errMsg && <p className="text-[14px] text-red-800 mb-6">{errMsg}</p>}
-        <ul className="divide-y divide-[var(--line-soft)] border-y border-[var(--line-soft)]">
-          {!notices || notices.length === 0 ? (
-            <li className="py-20 text-center text-muted text-[14px]">등록된 공지가 없습니다.</li>
-          ) : (
-            notices.map((n) => (
-              <li key={n.id}>
-                <Link href={`/notices/${n.id}`} className="group py-7 flex items-start justify-between gap-6">
-                  <div className="flex-1 min-w-0">
-                    {n.pinned && (
-                      <div className="text-[10px] tracking-[0.25em] text-ink mb-2">PINNED</div>
-                    )}
-                    <div className="text-[16px] text-ink line-clamp-2 leading-relaxed group-hover:translate-x-1 transition-transform">
-                      {n.title}
-                    </div>
-                  </div>
-                  <div className="text-[11px] tracking-[0.15em] text-muted shrink-0 pt-1">{formatDate(n.created_at)}</div>
-                </Link>
-              </li>
-            ))
-          )}
-        </ul>
-      </div>
-    </div>
+    <>
+      <PageHeader title="공지사항" eyebrow="News & Notice" subtitle="교회의 소식을 전합니다" image={IMG.notice} />
+      <section className="py-20">
+        <div className="max-w-[920px] mx-auto px-8">
+          {errMsg && <p className="text-[14px] text-[var(--burgundy)] mb-6">{errMsg}</p>}
+
+          <div className="bg-white border border-[var(--line)] card-shadow">
+            {!notices || notices.length === 0 ? (
+              <div className="py-20 text-center text-[var(--mute)]">등록된 공지가 없습니다.</div>
+            ) : (
+              <ul>
+                {notices.map((n, i, arr) => {
+                  const isNew = (Date.now() - new Date(n.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000;
+                  return (
+                    <li key={n.id} className={`grid grid-cols-[88px_1fr_110px] items-center gap-4 px-7 py-5 hover:bg-[var(--paper)] transition-colors ${i < arr.length - 1 ? "border-b border-[var(--line)]" : ""}`}>
+                      <span className={`inline-block px-2.5 py-1 font-sans text-[12px] font-bold text-center rounded-sm ${
+                        n.pinned ? "bg-[var(--burgundy)] text-[var(--gold-2)]" : "bg-[var(--paper-2)] text-[var(--navy)]"
+                      }`}>
+                        {n.pinned ? "공지" : "소식"}
+                      </span>
+                      <Link href={`/notices/${n.id}`} className="font-serif text-[16px] text-[var(--ink)] font-medium tracking-[-0.02em] line-clamp-1 hover:text-[var(--navy)]">
+                        {n.title}
+                        {isNew && <span className="inline-block ml-2 bg-[var(--burgundy)] text-white font-sans text-[10px] font-bold px-1.5 py-0.5 rounded-sm align-middle">N</span>}
+                      </Link>
+                      <span className="font-display italic text-[var(--mute)] text-[15px] text-right">{formatDate(n.created_at)}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

@@ -13,11 +13,18 @@ const items = [
 
 export default function Page() {
   return (
-    <div className="bg-paper">
-      <PageHeader title="예배안내" eyebrow="— Worship" subtitle="가까운교회의 예배" image={IMG.worship} />
-      <div className="container-wide section">
-        <SectionGrid items={items} />
-      </div>
-    </div>
+    <>
+      <PageHeader title="예배안내" eyebrow="Worship Service" subtitle="가까운교회의 예배" image={IMG.worship} />
+      <section className="py-24">
+        <div className="max-w-[1240px] mx-auto px-8">
+          <div className="sec-title">
+            <span className="eyebrow">Worship</span>
+            <h2>한 주의 예배를 안내합니다</h2>
+            <div className="deco"><span className="line"></span><span className="dot"></span><span className="line"></span></div>
+          </div>
+          <SectionGrid items={items} />
+        </div>
+      </section>
+    </>
   );
 }
