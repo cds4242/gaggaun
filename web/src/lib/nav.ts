@@ -29,8 +29,7 @@ export const NAV: NavItem[] = [
     label: "설교말씀",
     href: "/media/sermon",
     children: [
-      { label: "주일 설교", href: "/media/sermon" },
-      { label: "수요 강해", href: "/media/sermon" },
+      { label: "설교 영상", href: "/media/sermon" },
       { label: "사진 갤러리", href: "/media/gallery" },
     ],
   },

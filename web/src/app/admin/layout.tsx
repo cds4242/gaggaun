@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { AdminSide } from "@/components/admin-side";
+import { LogoutLink } from "@/components/logout-link";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const { email } = await requireAdmin("/admin");
@@ -16,7 +17,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <span className="sep">|</span>
           <Link href="/" target="_blank">사이트 보기 ↗</Link>
           <span className="sep">|</span>
-          <Link href="/logout">로그아웃</Link>
+          <LogoutLink />
         </div>
       </header>
       <AdminSide />

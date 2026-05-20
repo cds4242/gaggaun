@@ -25,7 +25,7 @@ export function SiteHeader() {
               {item.children && (
                 <ul className="submenu">
                   {item.children.map((c) => (
-                    <li key={c.href}>
+                    <li key={`${c.label}-${c.href}`}>
                       <Link href={c.href}>{c.label}</Link>
                     </li>
                   ))}
@@ -56,7 +56,7 @@ export function SiteHeader() {
               {item.children && (
                 <div className="subs">
                   {item.children.map((c) => (
-                    <Link key={c.href} href={c.href} onClick={() => setOpen(false)}>
+                    <Link key={`${c.label}-${c.href}`} href={c.href} onClick={() => setOpen(false)}>
                       {c.label}
                     </Link>
                   ))}

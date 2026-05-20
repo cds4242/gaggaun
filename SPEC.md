@@ -159,6 +159,50 @@ Playwright 결과물(`.playwright-mcp/`, `playwright-report/`, `test-results/`)�
 
 ---
 
+## 7.5 인증 / 로그아웃 흐름
+
+### 권한 체크
+
+- `requireAdmin(pathForRedirect)` (`web/src/lib/auth.ts`):
+  - `supabase.auth.getUser()` → 실패 또는 이메일 없음 → `/login?next=...`
+  - `admins` 테이블 SELECT (이메일 lowercase 매칭):
+    - 쿼리 에러(RLS/네트워크 등) → `/?msg=admin-check-failed`
+    - 결과 없음 → `/?msg=not-admin`
+    - 결과 있음 → `{ email }` 반환
+- Admin 페이지 진입 시 자동으로 "로그아웃됨"처럼 보이지 않도록, 에러 경로와
+  권한 없음 경로를 분리해 안내한다.
+
+### 로그아웃
+
+- 일반 사용자는 `<LogoutLink />` 컴포넌트(`web/src/components/logout-link.tsx`)를 클릭.
+- 클릭 시 `window.confirm("로그아웃하시겠습니까?")` 표시.
+- 동의 시 `logoutAction()` (`web/src/app/logout/actions.ts`, `"use server"`)
+  → `supabase.auth.signOut()` → `redirect("/?msg=logout")`.
+- `useTransition` pending 동안 버튼 텍스트는 "로그아웃 중...".
+- 기존 `GET /logout` route는 호환성 유지로 남아있지만, UI 진입점은 모두 LogoutLink 사용.
+
+### Flash 메시지
+
+- 신호: URL 쿼리 `?msg=...`.
+- 핸들러: `<FlashMessage />` (`web/src/components/flash-message.tsx`, 클라이언트).
+  `site-shell.tsx`에서 Suspense로 감싸 모든 레이아웃에 포함.
+- 메시지 매핑:
+  | key | 톤 | 문구 |
+  | --- | --- | --- |
+  | `logout` | ok (navy) | 로그아웃되었습니다. |
+  | `not-admin` | warn (burgundy) | 관리자 권한이 없습니다. |
+  | `admin-check-failed` | warn (burgundy) | 관리자 확인 중 오류가 발생했습니다. |
+- 동작: 상단 중앙에서 페이드+slide-down, 2.5초 후 사라지고 URL에서 `msg` 파라미터를 제거.
+
+### 로그인 트랜지션
+
+- `LoginForm`(`web/src/app/login/login-form.tsx`):
+  - 마운트 시 페이드인.
+  - 성공 시 버튼이 "환영합니다 ✓"로 바뀌고 300ms 뒤 `router.push(next)`.
+  - 로딩 중 입력 필드 disabled.
+
+---
+
 ## 8. 데이터 의존성 (현재)
 
 | 페이지 | Supabase 테이블 | 폴백 |

@@ -4,6 +4,81 @@
 
 ---
 
+## 2026-05-21 (2) — Admin 인증 흐름 개선 · 로그아웃 confirm · QA
+
+### 한 줄 요약
+
+Admin 페이지 이동 중 자동으로 "로그아웃된 것처럼" 보이던 동선을 정리하고,
+로그아웃을 confirm + server action으로 바꿔 자연스럽게 동작하도록 만들었다.
+로그인은 트랜지션을 입혔고, 홈 더미 공지 클릭 시 404로 빠지던 버그도 잡았다.
+
+### 1. Admin 자동 로그아웃 — 원인과 수정
+
+- `requireAdmin()`이 매 요청마다 `auth.getUser()` + `isAdminEmail()`을 호출하는데,
+  `isAdminEmail()`이 내부에서 try/catch로 오류를 삼키고 false를 반환했다.
+  → `admins` 테이블 SELECT가 RLS/네트워크 등으로 실패하면 사용자 입장에선
+  로그인된 상태인데도 매번 `/?msg=not-admin`으로 튕겨 "로그아웃됨"으로 보임.
+- 수정 (`web/src/lib/auth.ts`):
+  - `isAdminEmail` 의존 제거, `requireAdmin` 내부에서 `admins` 조회를 직접 수행.
+  - `getUser()` 에러 / 이메일 없음 → `/login?next=...`
+  - admins 조회 에러 → `/?msg=admin-check-failed` (식별 가능한 메시지)
+  - admins 결과 없음 → `/?msg=not-admin`
+- 또 다른 원인 후보: `<Link href="/logout">`이 prefetch되어 hover만으로
+  signOut이 발화될 가능성. → 다음 항목에서 server action 기반 로그아웃으로 교체해
+  prefetch 영향에서 분리.
+
+### 2. 로그아웃 confirm + 부드러운 전환
+
+- 신규 `web/src/components/logout-link.tsx` (클라이언트 컴포넌트):
+  - 클릭 시 `window.confirm("로그아웃하시겠습니까?")` → 동의 시 server action 호출.
+  - `useTransition`으로 pending 상태에서 "로그아웃 중..." 표시.
+- 신규 `web/src/app/logout/actions.ts`: `"use server"`로 `signOut()` 후
+  `/?msg=logout` 리다이렉트. 기존 GET `/logout/route.ts`는 호환성 유지를 위해 그대로 둠.
+- `web/src/components/util-bar.tsx`, `web/src/app/admin/layout.tsx`의 로그아웃 링크를
+  `<LogoutLink />`로 교체.
+
+### 3. Flash 메시지 (자연스러운 안내)
+
+- 신규 `web/src/components/flash-message.tsx` (클라이언트):
+  - URL 쿼리 `?msg=logout | not-admin | admin-check-failed`를 읽어 상단 중앙에
+    토스트 표시 (페이드 + slide-down, 2.5초 후 사라지고 URL 정리).
+  - `site-shell.tsx`에서 `Suspense`로 감싸 bare/일반 레이아웃 모두에 포함.
+
+### 4. 로그인 폼 트랜지션
+
+- `web/src/app/login/login-form.tsx`:
+  - 마운트 시 페이드인, 로그인 성공 시 버튼 라벨이 "환영합니다 ✓"로 바뀌고
+    300ms 뒤 `router.push(next)`로 부드럽게 전환.
+  - 로딩 중 입력 필드 disabled 처리.
+
+### 5. 기획 개선 (NAV 정리 · 키 중복)
+
+- `/media/sermon` 페이지에서 React 콘솔 경고 "두 children이 같은 key" 발생.
+  - 원인: `lib/nav.ts`의 '설교말씀' children에 `/media/sermon`이 두 번
+    (`주일 설교`, `수요 강해`). site-header가 `key={c.href}`를 쓰고 있었다.
+  - 수정: NAV의 중복 항목을 `설교 영상` 하나로 합치고,
+    site-header의 key는 안전하게 `${label}-${href}`로 변경.
+
+### 6. QA 자동 점검 (Playwright headless · 백그라운드)
+
+- 27개 라우트에서 HTML을 파싱해 모든 내부 링크를 fetch.
+- 1회차 결과: 홈 카드의 `/notices/1` ~ `/notices/6`이 전부 404.
+  - 원인: Supabase 비어 있을 때 더미 공지 6건을 렌더링하면서
+    각 항목 링크가 실제 존재하지 않는 detail 경로를 가리킴.
+  - 수정 (`web/src/app/page.tsx`): 더미일 때는 `/notices` 목록으로 보내도록 분기.
+- 2회차: 404 0건.
+- 3회차: 모바일 375px에서 27개 라우트 가로 오버플로 0건 유지,
+  콘솔 에러도 0건(이전의 key 중복 경고 포함 모두 해소).
+
+### 변경 파일
+
+- 수정: `admin/layout.tsx`, `login/login-form.tsx`, `page.tsx`,
+  `components/site-header.tsx`, `components/site-shell.tsx`,
+  `components/util-bar.tsx`, `lib/auth.ts`, `lib/nav.ts`
+- 신규: `app/logout/actions.ts`, `components/flash-message.tsx`, `components/logout-link.tsx`
+
+---
+
 ## 2026-05-21 — 모바일 가로 오버플로 수정
 
 ### 한 줄 요약

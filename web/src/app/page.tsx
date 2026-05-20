@@ -55,7 +55,8 @@ const galleryItems = [
 
 export default async function Home() {
   const fetched = await getRecentNotices();
-  const notices = fetched.length > 0 ? fetched : dummyNotices;
+  const usingDummy = fetched.length === 0;
+  const notices = usingDummy ? dummyNotices : fetched;
 
   return (
     <>
@@ -281,11 +282,12 @@ export default async function Home() {
                 {notices.map((n) => {
                   const isNew = (Date.now() - new Date(n.created_at).getTime()) < 14 * 24 * 60 * 60 * 1000;
                   const dateShort = formatDate(n.created_at).replace(/^\d{4}\.\s/, "");
+                  const href = usingDummy ? "/notices" : `/notices/${n.id}`;
                   return (
                     <li key={n.id}>
                       <span className={"tag " + (n.pinned ? "notice" : "news")}>{n.pinned ? "공지" : "소식"}</span>
                       <span className="ttl">
-                        <Link href={`/notices/${n.id}`}>{n.title}</Link>
+                        <Link href={href}>{n.title}</Link>
                         {isNew && <span className="new">N</span>}
                       </span>
                       <span className="date">{dateShort}</span>

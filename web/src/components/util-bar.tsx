@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LogoutLink } from "@/components/logout-link";
 
 export function UtilBar({ userEmail }: { userEmail?: string | null }) {
   return (
@@ -14,7 +15,7 @@ export function UtilBar({ userEmail }: { userEmail?: string | null }) {
             <>
               <Link href="/admin">관리자</Link>
               <span className="sep">|</span>
-              <Link href="/logout">로그아웃</Link>
+              <LogoutLink />
             </>
           ) : (
             <>
