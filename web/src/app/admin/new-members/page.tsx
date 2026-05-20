@@ -1,6 +1,9 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
+
+export const metadata = { title: "새가족 관리 | 가까운교회" };
 
 export default async function Page() {
   await requireAdmin("/admin/new-members");
@@ -9,40 +12,57 @@ export default async function Page() {
     .from("new_members")
     .select("*")
     .order("created_at", { ascending: false });
+  const rows = members ?? [];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
-      <h1 className="text-2xl font-bold mb-6">새가족 등록 목록</h1>
-      <div className="overflow-auto rounded-lg border border-gray-200">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="p-3 text-left">이름</th>
-              <th className="p-3 text-left">연락처</th>
-              <th className="p-3 text-left">성별</th>
-              <th className="p-3 text-left">초청자</th>
-              <th className="p-3 text-left">방문일</th>
-              <th className="p-3 text-left">기도제목</th>
-              <th className="p-3 text-left">등록일</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {!members || members.length === 0 ? (
-              <tr><td colSpan={7} className="p-8 text-center text-gray-500">없음</td></tr>
-            ) : members.map((m) => (
-              <tr key={m.id}>
-                <td className="p-3 font-medium">{m.name}</td>
-                <td className="p-3">{m.phone}</td>
-                <td className="p-3">{m.gender === "M" ? "남" : m.gender === "F" ? "여" : "-"}</td>
-                <td className="p-3">{m.invited_by ?? "-"}</td>
-                <td className="p-3">{m.visited_at ?? "-"}</td>
-                <td className="p-3 max-w-xs truncate">{m.prayer_request ?? "-"}</td>
-                <td className="p-3 text-gray-500">{formatDate(m.created_at)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <>
+      <div className="admin-page-head">
+        <div className="title-side">
+          <span className="eyebrow">New Family</span>
+          <h1>새가족 등록 관리</h1>
+        </div>
+        <Link href="/new-member" target="_blank" className="more-link">새가족 등록 페이지 ↗</Link>
       </div>
-    </div>
+
+      <div className="admin-card">
+        <div className="ac-head">
+          <h3>전체 등록 ({rows.length})</h3>
+        </div>
+        <div className="ac-body" style={{ padding: 0 }}>
+          {rows.length === 0 ? (
+            <div className="admin-empty">아직 새가족 등록이 없습니다.</div>
+          ) : (
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th style={{ width: 90 }}>이름</th>
+                  <th style={{ width: 130 }}>연락처</th>
+                  <th style={{ width: 60 }}>성별</th>
+                  <th style={{ width: 110 }}>방문일</th>
+                  <th style={{ width: 110 }}>초청자</th>
+                  <th>기도 제목</th>
+                  <th style={{ width: 130 }}>등록일</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((m) => (
+                  <tr key={m.id}>
+                    <td style={{ color: "var(--navy)", fontWeight: 600 }}>{m.name}</td>
+                    <td>{m.phone}</td>
+                    <td>{m.gender === "M" ? "남" : m.gender === "F" ? "여" : "-"}</td>
+                    <td className="muted">{m.visited_at ?? "-"}</td>
+                    <td>{m.invited_by ?? "-"}</td>
+                    <td className="muted" style={{ maxWidth: 320 }}>
+                      <div className="line-clamp-2">{m.prayer_request ?? "-"}</div>
+                    </td>
+                    <td className="muted">{formatDate(m.created_at)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </>
   );
 }

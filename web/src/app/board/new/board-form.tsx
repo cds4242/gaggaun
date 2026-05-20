@@ -4,11 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { createBoardPost } from "../actions";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
 
 const BUCKET = "board-images";
 
@@ -17,7 +12,7 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [authorName, setAuthorName] = useState(defaultAuthor ?? "");
-  const [images, setImages] = useState<{ url: string; path: string }[]>([]);
+  const [images, setImages] = useState<{ url: string; path: string; name: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -34,18 +29,15 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
         const ext = file.name.split(".").pop() ?? "jpg";
         const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
         const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: file.type,
+          cacheControl: "3600", upsert: false, contentType: file.type,
         });
         if (error) throw error;
         const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(path);
-        next.push({ url: pub.publicUrl, path });
+        next.push({ url: pub.publicUrl, path, name: file.name });
       }
       setImages((prev) => [...prev, ...next]);
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "업로드 실패";
-      setErr(msg);
+      setErr(e instanceof Error ? e.message : "업로드 실패");
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -56,9 +48,7 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
     try {
       const supabase = createClient();
       await supabase.storage.from(BUCKET).remove([path]);
-    } catch {
-      // 실패해도 UI에서는 제거
-    }
+    } catch {}
     setImages((prev) => prev.filter((i) => i.path !== path));
   }
 
@@ -75,55 +65,50 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
         image_urls: images.map((i) => i.url),
       });
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "오류";
-      setErr(msg);
+      setErr(e instanceof Error ? e.message : "오류");
       setSubmitting(false);
     }
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div>
-        <Label htmlFor="author">작성자</Label>
-        <Input id="author" value={authorName} onChange={(e) => setAuthorName(e.target.value)} required className="mt-1" />
+    <form onSubmit={onSubmit} className="form-card">
+      <div className="form-row">
+        <label htmlFor="author">작성자<span className="req">*</span></label>
+        <input id="author" value={authorName} onChange={(e) => setAuthorName(e.target.value)} required />
       </div>
-      <div>
-        <Label htmlFor="title">제목</Label>
-        <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required className="mt-1" />
+      <div className="form-row">
+        <label htmlFor="title">제목<span className="req">*</span></label>
+        <input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
       </div>
-      <div>
-        <Label htmlFor="content">내용</Label>
-        <Textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} rows={10} required className="mt-1" />
+      <div className="form-row">
+        <label htmlFor="content">내용<span className="req">*</span></label>
+        <textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} rows={12} required />
       </div>
-      <div>
-        <Label>이미지 첨부</Label>
-        <input type="file" multiple accept="image/*" onChange={onUpload} className="mt-1 block text-sm" />
-        {uploading && <p className="text-xs text-gray-500 mt-1">업로드 중...</p>}
-        {images.length > 0 && (
-          <div className="mt-3 grid grid-cols-3 sm:grid-cols-4 gap-2">
-            {images.map((img) => (
-              <div key={img.path} className="relative aspect-square overflow-hidden rounded border border-gray-200">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={img.url} alt="" className="absolute inset-0 h-full w-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => removeImage(img.path)}
-                  className="absolute right-1 top-1 rounded-full bg-black/60 p-1 text-white"
-                  aria-label="삭제"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+      <div className="form-row">
+        <label>이미지 첨부 (선택)</label>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <input type="file" multiple accept="image/*" onChange={onUpload} style={{ padding: 10, border: "1px dashed var(--line)", background: "var(--ivory)" }} />
+          {uploading && <span style={{ fontSize: 13, color: "var(--mute)" }}>업로드 중...</span>}
+          {images.length > 0 && (
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
+              {images.map((img) => (
+                <li key={img.path} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", border: "1px solid var(--line)", background: "var(--ivory)" }}>
+                  <span style={{ fontSize: 13, color: "var(--ink)" }}>📎 {img.name}</span>
+                  <button type="button" onClick={() => removeImage(img.path)} style={{ color: "var(--burgundy)", fontSize: 13 }}>
+                    제거
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
-      {err && <p className="text-sm text-red-600">{err}</p>}
-      <div className="flex gap-2 pt-4">
-        <Button type="submit" disabled={submitting || uploading}>
+      {err && <p style={{ color: "var(--burgundy)", fontSize: 13 }}>{err}</p>}
+      <div className="form-actions" style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+        <button type="submit" disabled={submitting || uploading} className="btn-primary">
           {submitting ? "등록 중..." : "등록"}
-        </Button>
-        <Button type="button" variant="outline" onClick={() => router.back()}>취소</Button>
+        </button>
+        <button type="button" className="more-link" onClick={() => router.back()}>취소</button>
       </div>
     </form>
   );

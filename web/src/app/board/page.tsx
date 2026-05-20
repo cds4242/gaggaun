@@ -1,14 +1,19 @@
 import Link from "next/link";
-import Image from "next/image";
 import { PageHeader } from "@/components/page-header";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
-import { IMG } from "@/lib/images";
 
 export const metadata = { title: "게시판 | 가까운교회" };
 export const revalidate = 0;
 
-type Post = { id: number; title: string; author_name: string; image_urls: string[] | null; views: number; created_at: string };
+type Post = {
+  id: number;
+  title: string;
+  author_name: string;
+  image_urls: string[] | null;
+  views: number;
+  created_at: string;
+};
 
 export default async function BoardPage() {
   let posts: Post[] | null = null;
@@ -23,43 +28,54 @@ export default async function BoardPage() {
     posts = null;
   }
 
-  return (
-    <div className="bg-paper">
-      <PageHeader title="자유 게시판" eyebrow="— Community" subtitle="성도들의 따뜻한 나눔 공간" image={IMG.board} />
-      <div className="container-wide section">
-        <div className="flex justify-end mb-10">
-          <Link href="/board/new" className="btn-ink">+ 글쓰기</Link>
-        </div>
+  const total = posts?.length ?? 0;
 
-        {!posts || posts.length === 0 ? (
-          <div className="py-32 text-center text-muted text-[14px] border-y border-[var(--line-soft)]">
-            아직 등록된 게시글이 없습니다.
+  return (
+    <>
+      <PageHeader title="자유 게시판" eyebrow="COMMUNITY BOARD" subtitle="성도들의 따뜻한 나눔 공간" />
+      <section className="block">
+        <div className="wrap">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, flexWrap: "wrap", gap: 10 }}>
+            <div style={{ fontSize: 14, color: "var(--mute)" }}>
+              전체 <strong style={{ color: "var(--navy)" }}>{total}</strong>건
+            </div>
+            <Link href="/board/new" className="btn-primary btn-sm">글쓰기</Link>
           </div>
-        ) : (
-          <ul className="grid gap-px bg-[var(--line-soft)] border border-[var(--line-soft)] sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((p) => (
-              <li key={p.id} className="bg-paper">
-                <Link href={`/board/${p.id}`} className="block p-8 h-full hover:bg-surface transition-colors">
-                  {p.image_urls?.[0] ? (
-                    <div className="relative aspect-[4/3] mb-6 zoom">
-                      <Image src={p.image_urls[0]} alt="" fill className="object-cover" unoptimized />
-                    </div>
-                  ) : (
-                    <div className="aspect-[4/3] mb-6 bg-[var(--line-soft)] flex items-center justify-center text-muted text-[10px] tracking-[0.3em]">
-                      TEXT ONLY
-                    </div>
-                  )}
-                  <div className="text-[16px] text-ink line-clamp-2 leading-snug">{p.title}</div>
-                  <div className="mt-4 flex items-center justify-between text-[11px] tracking-[0.15em] text-muted">
-                    <span>{p.author_name}</span>
-                    <span>{formatDate(p.created_at)} · {p.views}</span>
+
+          <div className="board-list">
+            <div className="row head">
+              <div className="cell c-no">번호</div>
+              <div className="cell c-title">제목</div>
+              <div className="cell c-author">작성자</div>
+              <div className="cell c-date">작성일</div>
+              <div className="cell c-views">조회</div>
+            </div>
+            {!posts || posts.length === 0 ? (
+              <div className="row body empty">
+                <div className="cell" style={{ gridColumn: "1 / -1", textAlign: "center", padding: "60px 20px", color: "var(--mute)" }}>
+                  아직 등록된 게시글이 없습니다.
+                </div>
+              </div>
+            ) : posts.map((p, i) => {
+              const hasImage = (p.image_urls?.length ?? 0) > 0;
+              return (
+                <div key={p.id} className="row body">
+                  <div className="cell c-no">{total - i}</div>
+                  <div className="cell c-title">
+                    <Link href={`/board/${p.id}`}>
+                      {p.title}
+                      {hasImage && <span className="mark-img" title="이미지 첨부">📎</span>}
+                    </Link>
                   </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
+                  <div className="cell c-author">{p.author_name}</div>
+                  <div className="cell c-date">{formatDate(p.created_at)}</div>
+                  <div className="cell c-views">{p.views}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

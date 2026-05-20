@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
-import { UtilBar } from "@/components/util-bar";
+import { SiteShell } from "@/components/site-shell";
 import { createClient, isAdminEmail } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -19,6 +17,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     userEmail = data.user?.email ?? null;
     admin = await isAdminEmail(userEmail);
   } catch {}
+  void admin;
 
   return (
     <html lang="ko">
@@ -30,11 +29,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen flex flex-col">
-        <UtilBar userEmail={userEmail} />
-        <SiteHeader userEmail={userEmail} isAdmin={admin} />
-        <main className="flex-1">{children}</main>
-        <SiteFooter />
+      <body>
+        <SiteShell userEmail={userEmail}>{children}</SiteShell>
       </body>
     </html>
   );

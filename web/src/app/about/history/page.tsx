@@ -1,5 +1,4 @@
 import { PageHeader } from "@/components/page-header";
-import { IMG } from "@/lib/images";
 
 export const metadata = { title: "교회 연혁 | 가까운교회" };
 
@@ -12,26 +11,53 @@ const history = [
 
 export default function Page() {
   return (
-    <div className="bg-paper">
-      <PageHeader title="교회 연혁" eyebrow="— History" subtitle="걸어온 발자취" image={IMG.history} />
-      <div className="container-narrow section">
-        {history.map((h, i) => (
-          <div key={h.year} className="grid grid-cols-[120px_1fr] gap-12 py-12 border-b border-[var(--line-soft)]">
-            <div>
-              <div className="font-display text-5xl text-ink">{h.year}</div>
-              <div className="text-[11px] tracking-[0.25em] text-muted mt-3">CHAPTER {String(i + 1).padStart(2, "0")}</div>
-            </div>
-            <ul className="space-y-3 pt-3">
-              {h.events.map((e) => (
-                <li key={e} className="flex items-start gap-4 text-ink/85 text-[15px]">
-                  <span className="mt-3 h-px w-6 bg-ink shrink-0" />
-                  <span>{e}</span>
-                </li>
-              ))}
-            </ul>
+    <>
+      <PageHeader title="교회 연혁" eyebrow="HISTORY" subtitle="걸어온 발자취" />
+      <section className="block">
+        <div className="wrap" style={{ maxWidth: 880 }}>
+          <div className="prose-box" style={{ padding: "48px 56px" }}>
+            {history.map((h, i, arr) => (
+              <div
+                key={h.year}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "120px 1fr",
+                  gap: 40,
+                  padding: "28px 0",
+                  borderBottom: i < arr.length - 1 ? "1px solid var(--line)" : "none",
+                }}
+              >
+                <div>
+                  <div style={{ fontFamily: "var(--display)", fontStyle: "italic", fontSize: 44, color: "var(--gold)", lineHeight: 1 }}>
+                    {h.year}
+                  </div>
+                  <div style={{ fontFamily: "var(--sans)", fontSize: 11, letterSpacing: "0.25em", color: "var(--mute)", marginTop: 10 }}>
+                    CHAPTER {String(i + 1).padStart(2, "0")}
+                  </div>
+                </div>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                  {h.events.map((e) => (
+                    <li
+                      key={e}
+                      style={{
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: 14,
+                        padding: "6px 0",
+                        fontSize: 16,
+                        color: "var(--ink)",
+                      }}
+                    >
+                      <span style={{ marginTop: 12, width: 18, height: 1, background: "var(--gold)", flexShrink: 0 }} />
+                      <span>{e}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </div>
+        </div>
+      </section>
+    </>
   );
 }

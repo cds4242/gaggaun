@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient, isAdminEmail } from "@/lib/supabase/server";
@@ -16,7 +15,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     .maybeSingle();
   if (!post) notFound();
 
-  // best-effort view increment
   incrementBoardView(Number(id)).catch(() => null);
 
   const { data: userData } = await supabase.auth.getUser();
@@ -24,33 +22,46 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const postId = post.id;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
-      <div className="mb-4">
-        <Link href="/board" className="text-sm text-gray-500 hover:underline">← 게시판으로</Link>
-      </div>
-      <h1 className="text-3xl font-bold">{post.title}</h1>
-      <div className="mt-2 text-sm text-gray-500">
-        {post.author_name} · {formatDate(post.created_at)} · 조회 {post.views}
-      </div>
-      <div className="mt-8 whitespace-pre-wrap text-gray-800 leading-relaxed">
-        {post.content}
-      </div>
-      {post.image_urls && post.image_urls.length > 0 && (
-        <div className="mt-8 grid gap-3 sm:grid-cols-2">
-          {post.image_urls.map((url: string, i: number) => (
-            <div key={i} className="relative aspect-video overflow-hidden rounded-lg border border-gray-200">
-              <Image src={url} alt={`첨부 ${i + 1}`} fill className="object-cover" unoptimized />
+    <section className="block">
+      <div className="wrap" style={{ maxWidth: 920 }}>
+        <Link href="/board" style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--mute)" }}>
+          ← 게시판 목록
+        </Link>
+        <div className="prose-box" style={{ marginTop: 24 }}>
+          <h2 style={{ marginBottom: 16 }}>{post.title}</h2>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 13, color: "var(--mute)", paddingBottom: 20, borderBottom: "1px solid var(--line)", marginBottom: 32, flexWrap: "wrap" }}>
+            <span><strong style={{ color: "var(--navy)", fontWeight: 600 }}>{post.author_name}</strong></span>
+            <span style={{ width: 1, height: 12, background: "var(--line)" }} />
+            <span style={{ fontFamily: "var(--display)", fontStyle: "italic" }}>{formatDate(post.created_at)}</span>
+            <span style={{ width: 1, height: 12, background: "var(--line)" }} />
+            <span>조회 {post.views}</span>
+          </div>
+
+          <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.95, color: "var(--body)", fontSize: 16 }}>
+            {post.content}
+          </div>
+
+          {post.image_urls && post.image_urls.length > 0 && (
+            <div style={{ marginTop: 32, display: "grid", gap: 16 }}>
+              {post.image_urls.map((url: string, i: number) => (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img key={i} src={url} alt={`첨부 ${i + 1}`} style={{ width: "100%", height: "auto", border: "1px solid var(--line)" }} />
+              ))}
             </div>
-          ))}
+          )}
+
+          <div style={{ marginTop: 40, paddingTop: 24, borderTop: "1px solid var(--line)", display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <Link href="/board" className="more-link">목록</Link>
+            {admin && (
+              <form action={async () => { "use server"; await deleteBoardPost(postId); }} style={{ display: "inline" }}>
+                <button type="submit" className="more-link" style={{ borderColor: "var(--burgundy)", color: "var(--burgundy)", background: "transparent" }}>
+                  삭제
+                </button>
+              </form>
+            )}
+          </div>
         </div>
-      )}
-      {admin && (
-        <form action={async () => { "use server"; await deleteBoardPost(postId); }} className="mt-12">
-          <button type="submit" className="text-sm text-red-600 hover:underline">
-            관리자: 이 글 삭제
-          </button>
-        </form>
-      )}
-    </div>
+      </div>
+    </section>
   );
 }

@@ -19,26 +19,22 @@ export default async function NoticeDetail({ params }: { params: Promise<{ id: s
   const admin = await isAdminEmail(userData.user?.email);
 
   return (
-    <section className="py-20 bg-[var(--paper)]">
-      <div className="max-w-[920px] mx-auto px-8">
-        <Link href="/notices" className="font-sans text-[13px] text-[var(--mute)] hover:text-[var(--navy)]">
+    <section className="block">
+      <div className="wrap" style={{ maxWidth: 920 }}>
+        <Link href="/notices" style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--mute)" }}>
           ← 공지사항 목록
         </Link>
-        <div className="bg-white border border-[var(--line)] card-shadow mt-6 px-10 py-12">
-          <span className="font-display italic text-[17px] text-[var(--gold)] tracking-[0.08em] block mb-3">— Notice</span>
-          <h1 className="font-serif font-bold text-[32px] text-[var(--navy)] tracking-[-0.04em] leading-[1.35]">
-            {notice.title}
-          </h1>
-          <div className="mt-5 flex items-center gap-4 text-[13px] text-[var(--mute)] pb-6 border-b border-[var(--line)]">
+        <div className="prose-box" style={{ marginTop: 24 }}>
+          <span className="eyebrow">— Notice</span>
+          <h2 style={{ marginBottom: 18 }}>{notice.title}</h2>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 13, color: "var(--mute)", paddingBottom: 24, borderBottom: "1px solid var(--line)", marginBottom: 32 }}>
             <span>관리자</span>
-            <span className="w-px h-3 bg-[var(--line)]" />
-            <span className="font-display italic">{formatDate(notice.created_at)}</span>
+            <span style={{ width: 1, height: 12, background: "var(--line)" }} />
+            <span style={{ fontFamily: "var(--display)", fontStyle: "italic" }}>{formatDate(notice.created_at)}</span>
           </div>
-
-          <div className="mt-10 prose-quiet whitespace-pre-wrap">{notice.content}</div>
-
+          <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.95, color: "var(--body)", fontSize: 16 }}>{notice.content}</div>
           {admin && (
-            <div className="mt-12 pt-8 border-t border-[var(--line)]">
+            <div style={{ marginTop: 48, paddingTop: 32, borderTop: "1px solid var(--line)" }}>
               <Link href={`/admin/notices/${notice.id}/edit`} className="btn-primary">수정</Link>
             </div>
           )}

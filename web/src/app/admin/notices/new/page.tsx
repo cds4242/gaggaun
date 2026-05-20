@@ -1,31 +1,46 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { createNotice } from "../actions";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+
+export const metadata = { title: "공지 작성 | 가까운교회" };
 
 export default async function Page() {
   await requireAdmin("/admin/notices/new");
   return (
-    <div className="mx-auto max-w-2xl px-4 py-12">
-      <h1 className="text-2xl font-bold mb-6">공지사항 작성</h1>
-      <form action={createNotice} className="space-y-4">
-        <div>
-          <Label htmlFor="title">제목</Label>
-          <Input id="title" name="title" required className="mt-1" />
+    <>
+      <div className="admin-page-head">
+        <div className="title-side">
+          <span className="eyebrow">New Notice</span>
+          <h1>새 공지 작성</h1>
         </div>
-        <div>
-          <Label htmlFor="content">내용</Label>
-          <Textarea id="content" name="content" rows={10} required className="mt-1" />
+        <Link href="/admin/notices" style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--mute)" }}>
+          ← 목록으로
+        </Link>
+      </div>
+
+      <div className="admin-card">
+        <div className="ac-head"><h3>공지 내용</h3></div>
+        <div className="ac-body">
+          <form action={createNotice} className="admin-form">
+            <div className="row">
+              <label htmlFor="title">제목</label>
+              <input id="title" name="title" type="text" required placeholder="공지 제목을 입력하세요" />
+            </div>
+            <div className="row">
+              <label htmlFor="content">내용</label>
+              <textarea id="content" name="content" required placeholder="공지 내용을 입력하세요" />
+            </div>
+            <label className="check">
+              <input type="checkbox" name="pinned" />
+              상단 고정 (공지로 표시)
+            </label>
+            <div className="actions">
+              <button type="submit" className="btn-primary">등록</button>
+              <Link href="/admin/notices" className="more-link">취소</Link>
+            </div>
+          </form>
         </div>
-        <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" name="pinned" /> 상단 고정 (공지)
-        </label>
-        <div className="flex gap-2 pt-4">
-          <Button type="submit">등록</Button>
-        </div>
-      </form>
-    </div>
+      </div>
+    </>
   );
 }

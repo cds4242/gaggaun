@@ -31,3 +31,8 @@ Thumbs.db
 .playwright-mcp/
 playwright-report/
 test-results/
+
+# Local screenshots / 박제 산출물 (작업용 미리보기)
+/*.png
+/*.jpeg
+/*.jpg

@@ -1,6 +1,5 @@
 import { PageHeader } from "@/components/page-header";
 import { SectionGrid } from "@/components/section-grid";
-import { IMG } from "@/lib/images";
 
 export const metadata = { title: "예배안내 | 가까운교회" };
 
@@ -14,14 +13,9 @@ const items = [
 export default function Page() {
   return (
     <>
-      <PageHeader title="예배안내" eyebrow="Worship Service" subtitle="가까운교회의 예배" image={IMG.worship} />
-      <section className="py-24">
-        <div className="max-w-[1240px] mx-auto px-8">
-          <div className="sec-title">
-            <span className="eyebrow">Worship</span>
-            <h2>한 주의 예배를 안내합니다</h2>
-            <div className="deco"><span className="line"></span><span className="dot"></span><span className="line"></span></div>
-          </div>
+      <PageHeader title="예배안내" eyebrow="WORSHIP SERVICE" subtitle="가까운교회의 예배" />
+      <section className="block">
+        <div className="wrap">
           <SectionGrid items={items} />
         </div>
       </section>
