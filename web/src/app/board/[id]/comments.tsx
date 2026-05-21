@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { formatDateTime } from "@/lib/utils";
-import { createBoardComment, deleteBoardComment } from "./actions";
+import { createBoardComment, deleteBoardCommentWithPassword } from "./actions";
 
 export type CommentNode = {
   id: number;
@@ -53,14 +53,38 @@ export function Comments({ postId, comments, admin }: Props) {
   );
 }
 
+function DeleteCommentBtn({ commentId, postId, admin, label = "삭제" }: { commentId: number; postId: number; admin: boolean; label?: string }) {
+  const [pending, start] = useTransition();
+  function onClick() {
+    if (pending) return;
+    if (admin) {
+      if (!window.confirm("이 댓글을 삭제하시겠습니까? (관리자)")) return;
+      start(async () => {
+        try { await deleteBoardCommentWithPassword(commentId, postId, ""); }
+        catch (e: unknown) { window.alert(e instanceof Error ? e.message : "삭제 실패"); }
+      });
+      return;
+    }
+    const pw = window.prompt("댓글 삭제: 작성 시 입력한 비밀번호 4자리");
+    if (pw === null) return;
+    if (!/^\d{4}$/.test(pw.trim())) {
+      window.alert("비밀번호는 숫자 4자리로 입력해 주세요.");
+      return;
+    }
+    start(async () => {
+      try { await deleteBoardCommentWithPassword(commentId, postId, pw.trim()); }
+      catch (e: unknown) { window.alert(e instanceof Error ? e.message : "삭제 실패"); }
+    });
+  }
+  return (
+    <button type="button" onClick={onClick} disabled={pending} style={{ fontSize: 12, color: "var(--burgundy)" }}>
+      {pending ? "삭제 중..." : label}
+    </button>
+  );
+}
+
 function CommentItem({ comment, replies, postId, admin }: { comment: CommentNode; replies: CommentNode[]; postId: number; admin: boolean }) {
   const [replyOpen, setReplyOpen] = useState(false);
-  const [pending, start] = useTransition();
-
-  function onDelete() {
-    if (!window.confirm("이 댓글을 삭제하시겠습니까?")) return;
-    start(async () => { await deleteBoardComment(comment.id, postId); });
-  }
 
   return (
     <li style={{ border: "1px solid var(--line)", background: "var(--white)" }}>
@@ -72,11 +96,7 @@ function CommentItem({ comment, replies, postId, admin }: { comment: CommentNode
             <button type="button" onClick={() => setReplyOpen((v) => !v)} style={{ fontSize: 12, color: "var(--navy)" }}>
               {replyOpen ? "취소" : "답글"}
             </button>
-            {admin && (
-              <button type="button" onClick={onDelete} disabled={pending} style={{ fontSize: 12, color: "var(--burgundy)" }}>
-                {pending ? "삭제 중..." : "삭제"}
-              </button>
-            )}
+            <DeleteCommentBtn commentId={comment.id} postId={postId} admin={admin} />
           </div>
         </div>
         <div style={{ whiteSpace: "pre-wrap", color: "var(--body)", fontSize: 14.5, lineHeight: 1.7 }}>{comment.content}</div>
@@ -96,11 +116,9 @@ function CommentItem({ comment, replies, postId, admin }: { comment: CommentNode
                 <span style={{ color: "var(--gold)", fontSize: 12, fontFamily: "var(--sans)" }}>└ 답글</span>
                 <strong style={{ color: "var(--navy)", fontSize: 14 }}>{r.author_name}</strong>
                 <span style={{ color: "var(--mute)", fontSize: 12, fontFamily: "var(--sans)" }}>{formatDateTime(r.created_at)}</span>
-                {admin && (
-                  <button type="button" onClick={() => { if (window.confirm("이 답글을 삭제하시겠습니까?")) start(async () => { await deleteBoardComment(r.id, postId); }); }} style={{ marginLeft: "auto", fontSize: 12, color: "var(--burgundy)" }}>
-                    삭제
-                  </button>
-                )}
+                <div style={{ marginLeft: "auto" }}>
+                  <DeleteCommentBtn commentId={r.id} postId={postId} admin={admin} />
+                </div>
               </div>
               <div style={{ whiteSpace: "pre-wrap", color: "var(--body)", fontSize: 14.5, lineHeight: 1.7 }}>{r.content}</div>
             </li>
@@ -114,16 +132,21 @@ function CommentItem({ comment, replies, postId, admin }: { comment: CommentNode
 function CommentForm({ postId, parentId, compact = false, onDone }: { postId: number; parentId?: number; compact?: boolean; onDone?: () => void }) {
   const [author, setAuthor] = useState("");
   const [content, setContent] = useState("");
+  const [password, setPassword] = useState("");
   const [err, setErr] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
+    if (!/^\d{4}$/.test(password)) {
+      setErr("비밀번호는 숫자 4자리로 입력해 주세요.");
+      return;
+    }
     start(async () => {
       try {
-        await createBoardComment({ post_id: postId, parent_id: parentId ?? null, author_name: author, content });
-        setAuthor(""); setContent("");
+        await createBoardComment({ post_id: postId, parent_id: parentId ?? null, author_name: author, content, password });
+        setAuthor(""); setContent(""); setPassword("");
         onDone?.();
       } catch (e: unknown) {
         setErr(e instanceof Error ? e.message : "오류가 발생했습니다.");
@@ -142,6 +165,17 @@ function CommentForm({ postId, parentId, compact = false, onDone }: { postId: nu
           value={author}
           onChange={(e) => setAuthor(e.target.value)}
           style={{ flex: "0 1 160px", padding: "8px 10px", border: "1px solid var(--line)", background: "var(--white)", fontSize: 13 }}
+        />
+        <input
+          type="password"
+          inputMode="numeric"
+          pattern="\d{4}"
+          maxLength={4}
+          required
+          placeholder="비번 4자리"
+          value={password}
+          onChange={(e) => setPassword(e.target.value.replace(/\D/g, "").slice(0, 4))}
+          style={{ flex: "0 1 120px", padding: "8px 10px", border: "1px solid var(--line)", background: "var(--white)", fontSize: 13, letterSpacing: ".3em" }}
         />
       </div>
       <textarea

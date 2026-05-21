@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import { createClient, isAdminEmail } from "@/lib/supabase/server";
 import { formatDateTime } from "@/lib/utils";
 import { incrementBoardView } from "../actions";
-import { deleteBoardPostAndGoList } from "./actions";
+import { deleteBoardPostAndGoList, deleteBoardPostWithPassword } from "./actions";
 import { Comments } from "./comments";
 import { DeleteButton } from "@/components/delete-button";
+import { PasswordDeleteButton } from "@/components/password-delete-button";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -120,16 +121,25 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           <div style={{ marginTop: 24, paddingTop: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
             <Link href="/board" className="more-link">목록</Link>
             <Link href="/board/new" className="more-link">글쓰기</Link>
-            {admin && (
-              <div style={{ marginLeft: "auto" }}>
+            <Link href={`/board/${postId}/edit`} className="more-link">수정</Link>
+            <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+              {admin ? (
                 <DeleteButton
                   action={async () => { "use server"; await deleteBoardPostAndGoList(postId); }}
-                  confirmMessage="이 게시글을 정말 삭제하시겠습니까?"
+                  confirmMessage="이 게시글을 정말 삭제하시겠습니까? (관리자)"
                   className="more-link"
                   style={{ borderColor: "var(--burgundy)", color: "var(--burgundy)", background: "transparent" }}
                 />
-              </div>
-            )}
+              ) : (
+                <PasswordDeleteButton
+                  action={async (pw) => { "use server"; await deleteBoardPostWithPassword(postId, pw); }}
+                  label="삭제"
+                  promptMessage="글 삭제: 작성 시 입력한 비밀번호 4자리"
+                  className="more-link"
+                  style={{ borderColor: "var(--burgundy)", color: "var(--burgundy)", background: "transparent" }}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>

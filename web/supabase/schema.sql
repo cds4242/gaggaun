@@ -46,9 +46,11 @@ create table if not exists public.board_posts (
   author_email text,
   image_urls text[] not null default '{}',
   views integer not null default 0,
+  password_hash text,                                 -- 익명 작성자 본인 확인용 4자리 비번 bcrypt 해시
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+alter table public.board_posts add column if not exists password_hash text;
 
 create index if not exists board_posts_created_at_idx on public.board_posts (created_at desc);
 
@@ -167,8 +169,10 @@ create table if not exists public.board_comments (
   parent_id bigint references public.board_comments(id) on delete cascade,
   author_name text not null,
   content text not null,
+  password_hash text,
   created_at timestamptz not null default now()
 );
+alter table public.board_comments add column if not exists password_hash text;
 create index if not exists board_comments_post_idx on public.board_comments(post_id, created_at);
 create index if not exists board_comments_parent_idx on public.board_comments(parent_id);
 

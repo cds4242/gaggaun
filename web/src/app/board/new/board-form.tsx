@@ -14,6 +14,7 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [authorName, setAuthorName] = useState(defaultAuthor ?? "");
+  const [password, setPassword] = useState("");
   const [images, setImages] = useState<{ url: string; path: string; name: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -95,6 +96,11 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
     e.preventDefault();
     setErr(null);
     setSubmitting(true);
+    if (!/^\d{4}$/.test(password)) {
+      setErr("비밀번호는 숫자 4자리로 입력해 주세요.");
+      setSubmitting(false);
+      return;
+    }
     try {
       await createBoardPost({
         title,
@@ -102,6 +108,7 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
         author_name: authorName,
         author_email: defaultEmail,
         image_urls: images.map((i) => i.url),
+        password,
       });
       try { localStorage.removeItem(DRAFT_KEY); } catch {}
     } catch (e: unknown) {
@@ -121,6 +128,24 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
       <div className="form-row">
         <label htmlFor="author">작성자<span className="req">*</span></label>
         <input id="author" value={authorName} onChange={(e) => setAuthorName(e.target.value)} required maxLength={20} placeholder="이름 또는 닉네임" />
+      </div>
+      <div className="form-row">
+        <label htmlFor="password">비밀번호 (숫자 4자리)<span className="req">*</span></label>
+        <input
+          id="password"
+          type="password"
+          inputMode="numeric"
+          pattern="\d{4}"
+          maxLength={4}
+          value={password}
+          onChange={(e) => setPassword(e.target.value.replace(/\D/g, "").slice(0, 4))}
+          required
+          placeholder="예) 1234"
+          style={{ letterSpacing: ".4em" }}
+        />
+        <small style={{ color: "var(--mute)", fontSize: 12, marginTop: 6, display: "block" }}>
+          글 수정·삭제 시 사용됩니다. 비밀번호는 안전하게 암호화되어 저장됩니다.
+        </small>
       </div>
       <div className="form-row">
         <label htmlFor="title">제목<span className="req">*</span></label>
