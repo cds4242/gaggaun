@@ -148,6 +148,34 @@ create policy gallery_modify on public.gallery_photos
   for all using (public.is_admin()) with check (public.is_admin());
 
 -- ───────────────────────────────────────────────────────────────
+-- 6) 설교 영상 (sermons)
+-- ───────────────────────────────────────────────────────────────
+create table if not exists public.sermons (
+  id bigserial primary key,
+  title text not null,
+  preacher text not null,
+  verse text,
+  badge text,                        -- 예: '주일 1부', '주일 2부', '수요 강해'
+  youtube_id text not null,          -- 11자리 YouTube video ID
+  duration text,                     -- 'mm:ss' 형식
+  summary text,
+  preached_at date,                  -- 설교 일자
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists sermons_preached_at_idx on public.sermons (preached_at desc);
+create index if not exists sermons_created_at_idx on public.sermons (created_at desc);
+
+alter table public.sermons enable row level security;
+
+drop policy if exists sermons_select on public.sermons;
+create policy sermons_select on public.sermons for select using (true);
+
+drop policy if exists sermons_modify on public.sermons;
+create policy sermons_modify on public.sermons
+  for all using (public.is_admin()) with check (public.is_admin());
+
+-- ───────────────────────────────────────────────────────────────
 -- Storage 버킷
 -- 대시보드에서 "board-images", "gallery" 버킷을 public 으로 만들어두세요.
 -- 또는 아래 SQL 실행:
