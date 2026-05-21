@@ -14,7 +14,7 @@ export default function Page() {
             <LoginForm />
           </Suspense>
           <p style={{ marginTop: 32, fontSize: 12, color: "var(--mute)", lineHeight: 1.7 }}>
-            ※ Supabase Auth로 가입된 이메일이면서 admins 테이블에 등록된 사용자만 관리자 권한이 부여됩니다.
+            ※ 베타버전 : admin@admin.com / admin1234
           </p>
         </div>
       </div>

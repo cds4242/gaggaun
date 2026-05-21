@@ -9,8 +9,8 @@ export function LoginForm() {
   const params = useSearchParams();
   const next = params.get("next") ?? "/admin";
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin@admin.com");
+  const [password, setPassword] = useState("admin1234");
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
