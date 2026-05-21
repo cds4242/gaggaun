@@ -29,17 +29,18 @@ export function Pagination({ basePath, page, totalPages, searchParams }: Props) 
 
   return (
     <nav className="pagination" aria-label="페이지 네비게이션">
-      {firstHref ? <Link href={firstHref} aria-label="처음">«</Link> : <span className="disabled" aria-disabled>«</span>}
-      {prevHref ? <Link href={prevHref} aria-label="이전">‹</Link> : <span className="disabled" aria-disabled>‹</span>}
+      {firstHref ? <Link href={firstHref} aria-label="처음" prefetch>«</Link> : <span className="disabled" aria-disabled>«</span>}
+      {prevHref ? <Link href={prevHref} aria-label="이전" prefetch>‹</Link> : <span className="disabled" aria-disabled>‹</span>}
       {pages.map((p) => (
         p === page ? (
           <span key={p} className="current" aria-current="page">{p}</span>
         ) : (
-          <Link key={p} href={build(basePath, p, searchParams)}>{p}</Link>
+          // 가까운 페이지(±1)는 prefetch 활성, 멀리 있는 페이지는 호버 prefetch만
+          <Link key={p} href={build(basePath, p, searchParams)} prefetch={Math.abs(p - page) <= 1}>{p}</Link>
         )
       ))}
-      {nextHref ? <Link href={nextHref} aria-label="다음">›</Link> : <span className="disabled" aria-disabled>›</span>}
-      {lastHref ? <Link href={lastHref} aria-label="마지막">»</Link> : <span className="disabled" aria-disabled>»</span>}
+      {nextHref ? <Link href={nextHref} aria-label="다음" prefetch>›</Link> : <span className="disabled" aria-disabled>›</span>}
+      {lastHref ? <Link href={lastHref} aria-label="마지막" prefetch>»</Link> : <span className="disabled" aria-disabled>»</span>}
     </nav>
   );
 }

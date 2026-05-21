@@ -6,13 +6,14 @@ import { formatDate } from "@/lib/utils";
 export const metadata = { title: "관리자 대시보드 | 가까운교회" };
 
 type Recent = { id: number; title: string; created_at: string; pinned?: boolean };
+type Pending = { id: number; name: string; phone: string; created_at: string };
 
 export default async function AdminHome() {
   await requireAdmin("/admin");
   const supabase = await createClient();
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  const [{ count: nc }, { count: bc }, { count: mc }, { count: mc7 }, gcRes, scRes, latestNotices, latestBoard, latestMembers] = await Promise.all([
+  const [{ count: nc }, { count: bc }, { count: mc }, { count: mc7 }, gcRes, scRes, latestNotices, latestBoard, latestMembers, pendingMembersRes] = await Promise.all([
     supabase.from("notices").select("*", { count: "exact", head: true }),
     supabase.from("board_posts").select("*", { count: "exact", head: true }),
     supabase.from("new_members").select("*", { count: "exact", head: true }),
@@ -22,6 +23,14 @@ export default async function AdminHome() {
     supabase.from("notices").select("id, title, pinned, created_at").order("created_at", { ascending: false }).limit(5),
     supabase.from("board_posts").select("id, title, author_name, created_at").order("created_at", { ascending: false }).limit(5),
     supabase.from("new_members").select("id, name, phone, created_at").order("created_at", { ascending: false }).limit(5),
+    // 등록 후 7일 이상 지났는데 아직 pending인 새가족
+    supabase
+      .from("new_members")
+      .select("id, name, phone, created_at")
+      .eq("status", "pending")
+      .lte("created_at", sevenDaysAgo)
+      .order("created_at", { ascending: true })
+      .limit(20),
   ]);
   const gc = gcRes.error ? 0 : (gcRes.count ?? 0);
   const sc = scRes.error ? 0 : (scRes.count ?? 0);
@@ -29,6 +38,7 @@ export default async function AdminHome() {
   const notices = (latestNotices.data as Recent[]) ?? [];
   const board = (latestBoard.data as (Recent & { author_name: string })[]) ?? [];
   const members = (latestMembers.data as { id: number; name: string; phone: string; created_at: string }[]) ?? [];
+  const pendingMembers = (pendingMembersRes.data as Pending[]) ?? [];
 
   return (
     <>
@@ -48,6 +58,31 @@ export default async function AdminHome() {
         <StatCard label="NEW FAMILY" value={mc ?? 0} sub="새가족 등록" href="/admin/new-members" />
         <StatCard label="THIS WEEK" value={mc7 ?? 0} sub="최근 7일 신규" href="/admin/new-members" />
       </div>
+
+      {pendingMembers.length > 0 && (
+        <div className="admin-alert" role="region" aria-label="미응대 새가족">
+          <div className="ah-head">
+            <span className="ah-badge">{pendingMembers.length}</span>
+            <div className="ah-text">
+              <strong>미응대 새가족</strong>
+              <small>등록 후 7일 이상 지났는데 아직 ‘미응대’ 상태인 분들입니다. 빠르게 연락드려 주세요.</small>
+            </div>
+            <Link href="/admin/new-members?status=pending" className="ah-cta">전체 보기 →</Link>
+          </div>
+          <ul className="ah-list">
+            {pendingMembers.slice(0, 5).map((m) => {
+              const days = Math.floor((Date.now() - new Date(m.created_at).getTime()) / (24 * 60 * 60 * 1000));
+              return (
+                <li key={m.id}>
+                  <span className="nm">{m.name}</span>
+                  <span className="ph">{m.phone}</span>
+                  <span className="dt">등록 {days}일 전 · {formatDate(m.created_at)}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
         <DashCard title="최근 공지" href="/admin/notices" all="공지 관리 →">

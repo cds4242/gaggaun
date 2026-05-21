@@ -8,6 +8,7 @@ import { deleteBoardPostAndGoList, deleteBoardPostWithPassword } from "./actions
 import { Comments } from "./comments";
 import { DeleteButton } from "@/components/delete-button";
 import { PasswordDeleteButton } from "@/components/password-delete-button";
+import { RichText } from "@/components/rich-text";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -80,9 +81,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <span>조회 {post.views}</span>
           </div>
 
-          <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.95, color: "var(--body)", fontSize: 16 }}>
-            {post.content}
-          </div>
+          <RichText
+            text={post.content}
+            className="post-body"
+          />
 
           {post.image_urls && post.image_urls.length > 0 && (
             <div style={{ marginTop: 32, display: "grid", gap: 16 }}>

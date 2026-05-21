@@ -1760,6 +1760,112 @@ section.block{ padding:100px 0; position:relative }
 .admin-table .actions a:hover{ background:var(--navy); color:var(--white); border-color:var(--navy) }
 .admin-table .actions .danger{ color:var(--burgundy); border-color:var(--line) }
 .admin-table .actions .danger:hover{ background:var(--burgundy); color:var(--white); border-color:var(--burgundy) }
+/* RichText (게시판/공지 본문 안전 렌더) */
+.rt-link{
+  color:var(--navy); text-decoration:underline;
+  text-underline-offset:3px; text-decoration-thickness:1px;
+  word-break:break-all;
+}
+.rt-link:hover{ color:var(--burgundy) }
+.post-body{
+  line-height:1.95; color:var(--body); font-size:16px;
+  word-break:break-word; overflow-wrap:break-word;
+}
+@media (max-width:560px){ .post-body{ font-size:15.5px; line-height:1.8 } }
+.comment-body{ color:var(--body); font-size:14.5px; line-height:1.7; word-break:break-word; overflow-wrap:break-word }
+
+/* 게시판 임시저장 복구 토스트 */
+.draft-toast{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  margin-bottom:18px; padding:14px 18px;
+  background: linear-gradient(135deg, rgba(199,158,95,0.12), rgba(176,134,72,0.06));
+  border:1px solid var(--gold-soft);
+  border-left:4px solid var(--gold);
+}
+.draft-toast .dt-text{ display:flex; flex-direction:column; gap:2px; min-width:0; flex:1 }
+.draft-toast .dt-text strong{ font-family:var(--serif); font-size:14.5px; color:var(--navy) }
+.draft-toast .dt-text small{ font-family:var(--serif); font-size:12.5px; color:var(--mute) }
+.draft-toast .dt-actions{ display:flex; gap:8px }
+.draft-toast .dt-primary,
+.draft-toast .dt-ghost{
+  padding:8px 14px; font-family:var(--serif); font-size:13px; font-weight:600;
+  border:1px solid var(--navy);
+  cursor:pointer;
+}
+.draft-toast .dt-primary{ background:var(--navy); color:var(--white) }
+.draft-toast .dt-primary:hover{ background:var(--burgundy); border-color:var(--burgundy) }
+.draft-toast .dt-ghost{ background:transparent; color:var(--navy) }
+.draft-toast .dt-ghost:hover{ background:var(--navy); color:var(--white) }
+@media (max-width:560px){
+  .draft-toast{ padding:12px 14px }
+  .draft-toast .dt-actions{ width:100%; justify-content:flex-end }
+}
+
+/* Admin 새가족 status select */
+.status-select{
+  font-family:var(--serif); font-size:12.5px; font-weight:600;
+  padding:5px 8px;
+  border:1px solid var(--line);
+  background:var(--white);
+  color:var(--body);
+  cursor:pointer;
+}
+.status-select.status-pending{ color:var(--burgundy); border-color:var(--burgundy) }
+.status-select.status-contacted{ color:var(--gold); border-color:var(--gold) }
+.status-select.status-settled{ color:var(--navy); border-color:var(--navy) }
+
+/* Admin 알림 카드 — 미응대 새가족 등 액션 필요 항목 */
+.admin-alert{
+  margin: 6px 0 28px;
+  background: linear-gradient(135deg, rgba(107,31,42,0.06), rgba(176,134,72,0.04));
+  border: 1px solid var(--burgundy);
+  border-left-width: 4px;
+}
+.admin-alert .ah-head{
+  display:flex; align-items:center; gap:14px;
+  padding:18px 22px;
+  border-bottom:1px dashed rgba(107,31,42,0.20);
+}
+.admin-alert .ah-badge{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:32px; height:32px; padding:0 10px;
+  background:var(--burgundy); color:var(--white);
+  border-radius:16px;
+  font-family:var(--sans); font-size:14px; font-weight:700;
+  flex-shrink:0;
+}
+.admin-alert .ah-text{ display:flex; flex-direction:column; gap:2px; min-width:0; flex:1 }
+.admin-alert .ah-text strong{ font-family:var(--serif); font-size:15px; color:var(--burgundy); font-weight:700 }
+.admin-alert .ah-text small{ font-family:var(--serif); font-size:12.5px; color:var(--body); line-height:1.6 }
+.admin-alert .ah-cta{
+  font-family:var(--sans); font-size:13px; color:var(--burgundy); font-weight:600;
+  white-space:nowrap;
+}
+.admin-alert .ah-cta:hover{ text-decoration:underline }
+.admin-alert .ah-list{
+  list-style:none; margin:0; padding:6px 22px 16px;
+}
+.admin-alert .ah-list li{
+  display:grid; grid-template-columns: 100px 130px 1fr;
+  align-items:center; gap:14px;
+  padding:10px 0;
+  border-bottom:1px dashed var(--line);
+  font-family:var(--serif); font-size:14px;
+}
+.admin-alert .ah-list li:last-child{ border-bottom:0 }
+.admin-alert .ah-list .nm{ color:var(--navy); font-weight:600 }
+.admin-alert .ah-list .ph{ color:var(--body); font-family:var(--sans); font-size:13px }
+.admin-alert .ah-list .dt{ color:var(--mute); font-size:12.5px; text-align:right }
+@media (max-width:560px){
+  .admin-alert .ah-head{ flex-wrap:wrap; padding:14px 16px }
+  .admin-alert .ah-cta{ margin-left:auto }
+  .admin-alert .ah-list{ padding:6px 16px 14px }
+  .admin-alert .ah-list li{
+    grid-template-columns:1fr; gap:2px; padding:10px 0;
+  }
+  .admin-alert .ah-list .dt{ text-align:left }
+}
+
 /* 모바일: 어드민 테이블을 카드형으로 — 각 row가 한 카드, 컬럼 라벨은 ::before로 */
 @media (max-width:560px){
   .admin-card .ac-body{ overflow-x:visible; padding:0 }

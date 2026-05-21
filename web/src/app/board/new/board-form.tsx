@@ -22,27 +22,34 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
   const [draftMsg, setDraftMsg] = useState<string | null>(null);
   const restoredRef = useRef(false);
 
-  // 마운트 시 임시저장 복구
+  type Draft = { title?: string; content?: string; authorName?: string; ts?: number };
+  const [pendingDraft, setPendingDraft] = useState<Draft | null>(null);
+
+  // 마운트 시 임시저장 발견 → confirm 대신 상단 카드로 노출
   useEffect(() => {
     if (restoredRef.current) return;
     restoredRef.current = true;
     try {
       const raw = localStorage.getItem(DRAFT_KEY);
       if (!raw) return;
-      const d = JSON.parse(raw);
-      if (d.title || d.content || d.authorName) {
-        const ok = window.confirm("저장된 임시 글이 있습니다. 이어서 작성하시겠습니까?");
-        if (ok) {
-          if (d.title) setTitle(d.title);
-          if (d.content) setContent(d.content);
-          if (d.authorName) setAuthorName(d.authorName);
-          setDraftMsg("임시 글을 불러왔습니다.");
-        } else {
-          localStorage.removeItem(DRAFT_KEY);
-        }
-      }
+      const d = JSON.parse(raw) as Draft;
+      if (d.title || d.content || d.authorName) setPendingDraft(d);
     } catch {}
   }, []);
+
+  function restoreDraft() {
+    if (!pendingDraft) return;
+    if (pendingDraft.title) setTitle(pendingDraft.title);
+    if (pendingDraft.content) setContent(pendingDraft.content);
+    if (pendingDraft.authorName) setAuthorName(pendingDraft.authorName);
+    setPendingDraft(null);
+    setDraftMsg("임시 글을 불러왔습니다.");
+  }
+  function discardDraft() {
+    try { localStorage.removeItem(DRAFT_KEY); } catch {}
+    setPendingDraft(null);
+    setDraftMsg("임시 글을 비웠습니다.");
+  }
 
   // 자동 저장
   useEffect(() => {
@@ -124,7 +131,23 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
   }
 
   return (
-    <form onSubmit={onSubmit} className="form-card">
+    <>
+      {pendingDraft && (
+        <div className="draft-toast" role="region" aria-label="임시 글">
+          <div className="dt-text">
+            <strong>저장된 임시 글이 있어요</strong>
+            <small>
+              {pendingDraft.title ? `“${pendingDraft.title.slice(0, 30)}${pendingDraft.title.length > 30 ? "…" : ""}” ` : ""}
+              {pendingDraft.ts ? `· ${new Date(pendingDraft.ts).toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}` : ""}
+            </small>
+          </div>
+          <div className="dt-actions">
+            <button type="button" onClick={restoreDraft} className="dt-primary">이어 쓰기</button>
+            <button type="button" onClick={discardDraft} className="dt-ghost">새로 시작</button>
+          </div>
+        </div>
+      )}
+      <form onSubmit={onSubmit} className="form-card">
       <div className="form-row">
         <label htmlFor="author">작성자<span className="req">*</span></label>
         <input id="author" value={authorName} onChange={(e) => setAuthorName(e.target.value)} required maxLength={20} placeholder="이름 또는 닉네임" />
@@ -193,5 +216,6 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
         <button type="button" className="more-link" onClick={clearDraft} style={{ borderColor: "var(--burgundy)", color: "var(--burgundy)" }}>임시 글 비우기</button>
       </div>
     </form>
+    </>
   );
 }

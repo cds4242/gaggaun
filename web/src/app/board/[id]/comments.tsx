@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { formatDateTime } from "@/lib/utils";
+import { RichText } from "@/components/rich-text";
 import { createBoardComment, deleteBoardCommentWithPassword } from "./actions";
 
 export type CommentNode = {
@@ -99,7 +100,7 @@ function CommentItem({ comment, replies, postId, admin }: { comment: CommentNode
             <DeleteCommentBtn commentId={comment.id} postId={postId} admin={admin} />
           </div>
         </div>
-        <div style={{ whiteSpace: "pre-wrap", color: "var(--body)", fontSize: 14.5, lineHeight: 1.7 }}>{comment.content}</div>
+        <RichText text={comment.content} className="comment-body" />
       </div>
 
       {replyOpen && (
@@ -120,7 +121,7 @@ function CommentItem({ comment, replies, postId, admin }: { comment: CommentNode
                   <DeleteCommentBtn commentId={r.id} postId={postId} admin={admin} />
                 </div>
               </div>
-              <div style={{ whiteSpace: "pre-wrap", color: "var(--body)", fontSize: 14.5, lineHeight: 1.7 }}>{r.content}</div>
+              <RichText text={r.content} className="comment-body" />
             </li>
           ))}
         </ul>

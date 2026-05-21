@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient, isAdminEmail } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
+import { RichText } from "@/components/rich-text";
 
 export const revalidate = 0;
 
@@ -46,7 +47,7 @@ export default async function NoticeDetail({ params }: { params: Promise<{ id: s
             <span style={{ width: 1, height: 12, background: "var(--line)" }} />
             <span style={{ fontFamily: "var(--display)", fontStyle: "italic" }}>{formatDate(notice.created_at)}</span>
           </div>
-          <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.95, color: "var(--body)", fontSize: 16 }}>{notice.content}</div>
+          <RichText text={notice.content} className="post-body" />
           {admin && (
             <div style={{ marginTop: 48, paddingTop: 32, borderTop: "1px solid var(--line)" }}>
               <Link href={`/admin/notices/${notice.id}/edit`} className="btn-primary">수정</Link>
