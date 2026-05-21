@@ -943,9 +943,22 @@ section.block{ padding:100px 0; position:relative }
 .gtile.t1{ grid-column: span 6; grid-row: span 3 }
 .gtile.t2{ grid-column: span 3; grid-row: span 3 }
 .gtile.t3{ grid-column: span 3; grid-row: span 3 }
-.gtile.t4{ grid-column: span 4; grid-row: span 2 }
-.gtile.t5{ grid-column: span 4; grid-row: span 2 }
-.gtile.t6{ grid-column: span 4; grid-row: span 2 }
+.gtile.t4{ grid-column: span 3; grid-row: span 2 }
+.gtile.t5{ grid-column: span 3; grid-row: span 2 }
+.gtile.t6{ grid-column: span 3; grid-row: span 2 }
+.gtile.t7{ grid-column: span 3; grid-row: span 2 }
+.gtile.t8{ grid-column: span 12; grid-row: span 2 }
+@media (max-width:900px){
+  .gallery-grid{ grid-template-columns:repeat(6,1fr); grid-auto-rows:110px }
+  .gtile.t1{ grid-column: span 6; grid-row: span 3 }
+  .gtile.t2, .gtile.t3{ grid-column: span 3; grid-row: span 2 }
+  .gtile.t4, .gtile.t5, .gtile.t6, .gtile.t7{ grid-column: span 3; grid-row: span 2 }
+  .gtile.t8{ grid-column: span 6; grid-row: span 2 }
+}
+@media (max-width:520px){
+  .gallery-grid{ grid-template-columns:1fr; grid-auto-rows:200px; gap:10px }
+  .gtile.t1, .gtile.t2, .gtile.t3, .gtile.t4, .gtile.t5, .gtile.t6, .gtile.t7, .gtile.t8{ grid-column: span 1; grid-row: span 1 }
+}
 .gtile.t1 .ph{ background: repeating-linear-gradient(45deg, #d9c89b 0 26px, #c9b787 26px 27px) }
 .gtile.t2 .ph{ background: repeating-linear-gradient(115deg, #ddd0b1 0 22px, #c8b993 22px 23px) }
 .gtile.t3 .ph{ background: repeating-linear-gradient(75deg, #efe5cb 0 22px, #ddd0b1 22px 23px) }

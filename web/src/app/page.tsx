@@ -1,10 +1,22 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
+import { SITE_PHOTOS, PHOTO_BUILDING_EXTERIOR } from "@/lib/site-photos";
 
 export const revalidate = 60;
 
 type Notice = { id: number; title: string; created_at: string; pinned: boolean };
+type SermonRow = {
+  id: number;
+  title: string;
+  preacher: string;
+  verse: string | null;
+  badge: string | null;
+  duration: string | null;
+  youtube_id: string;
+  preached_at: string | null;
+  created_at: string;
+};
 
 async function getRecentNotices(): Promise<Notice[]> {
   try {
@@ -21,6 +33,21 @@ async function getRecentNotices(): Promise<Notice[]> {
   }
 }
 
+async function getRecentSermons(): Promise<SermonRow[]> {
+  try {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("sermons")
+      .select("id, title, preacher, verse, badge, duration, youtube_id, preached_at, created_at")
+      .order("preached_at", { ascending: false, nullsFirst: false })
+      .order("created_at", { ascending: false })
+      .limit(3);
+    return (data as SermonRow[]) ?? [];
+  } catch {
+    return [];
+  }
+}
+
 const dummyNotices: Notice[] = [
   { id: 1, title: "2026년 상반기 전교인 수련회 안내", created_at: "2026-05-18", pinned: true },
   { id: 2, title: "어버이주일 — 부모님 점심 식사 초청", created_at: "2026-05-12", pinned: false },
@@ -30,39 +57,62 @@ const dummyNotices: Notice[] = [
   { id: 6, title: "선교부 동남아 단기선교 보고회 안내", created_at: "2026-04-21", pinned: false },
 ];
 
-const sermons = [
-  { badge: "주일 2부", duration: "38:21", date: "2026. 05. 19 · 주일", title: "서로 사랑하라 — 새 계명의 자리", verse: "요한복음 13:34-35", preacher: "김요한 담임목사" },
-  { badge: "수요 강해", duration: "42:07", date: "2026. 05. 15 · 수요일", title: "광야의 만나 — 오늘의 양식", verse: "출애굽기 16:1-21", preacher: "이은혜 부목사" },
-  { badge: "주일 1부", duration: "35:54", date: "2026. 05. 12 · 주일", title: "여호와는 나의 목자시니", verse: "시편 23:1-6", preacher: "김요한 담임목사" },
-];
+// 다음 7일치 예배·정기 모임을 자동 생성 — 별도 페이지 데이터와 결이 맞는 운영 일정
+function getThisWeekSchedule() {
+  const now = new Date();
+  const DOW_KO = ["일", "월", "화", "수", "목", "금", "토"];
+  const DOW_EN = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const items: { d: string; w: string; ko: string; title: string; time: string }[] = [];
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(now);
+    date.setDate(now.getDate() + i);
+    const dow = date.getDay();
+    const dayLabel = String(date.getDate());
+    if (dow === 0) {
+      items.push({ d: dayLabel, w: DOW_EN[dow], ko: DOW_KO[dow], title: "주일 1부 · 2부 예배", time: "오전 9:00 · 11:00 · 본당" });
+    } else if (dow === 3) {
+      items.push({ d: dayLabel, w: DOW_EN[dow], ko: DOW_KO[dow], title: "수요 강해예배", time: "저녁 7:30 · 본당" });
+    } else if (dow === 5) {
+      items.push({ d: dayLabel, w: DOW_EN[dow], ko: DOW_KO[dow], title: "금요 합심 기도회", time: "저녁 8:00 · 본당" });
+    } else if (dow >= 1 && dow <= 5) {
+      items.push({ d: dayLabel, w: DOW_EN[dow], ko: DOW_KO[dow], title: "새벽 기도회", time: "새벽 5:30 · 본당" });
+    }
+  }
+  return items.slice(0, 5);
+}
 
-const weekly = [
-  { d: "21", w: "WED", title: "수요 강해예배", time: "저녁 7:30 · 본당" },
-  { d: "23", w: "FRI", title: "금요 합심 기도회", time: "저녁 8:00 · 본당" },
-  { d: "24", w: "SUN", title: "주일 1부 · 2부 예배", time: "오전 9:00 · 11:00" },
-  { d: "24", w: "SUN", title: "새가족 환영 점심", time: "낮 12:30 · 친교실" },
-  { d: "25", w: "MON", title: "여전도회 월례모임", time: "오전 10:30 · 2층" },
-];
-
-const galleryItems = [
-  { cls: "t1", t: "주일 본당 — 봄 부활절 예배", d: "2026. 04. 05" },
-  { cls: "t2", t: "찬양대 연습", d: "2026. 04. 12" },
-  { cls: "t3", t: "주일학교 봄소풍", d: "2026. 04. 20" },
-  { cls: "t4", t: "금요 합심기도회", d: "2026. 05. 02" },
-  { cls: "t5", t: "어버이주일 점심 나눔", d: "2026. 05. 12" },
-  { cls: "t6", t: "단기선교 보고회", d: "2026. 05. 18" },
+const galleryCaptions = [
+  { t: "본당 외관", d: "운양동 한강신도시" },
+  { t: "1층 로비", d: "맞이의 공간" },
+  { t: "예배의 자리", d: "주일 본당" },
+  { t: "공동체의 자리", d: "친교실 · 모임" },
+  { t: "본당 내부", d: "함께 드리는 예배" },
+  { t: "건물 디테일", d: "노출 콘크리트" },
+  { t: "공간의 빛", d: "창과 십자가" },
+  { t: "오시는 길", d: "교회 앞 풍경" },
 ];
 
 export default async function Home() {
-  const fetched = await getRecentNotices();
+  const [fetched, fetchedSermons] = await Promise.all([
+    getRecentNotices(),
+    getRecentSermons(),
+  ]);
   const usingDummy = fetched.length === 0;
   const notices = usingDummy ? dummyNotices : fetched;
+  const weekly = getThisWeekSchedule();
 
   return (
     <>
       {/* ============ Hero ============ */}
       <section className="hero">
-        <div className="hero-bg" />
+        <div
+          className="hero-bg"
+          style={PHOTO_BUILDING_EXTERIOR ? {
+            backgroundImage: `linear-gradient(180deg, rgba(18,27,52,0.55) 0%, rgba(18,27,52,0.85) 100%), url(${PHOTO_BUILDING_EXTERIOR})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center 35%",
+          } : undefined}
+        />
         <div className="hero-glass" aria-hidden>
           <svg viewBox="0 0 380 520" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -247,26 +297,34 @@ export default async function Home() {
             <Link className="more-link" href="/media/sermon">전체 설교 보기</Link>
           </div>
 
+          {fetchedSermons.length === 0 ? (
+            <div className="prose-box" style={{ textAlign: "center", color: "var(--mute)" }}>
+              설교 영상이 곧 업데이트됩니다.{" "}
+              <Link href="/media/sermon" className="a-link">설교 영상 페이지 →</Link>
+            </div>
+          ) : (
           <div className="sermons-grid">
-            {sermons.map((s) => (
-              <article key={s.title} className="sermon-card">
+            {fetchedSermons.map((s) => (
+              <Link key={s.id} href={`/media/sermon/${s.id}`} className="sermon-card" style={{ display: "block" }}>
                 <div className="sermon-thumb">
-                  <div className="ph" />
-                  <span className="badge">{s.badge}</span>
-                  <span className="duration">{s.duration}</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`https://i.ytimg.com/vi/${s.youtube_id}/mqdefault.jpg`} alt={s.title} loading="lazy" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                  {s.badge && <span className="badge">{s.badge}</span>}
+                  {s.duration && <span className="duration">{s.duration}</span>}
                   <div className="play">
                     <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20" /></svg>
                   </div>
                 </div>
                 <div className="sermon-body">
-                  <div className="date">{s.date}</div>
+                  <div className="date">{s.preached_at ? formatDate(s.preached_at) : formatDate(s.created_at)}</div>
                   <h3>{s.title}</h3>
-                  <div className="verse">{s.verse}</div>
+                  {s.verse && <div className="verse">{s.verse}</div>}
                   <div className="preacher">{s.preacher}</div>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
+          )}
         </div>
       </section>
 
@@ -327,15 +385,17 @@ export default async function Home() {
           </div>
 
           <div className="gallery-grid">
-            {galleryItems.map((g, i) => (
-              <div key={i} className={`gtile ${g.cls}`}>
-                <div className="ph" />
-                <div className="ovl">
-                  <div className="t">{g.t}</div>
-                  <div className="d">{g.d}</div>
+            {SITE_PHOTOS.slice(0, 8).map((url, i) => {
+              const cap = galleryCaptions[i] ?? { t: "가까운교회", d: "" };
+              return (
+                <div key={url} className={`gtile t${i + 1}`} style={{ backgroundImage: `url(${url})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+                  <div className="ovl">
+                    <div className="t">{cap.t}</div>
+                    <div className="d">{cap.d}</div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
