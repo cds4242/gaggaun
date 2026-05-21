@@ -4,17 +4,12 @@ export const metadata = { title: "오시는 길 | 가까운교회" };
 
 const ADDRESS = "경기 김포시 김포한강11로 234";
 const PLACE = "가까운교회";
-// 한강신도시 운양동 일대 대략 좌표 (지도 임베드용 boundary box)
-const LAT = 37.6705;
-const LNG = 126.6378;
 
 const naverMapUrl = `https://map.naver.com/p/search/${encodeURIComponent(ADDRESS)}`;
 const kakaoMapUrl = `https://map.kakao.com/?q=${encodeURIComponent(ADDRESS)}`;
 const googleMapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ADDRESS)}`;
-// OSM 임베드 — iframe 가능. 마커 포함, 핀은 LAT,LNG.
-const bboxDelta = 0.006;
-const osmBbox = `${LNG - bboxDelta}%2C${LAT - bboxDelta}%2C${LNG + bboxDelta}%2C${LAT + bboxDelta}`;
-const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${osmBbox}&layer=mapnik&marker=${LAT}%2C${LNG}`;
+// Google Maps embed (검색 결과 iframe — 별도 API 키 없이 동작)
+const googleEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(ADDRESS)}&hl=ko&z=16&output=embed`;
 
 export default function Page() {
   return (
@@ -25,10 +20,11 @@ export default function Page() {
           <div className="loc-grid">
             <div className="map-wrap">
               <iframe
-                src={osmEmbedUrl}
+                src={googleEmbedUrl}
                 title={`${PLACE} 지도`}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
                 style={{ width: "100%", height: 460, border: "1px solid var(--line)", background: "var(--paper)" }}
               />
               <div className="map-actions">
