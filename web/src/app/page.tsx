@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { SITE_PHOTOS, PHOTO_BUILDING_EXTERIOR } from "@/lib/site-photos";
+import { SermonPlayer } from "@/components/sermon-player";
 
 export const revalidate = 60;
 
@@ -303,27 +304,7 @@ export default async function Home() {
               <Link href="/media/sermon" className="a-link">설교 영상 페이지 →</Link>
             </div>
           ) : (
-          <div className="sermons-grid">
-            {fetchedSermons.map((s) => (
-              <Link key={s.id} href={`/media/sermon/${s.id}`} className="sermon-card" style={{ display: "block" }}>
-                <div className="sermon-thumb">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`https://i.ytimg.com/vi/${s.youtube_id}/mqdefault.jpg`} alt={s.title} loading="lazy" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                  {s.badge && <span className="badge">{s.badge}</span>}
-                  {s.duration && <span className="duration">{s.duration}</span>}
-                  <div className="play">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20" /></svg>
-                  </div>
-                </div>
-                <div className="sermon-body">
-                  <div className="date">{s.preached_at ? formatDate(s.preached_at) : formatDate(s.created_at)}</div>
-                  <h3>{s.title}</h3>
-                  {s.verse && <div className="verse">{s.verse}</div>}
-                  <div className="preacher">{s.preacher}</div>
-                </div>
-              </Link>
-            ))}
-          </div>
+            <SermonPlayer sermons={fetchedSermons} />
           )}
         </div>
       </section>
