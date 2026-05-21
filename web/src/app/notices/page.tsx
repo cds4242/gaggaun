@@ -56,7 +56,14 @@ export default async function NoticesPage({ searchParams }: { searchParams: Prom
           <div className="panel">
             {!notices || notices.length === 0 ? (
               <div style={{ padding: "64px 28px", textAlign: "center", color: "var(--mute)" }}>
-                {q ? <>‘{q}’ 검색 결과가 없습니다. <Link href="/notices" className="a-link" style={{ marginLeft: 8 }}>전체 보기</Link></> : <>등록된 공지가 없습니다.</>}
+                {q ? (
+                  <div className="empty-state">
+                    <div className="msg">‘{q}’ 검색 결과가 없습니다.</div>
+                    <Link href="/notices" className="empty-cta">전체 보기</Link>
+                  </div>
+                ) : (
+                  <div className="empty-state"><div className="msg">등록된 공지가 없습니다.</div></div>
+                )}
               </div>
             ) : (
               <ul className="notice-list">

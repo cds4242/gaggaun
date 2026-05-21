@@ -47,7 +47,14 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
         <div className="ac-body" style={{ padding: 0 }}>
           {rows.length === 0 ? (
             <div className="admin-empty">
-              {q ? <>‘{q}’ 검색 결과가 없습니다. <Link href="/admin/new-members" className="a-link" style={{ marginLeft: 8 }}>전체 보기</Link></> : <>아직 새가족 등록이 없습니다.</>}
+              {q ? (
+                <div className="empty-state">
+                  <div className="msg">‘{q}’ 검색 결과가 없습니다.</div>
+                  <Link href="/admin/new-members" className="empty-cta">전체 보기</Link>
+                </div>
+              ) : (
+                <div className="empty-state"><div className="msg">아직 새가족 등록이 없습니다.</div></div>
+              )}
             </div>
           ) : (
             <table className="admin-table">

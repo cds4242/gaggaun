@@ -76,7 +76,14 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
 
               {sermons.length === 0 ? (
                 <div className="prose-box" style={{ textAlign: "center", color: "var(--mute)" }}>
-                  {q ? <>‘{q}’ 검색 결과가 없습니다. <Link href="/media/sermon" className="a-link" style={{ marginLeft: 8 }}>전체 보기</Link></> : <>등록된 설교 영상이 없습니다.</>}
+                  {q ? (
+                    <div className="empty-state">
+                      <div className="msg">‘{q}’ 검색 결과가 없습니다.</div>
+                      <Link href="/media/sermon" className="empty-cta">전체 보기</Link>
+                    </div>
+                  ) : (
+                    <div className="empty-state"><div className="msg">등록된 설교 영상이 없습니다.</div></div>
+                  )}
                 </div>
               ) : (
                 <div className="sermons-grid">

@@ -299,9 +299,11 @@ export default async function Home() {
           </div>
 
           {fetchedSermons.length === 0 ? (
-            <div className="prose-box" style={{ textAlign: "center", color: "var(--mute)" }}>
-              설교 영상이 곧 업데이트됩니다.{" "}
-              <Link href="/media/sermon" className="a-link">설교 영상 페이지 →</Link>
+            <div className="prose-box">
+              <div className="empty-state">
+                <div className="msg">설교 영상이 곧 업데이트됩니다.</div>
+                <Link href="/media/sermon" className="empty-cta">설교 영상 페이지</Link>
+              </div>
             </div>
           ) : (
             <SermonPlayer sermons={fetchedSermons} />

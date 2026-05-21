@@ -4,7 +4,7 @@ import { Pagination } from "@/components/pagination";
 import { GalleryGrid } from "./gallery-grid";
 import { createPublicClient } from "@/lib/supabase/public";
 
-export const metadata = { title: "사진갤러리 | 가까운교회" };
+export const metadata = { title: "갤러리 | 가까운교회" };
 export const revalidate = 60;
 
 const PAGE_SIZE = 12;
@@ -53,12 +53,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
 
   return (
     <>
-      <PageHeader title="사진갤러리" eyebrow="PHOTO GALLERY" subtitle="가까운교회의 순간들" />
+      <PageHeader title="갤러리" eyebrow="PHOTO GALLERY" subtitle="가까운교회의 순간들" />
       <section className="block" style={{ background: "transparent" }}>
         <div className="wrap">
           {tableMissing ? (
             <div className="prose-box" style={{ textAlign: "center", color: "var(--mute)" }}>
-              <p>사진첩이 아직 준비 중입니다. 곧 업데이트됩니다.</p>
+              <p>갤러리가 아직 준비 중입니다. 곧 업데이트됩니다.</p>
             </div>
           ) : (
             <>
@@ -81,7 +81,14 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
 
               {photos.length === 0 ? (
                 <div className="prose-box" style={{ textAlign: "center", color: "var(--mute)" }}>
-                  {cat === "전체" ? "아직 등록된 사진이 없습니다." : <>‘{cat}’ 카테고리에 사진이 없습니다. <Link href="/media/gallery" className="a-link" style={{ marginLeft: 8 }}>전체 보기</Link></>}
+                  {cat === "전체" ? (
+                    <div className="empty-state"><div className="msg">아직 등록된 사진이 없습니다.</div></div>
+                  ) : (
+                    <div className="empty-state">
+                      <div className="msg">‘{cat}’ 카테고리에 사진이 없습니다.</div>
+                      <Link href="/media/gallery" className="empty-cta">전체 보기</Link>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <GalleryGrid photos={photos} />

@@ -30,7 +30,7 @@ export const NAV: NavItem[] = [
     href: "/media/sermon",
     children: [
       { label: "설교 영상", href: "/media/sermon" },
-      { label: "사진 갤러리", href: "/media/gallery" },
+      { label: "갤러리", href: "/media/gallery" },
     ],
   },
   {
@@ -39,7 +39,7 @@ export const NAV: NavItem[] = [
     children: [
       { label: "공지사항", href: "/notices" },
       { label: "자유게시판", href: "/board" },
-      { label: "사진 갤러리", href: "/media/gallery" },
+      { label: "갤러리", href: "/media/gallery" },
     ],
   },
   {

@@ -8,7 +8,7 @@ const items = [
   { href: "/admin/notices", label: "공지사항" },
   { href: "/admin/board", label: "게시판" },
   { href: "/admin/sermons", label: "설교 영상" },
-  { href: "/admin/gallery", label: "사진첩" },
+  { href: "/admin/gallery", label: "갤러리" },
   { href: "/admin/new-members", label: "새가족 등록" },
 ];
 

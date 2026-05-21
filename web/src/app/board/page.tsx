@@ -70,7 +70,17 @@ export default async function BoardPage({ searchParams }: { searchParams: Promis
             {!posts || posts.length === 0 ? (
               <div className="row body empty">
                 <div className="cell" style={{ gridColumn: "1 / -1", textAlign: "center", padding: "60px 20px", color: "var(--mute)" }}>
-                  {q ? <>‘{q}’ 검색 결과가 없습니다. <Link href="/board" className="a-link" style={{ marginLeft: 8 }}>전체 보기</Link></> : <>아직 등록된 게시글이 없습니다. <Link href="/board/new" className="a-link" style={{ marginLeft: 8 }}>첫 글 작성하기 →</Link></>}
+                  {q ? (
+                    <div className="empty-state">
+                      <div className="msg">‘{q}’ 검색 결과가 없습니다.</div>
+                      <Link href="/board" className="empty-cta">전체 보기</Link>
+                    </div>
+                  ) : (
+                    <div className="empty-state">
+                      <div className="msg">아직 등록된 게시글이 없습니다.</div>
+                      <Link href="/board/new" className="empty-cta">첫 글 작성하기</Link>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : posts.map((p, i) => {

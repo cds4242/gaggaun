@@ -6,7 +6,7 @@ import { Pagination } from "@/components/pagination";
 import { DeleteButton } from "@/components/delete-button";
 import { deleteGalleryPhoto } from "./actions";
 
-export const metadata = { title: "사진첩 관리 | 가까운교회" };
+export const metadata = { title: "갤러리 관리 | 가까운교회" };
 
 const PAGE_SIZE = 24;
 
@@ -34,7 +34,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
       <div className="admin-page-head">
         <div className="title-side">
           <span className="eyebrow">Gallery</span>
-          <h1>사진첩 관리</h1>
+          <h1>갤러리 관리</h1>
         </div>
         <Link href="/admin/gallery/new" className="btn-primary">+ 새 사진 업로드</Link>
       </div>
@@ -42,7 +42,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
       {missing && (
         <div className="admin-card" style={{ marginBottom: 16 }}>
           <div className="ac-body" style={{ color: "var(--burgundy)" }}>
-            gallery_photos 테이블이 없습니다. Supabase SQL Editor에서 web/supabase/schema.sql의 ‘5) 사진첩’ 블록을 실행해 주세요.
+            gallery_photos 테이블이 없습니다. Supabase SQL Editor에서 web/supabase/schema.sql의 ‘5) 갤러리’ 블록을 실행해 주세요.
           </div>
         </div>
       )}

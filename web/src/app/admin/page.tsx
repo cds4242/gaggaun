@@ -44,7 +44,7 @@ export default async function AdminHome() {
         <StatCard label="NOTICES" value={nc ?? 0} sub="공지사항" href="/admin/notices" />
         <StatCard label="BOARD POSTS" value={bc ?? 0} sub="자유 게시판" href="/admin/board" />
         <StatCard label="SERMONS" value={sc} sub="설교 영상" href="/admin/sermons" />
-        <StatCard label="GALLERY" value={gc} sub="사진첩" href="/admin/gallery" />
+        <StatCard label="GALLERY" value={gc} sub="갤러리" href="/admin/gallery" />
         <StatCard label="NEW FAMILY" value={mc ?? 0} sub="새가족 등록" href="/admin/new-members" />
         <StatCard label="THIS WEEK" value={mc7 ?? 0} sub="최근 7일 신규" href="/admin/new-members" />
       </div>

@@ -9,7 +9,7 @@ export default function Page() {
         <div className="wrap">
           <SectionGrid items={[
             { label: "설교영상", en: "Sermon", href: "/media/sermon", desc: "매주 주일 설교" },
-            { label: "사진갤러리", en: "Gallery", href: "/media/gallery", desc: "교회의 추억" },
+            { label: "갤러리", en: "Gallery", href: "/media/gallery", desc: "교회의 추억" },
           ]} />
         </div>
       </section>
