@@ -168,7 +168,15 @@ ul{list-style:none}
   max-width:1240px; margin:0 auto; padding:0 32px;
   min-width:0;
 }
-.util .left{ display:flex; gap:24px; align-items:center; min-width:0 }
+.util .left{ display:flex; gap:14px; align-items:center; min-width:0 }
+.util .left .util-admin{
+  color:rgba(255,255,255,0.45);
+  font-size:12px;
+  padding:6px 8px;
+  transition:color .2s;
+  flex-shrink:0;
+}
+.util .left .util-admin:hover{ color:var(--gold-2) }
 .util .left .verse{
   color:var(--gold-2); font-family:var(--serif);
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;
