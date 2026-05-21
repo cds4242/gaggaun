@@ -17,7 +17,6 @@ export async function deleteGalleryPhoto(id: number, imagePath: string) {
   }
   revalidatePath("/media/gallery");
   revalidatePath("/admin/gallery");
-  redirect("/admin/gallery");
 }
 
 export async function createGalleryPhoto(input: { title: string | null; category: string; image_url: string; image_path: string; taken_at: string | null }) {

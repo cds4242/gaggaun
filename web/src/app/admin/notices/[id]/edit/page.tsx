@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { updateNotice, deleteNotice } from "../../actions";
+import { updateNotice, deleteNoticeAndGoList } from "../../actions";
+import { DeleteButton } from "@/components/delete-button";
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -50,18 +51,16 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             </div>
           </form>
 
-          <form
-            action={async () => { "use server"; await deleteNotice(noticeId); }}
-            style={{ marginTop: 24, paddingTop: 20, borderTop: "1px dashed var(--line)" }}
-          >
-            <button
-              type="submit"
+          <div style={{ marginTop: 24, paddingTop: 20, borderTop: "1px dashed var(--line)" }}>
+            <DeleteButton
+              action={async () => { "use server"; await deleteNoticeAndGoList(noticeId); }}
+              confirmMessage={`'${notice.title}' 공지를 정말 삭제하시겠습니까?`}
+              label="이 공지 삭제"
+              pendingLabel="삭제 중..."
               className="more-link"
               style={{ borderColor: "var(--burgundy)", color: "var(--burgundy)" }}
-            >
-              이 공지 삭제
-            </button>
-          </form>
+            />
+          </div>
         </div>
       </div>
     </>

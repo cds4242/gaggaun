@@ -47,5 +47,11 @@ export async function deleteNotice(id: number) {
   const { error } = await supabase.from("notices").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/notices");
+  revalidatePath("/admin/notices");
+}
+
+// edit 페이지에서 삭제 후 목록으로 이동
+export async function deleteNoticeAndGoList(id: number) {
+  await deleteNotice(id);
   redirect("/admin/notices");
 }

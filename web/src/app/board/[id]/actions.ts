@@ -6,11 +6,18 @@ import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
 
 export async function deleteBoardPost(id: number) {
-  await requireAdmin(`/board/${id}`);
+  await requireAdmin(`/admin/board`);
   const supabase = await createClient();
   const { error } = await supabase.from("board_posts").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/board");
+  revalidatePath("/admin/board");
+  // redirect 없이 종료 — 호출자가 어디서 부르든 그 페이지가 자동 갱신됨
+}
+
+// 사이트 측 detail 페이지(/board/[id])에서 삭제할 때는 목록으로 이동해야 한다
+export async function deleteBoardPostAndGoList(id: number) {
+  await deleteBoardPost(id);
   redirect("/board");
 }
 

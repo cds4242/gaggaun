@@ -4,8 +4,9 @@ import { notFound } from "next/navigation";
 import { createClient, isAdminEmail } from "@/lib/supabase/server";
 import { formatDateTime } from "@/lib/utils";
 import { incrementBoardView } from "../actions";
-import { deleteBoardPost } from "./actions";
+import { deleteBoardPostAndGoList } from "./actions";
 import { Comments } from "./comments";
+import { DeleteButton } from "@/components/delete-button";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -120,11 +121,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             <Link href="/board" className="more-link">목록</Link>
             <Link href="/board/new" className="more-link">글쓰기</Link>
             {admin && (
-              <form action={async () => { "use server"; await deleteBoardPost(postId); }} style={{ display: "inline", marginLeft: "auto" }}>
-                <button type="submit" className="more-link" style={{ borderColor: "var(--burgundy)", color: "var(--burgundy)", background: "transparent" }}>
-                  삭제
-                </button>
-              </form>
+              <div style={{ marginLeft: "auto" }}>
+                <DeleteButton
+                  action={async () => { "use server"; await deleteBoardPostAndGoList(postId); }}
+                  confirmMessage="이 게시글을 정말 삭제하시겠습니까?"
+                  className="more-link"
+                  style={{ borderColor: "var(--burgundy)", color: "var(--burgundy)", background: "transparent" }}
+                />
+              </div>
             )}
           </div>
         </div>

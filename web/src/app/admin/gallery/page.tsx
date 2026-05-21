@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { Pagination } from "@/components/pagination";
+import { DeleteButton } from "@/components/delete-button";
 import { deleteGalleryPhoto } from "./actions";
 
 export const metadata = { title: "사진첩 관리 | 가까운교회" };
@@ -70,9 +71,14 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
                         {p.taken_at && <span className="dt"> · {p.taken_at}</span>}
                         <span className="dt"> · 등록 {formatDate(p.created_at)}</span>
                       </div>
-                      <form action={async () => { "use server"; await deleteGalleryPhoto(p.id, p.image_path); }} style={{ display: "inline" }}>
-                        <button type="submit" className="danger" style={{ marginTop: 10, fontSize: 13, padding: "6px 12px", border: "1px solid var(--burgundy)" }}>삭제</button>
-                      </form>
+                      <div style={{ marginTop: 10 }}>
+                        <DeleteButton
+                          action={async () => { "use server"; await deleteGalleryPhoto(p.id, p.image_path); }}
+                          confirmMessage={`'${p.title ?? "제목 없음"}' 사진을 정말 삭제하시겠습니까?`}
+                          className="danger"
+                          style={{ fontSize: 13, padding: "6px 12px", border: "1px solid var(--burgundy)" }}
+                        />
+                      </div>
                     </div>
                   </div>
                 </li>

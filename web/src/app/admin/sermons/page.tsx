@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { Pagination } from "@/components/pagination";
 import { SearchBar } from "@/components/search-bar";
+import { DeleteButton } from "@/components/delete-button";
 import { deleteSermon } from "./actions";
 
 export const metadata = { title: "설교 관리 | 가까운교회" };
@@ -90,9 +91,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
                     <td>
                       <div className="actions">
                         <Link href={`/admin/sermons/${s.id}/edit`}>수정</Link>
-                        <form action={async () => { "use server"; await deleteSermon(s.id); }} style={{ display: "inline" }}>
-                          <button type="submit" className="danger">삭제</button>
-                        </form>
+                        <DeleteButton
+                          action={async () => { "use server"; await deleteSermon(s.id); }}
+                          confirmMessage={`'${s.title}' 설교를 정말 삭제하시겠습니까?`}
+                        />
                       </div>
                     </td>
                   </tr>

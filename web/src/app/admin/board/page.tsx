@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { Pagination } from "@/components/pagination";
 import { SearchBar } from "@/components/search-bar";
+import { DeleteButton } from "@/components/delete-button";
 import { deleteBoardPost } from "@/app/board/[id]/actions";
 
 export const metadata = { title: "게시판 관리 | 가까운교회" };
@@ -82,9 +83,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
                       <td className="muted">{formatDate(p.created_at)}</td>
                       <td>
                         <div className="actions">
-                          <form action={async () => { "use server"; await deleteBoardPost(p.id); }} style={{ display: "inline" }}>
-                            <button type="submit" className="danger">삭제</button>
-                          </form>
+                          <DeleteButton
+                            action={async () => { "use server"; await deleteBoardPost(p.id); }}
+                            confirmMessage={`'${p.title}' 게시글을 정말 삭제하시겠습니까?`}
+                          />
                         </div>
                       </td>
                     </tr>

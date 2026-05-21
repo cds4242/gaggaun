@@ -78,5 +78,6 @@ export async function deleteSermon(id: number) {
   const { error } = await supabase.from("sermons").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/media/sermon");
-  redirect("/admin/sermons");
+  revalidatePath("/admin/sermons");
+  revalidatePath("/");
 }
