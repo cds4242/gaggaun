@@ -43,17 +43,21 @@ export function ThemeToggle() {
         type="button"
         onClick={() => setTo("light")}
         aria-pressed={mode === "light"}
+        aria-label="라이트 모드"
+        title="라이트 모드"
         className={"tt-opt" + (mode === "light" ? " active" : "")}
       >
-        <span aria-hidden>☀</span><span className="lbl">라이트</span>
+        <span aria-hidden>☀</span>
       </button>
       <button
         type="button"
         onClick={() => setTo("dark")}
         aria-pressed={mode === "dark"}
+        aria-label="다크 모드"
+        title="다크 모드"
         className={"tt-opt" + (mode === "dark" ? " active" : "")}
       >
-        <span aria-hidden>☾</span><span className="lbl">다크</span>
+        <span aria-hidden>☾</span>
       </button>
     </div>
   );
