@@ -34,12 +34,6 @@ export async function createBoardPost(input: {
 
 export async function incrementBoardView(id: number) {
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("board_posts")
-    .select("views")
-    .eq("id", id)
-    .maybeSingle();
-  if (data) {
-    await supabase.from("board_posts").update({ views: (data.views ?? 0) + 1 }).eq("id", id);
-  }
+  // RPC는 SECURITY DEFINER로 RLS를 우회하며 원자적으로 +1 한다
+  await supabase.rpc("increment_board_view", { post_id: id });
 }

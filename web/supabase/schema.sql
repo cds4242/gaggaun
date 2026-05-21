@@ -148,6 +148,42 @@ create policy gallery_modify on public.gallery_photos
   for all using (public.is_admin()) with check (public.is_admin());
 
 -- ───────────────────────────────────────────────────────────────
+-- board_posts views 원자적 증가 RPC + 게시판 댓글
+-- ───────────────────────────────────────────────────────────────
+create or replace function public.increment_board_view(post_id bigint)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  update public.board_posts set views = coalesce(views, 0) + 1 where id = post_id;
+$$;
+revoke all on function public.increment_board_view(bigint) from public;
+grant execute on function public.increment_board_view(bigint) to anon, authenticated;
+
+create table if not exists public.board_comments (
+  id bigserial primary key,
+  post_id bigint not null references public.board_posts(id) on delete cascade,
+  parent_id bigint references public.board_comments(id) on delete cascade,
+  author_name text not null,
+  content text not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists board_comments_post_idx on public.board_comments(post_id, created_at);
+create index if not exists board_comments_parent_idx on public.board_comments(parent_id);
+
+alter table public.board_comments enable row level security;
+
+drop policy if exists board_comments_select on public.board_comments;
+create policy board_comments_select on public.board_comments for select using (true);
+
+drop policy if exists board_comments_insert on public.board_comments;
+create policy board_comments_insert on public.board_comments for insert with check (true);
+
+drop policy if exists board_comments_delete on public.board_comments;
+create policy board_comments_delete on public.board_comments for delete using (public.is_admin());
+
+-- ───────────────────────────────────────────────────────────────
 -- 6) 설교 영상 (sermons)
 -- ───────────────────────────────────────────────────────────────
 create table if not exists public.sermons (

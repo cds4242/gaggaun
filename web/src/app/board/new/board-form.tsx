@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { FilePicker } from "@/components/file-picker";
 import { createBoardPost } from "../actions";
 
 const BUCKET = "board-images";
@@ -135,8 +136,14 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
       <div className="form-row">
         <label>이미지 첨부 (선택)</label>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <input type="file" multiple accept="image/*" onChange={onUpload} style={{ padding: 10, border: "1px dashed var(--line)", background: "var(--ivory)" }} />
-          {uploading && <span style={{ fontSize: 13, color: "var(--mute)" }}>업로드 중...</span>}
+          <FilePicker
+            onChange={onUpload}
+            multiple
+            accept="image/*"
+            disabled={uploading}
+            label="이미지 파일 선택"
+            hint={uploading ? "업로드 중..." : "여러 장 한 번에 선택 가능"}
+          />
           {images.length > 0 && (
             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
               {images.map((img) => (

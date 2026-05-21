@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { FilePicker } from "@/components/file-picker";
 import { createGalleryPhoto } from "../actions";
 
 const BUCKET = "gallery";
@@ -82,8 +83,14 @@ export function GalleryUploadForm() {
     <form onSubmit={onSubmit} className="admin-form">
       <div className="row">
         <label>사진 파일 (여러 장 가능)</label>
-        <input type="file" multiple accept="image/*" onChange={onUpload} style={{ padding: 10, border: "1px dashed var(--line)", background: "var(--ivory)" }} />
-        {uploading && <span style={{ fontSize: 13, color: "var(--mute)", marginTop: 6 }}>업로드 중...</span>}
+        <FilePicker
+          onChange={onUpload}
+          multiple
+          accept="image/*"
+          disabled={uploading}
+          label="사진 파일 선택"
+          hint={uploading ? "업로드 중..." : "여러 장 한 번에 선택 가능"}
+        />
         {pending.length > 0 && (
           <ul style={{ listStyle: "none", padding: 0, margin: "10px 0 0", display: "flex", flexWrap: "wrap", gap: 8 }}>
             {pending.map((p) => (

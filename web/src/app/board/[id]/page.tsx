@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient, isAdminEmail } from "@/lib/supabase/server";
-import { formatDate } from "@/lib/utils";
+import { formatDateTime } from "@/lib/utils";
 import { incrementBoardView } from "../actions";
 import { deleteBoardPost } from "./actions";
+import { Comments } from "./comments";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -35,7 +39,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const admin = await isAdminEmail(userData.user?.email);
   const postId = post.id;
 
-  const [{ data: prevRow }, { data: nextRow }] = await Promise.all([
+  const [{ data: prevRow }, { data: nextRow }, { data: commentRows }] = await Promise.all([
     supabase
       .from("board_posts")
       .select("id, title")
@@ -50,7 +54,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       .order("created_at", { ascending: true })
       .limit(1)
       .maybeSingle(),
+    supabase
+      .from("board_comments")
+      .select("id, post_id, parent_id, author_name, content, created_at")
+      .eq("post_id", postId)
+      .order("created_at", { ascending: true }),
   ]);
+  const comments = commentRows ?? [];
 
   return (
     <section className="block">
@@ -63,7 +73,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 13, color: "var(--mute)", paddingBottom: 20, borderBottom: "1px solid var(--line)", marginBottom: 32, flexWrap: "wrap" }}>
             <span><strong style={{ color: "var(--navy)", fontWeight: 600 }}>{post.author_name}</strong></span>
             <span style={{ width: 1, height: 12, background: "var(--line)" }} />
-            <span style={{ fontFamily: "var(--display)", fontStyle: "italic" }}>{formatDate(post.created_at)}</span>
+            <span style={{ fontFamily: "var(--sans)" }}>{formatDateTime(post.created_at)}</span>
             <span style={{ width: 1, height: 12, background: "var(--line)" }} />
             <span>조회 {post.views}</span>
           </div>
@@ -82,6 +92,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               ))}
             </div>
           )}
+
+          <Comments postId={postId} comments={comments} admin={admin} />
 
           <nav style={{ marginTop: 40, borderTop: "1px solid var(--line)" }} aria-label="이전·다음 글">
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>

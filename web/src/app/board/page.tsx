@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/page-header";
 import { Pagination } from "@/components/pagination";
 import { SearchBar } from "@/components/search-bar";
 import { createClient } from "@/lib/supabase/server";
-import { formatDate } from "@/lib/utils";
+import { formatDateTime } from "@/lib/utils";
 
 export const metadata = { title: "게시판 | 가까운교회" };
 export const revalidate = 30;
@@ -85,7 +85,7 @@ export default async function BoardPage({ searchParams }: { searchParams: Promis
                     </Link>
                   </div>
                   <div className="cell c-author">{p.author_name}</div>
-                  <div className="cell c-date">{formatDate(p.created_at)}</div>
+                  <div className="cell c-date">{formatDateTime(p.created_at)}</div>
                   <div className="cell c-views">{p.views}</div>
                 </div>
               );
