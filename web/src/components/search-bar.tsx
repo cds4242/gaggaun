@@ -9,9 +9,18 @@ export function SearchBar({ placeholder = "제목 검색" }: { placeholder?: str
   const params = useSearchParams();
   const initialQ = params.get("q") ?? "";
   const [q, setQ] = useState(initialQ);
+  const [isMobile, setIsMobile] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { setQ(initialQ); }, [initialQ]);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 560px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   // "/" 키로 빠르게 포커스
   useEffect(() => {
@@ -50,7 +59,7 @@ export function SearchBar({ placeholder = "제목 검색" }: { placeholder?: str
         type="search"
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder={placeholder + ' ("/" 키로 포커스)'}
+        placeholder={isMobile ? placeholder : placeholder + ' ("/" 키로 포커스)'}
         aria-label={placeholder}
       />
       {initialQ && (
