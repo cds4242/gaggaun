@@ -13,9 +13,6 @@ export default function Page() {
           <Suspense fallback={<div style={{ color: "var(--mute)" }}>로딩 중...</div>}>
             <LoginForm />
           </Suspense>
-          <p style={{ marginTop: 32, fontSize: 12, color: "var(--mute)", lineHeight: 1.7 }}>
-            ※ 베타버전 : admin@admin.com / admin1234
-          </p>
         </div>
       </div>
     </section>

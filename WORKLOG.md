@@ -4,6 +4,42 @@
 
 ---
 
+## 2026-05-21 (6) — 1시간 QA: 다크모드 가독성 전수 점검 + 로그인 안내문구 제거
+
+### 한 줄 요약
+
+다크모드에서 "어두운 배경 위에 항상 흰색 텍스트가 필요한 영역"이 토큰
+재정의(`--white`가 다크에서 `#1f2a45`로 변형)로 인해 깨지는 문제를 발견.
+hero / page-head / panel-head / site-footer / brand cross에 다크모드 전용 색상
+오버라이드를 추가하고, 또한 누락되어 있던 로그인 페이지의 베타 안내 문구
+("※ 베타버전 : admin@admin.com / admin1234")를 삭제했다.
+
+### 다크모드 가독성 수정 (`web/src/app/globals.css`)
+
+다음 영역에 `:root[data-theme="dark"]` 및 `prefers-color-scheme:dark` 셀렉터
+오버라이드를 추가하여 어두운 배경 위 텍스트의 흰색을 명시적으로 고정:
+
+- `.hero-content`, `.hero h1`, `.hero-strip .v` — 본문/제목/금주 정보
+- `.hero-ctas .btn-line` 텍스트 / hover 시 배경
+- `.panel-head` 배경(navy)·텍스트(흰색)·h3(골드)
+- `.page-head h1` · `.page-head p` (게시판 등 페이지 헤더)
+- `.site-footer` 본문 색 · `.foot-brand .name-ko` · `.foot-col a/li`
+- `.brand .cross` (헤더 십자가 박스)
+- `.foot-brand .cross-mini` 및 십자가 선
+
+### 기타
+
+- `web/src/app/login/page.tsx` — 베타 안내 `<p>` 삭제 (사용자가 이전 세션에
+  요청했던 것이 누락되어 있었음).
+
+### QA 검증
+
+- R1~R6 라운드: 다크모드에서 홈/예배일정/설교/공지/게시판/통합검색/로그인/
+  게시글 상세/푸터 모두 시각 확인. JPEG 스크린샷으로 비교.
+- 라이트모드 모바일/데스크탑 회귀 확인.
+
+---
+
 ## 2026-05-21 (5) — 1시간 라운드 R1~R6 + 메뉴 자동 닫힘 + 사진첩 + QA/베타
 
 ### 한 줄 요약

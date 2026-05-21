@@ -1,5 +1,5 @@
 @import "tailwindcss";
-/* mobile data card refresh */
+/* mobile data card refresh - dark panel-head fix */
 
 :root{
   --paper:#f8f3e8;
@@ -59,6 +59,46 @@
     color-scheme: dark;
   }
 }
+
+/* 다크 모드에서 항상 어두운 배경 위에 놓이는 영역(hero)은 토큰 재정의로 색이 깨지지 않게 흰색 고정 */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hero-content,
+  :root:not([data-theme="light"]) .hero h1,
+  :root:not([data-theme="light"]) .hero-strip .v { color:#ffffff }
+  :root:not([data-theme="light"]) .hero-ctas .btn-line { color:#ffffff }
+  :root:not([data-theme="light"]) .hero-ctas .btn-line:hover { background:#ffffff; color:#121b34 }
+  :root:not([data-theme="light"]) .panel-head { background:#1c2a4a; color:#ffffff }
+  :root:not([data-theme="light"]) .panel-head h3 { color:#e6d2a6 }
+  :root:not([data-theme="light"]) .panel-head .all { color:rgba(255,255,255,0.8) }
+  :root:not([data-theme="light"]) .page-head h1 { color:#ffffff }
+  :root:not([data-theme="light"]) .page-head p { color:rgba(255,255,255,0.85) }
+  :root:not([data-theme="light"]) .site-footer { color:rgba(255,255,255,0.78) }
+  :root:not([data-theme="light"]) .site-footer .foot-brand .name-ko { color:#ffffff }
+  :root:not([data-theme="light"]) .site-footer .foot-col a,
+  :root:not([data-theme="light"]) .site-footer .foot-col li { color:rgba(255,255,255,0.80) }
+  :root:not([data-theme="light"]) .brand .cross { background:#1c2a4a }
+  :root:not([data-theme="light"]) .foot-brand .cross-mini { background:#d8b878 }
+  :root:not([data-theme="light"]) .foot-brand .cross-mini::before,
+  :root:not([data-theme="light"]) .foot-brand .cross-mini::after { background:#0a0f1c }
+}
+:root[data-theme="dark"] .hero-content,
+:root[data-theme="dark"] .hero h1,
+:root[data-theme="dark"] .hero-strip .v { color:#ffffff }
+:root[data-theme="dark"] .hero-ctas .btn-line { color:#ffffff }
+:root[data-theme="dark"] .hero-ctas .btn-line:hover { background:#ffffff; color:#121b34 }
+:root[data-theme="dark"] .panel-head { background:#1c2a4a; color:#ffffff }
+:root[data-theme="dark"] .panel-head h3 { color:#e6d2a6 }
+:root[data-theme="dark"] .panel-head .all { color:rgba(255,255,255,0.8) }
+:root[data-theme="dark"] .page-head h1 { color:#ffffff }
+:root[data-theme="dark"] .page-head p { color:rgba(255,255,255,0.85) }
+:root[data-theme="dark"] .site-footer { color:rgba(255,255,255,0.78) }
+:root[data-theme="dark"] .site-footer .foot-brand .name-ko { color:#ffffff }
+:root[data-theme="dark"] .site-footer .foot-col a,
+:root[data-theme="dark"] .site-footer .foot-col li { color:rgba(255,255,255,0.80) }
+:root[data-theme="dark"] .brand .cross { background:#1c2a4a }
+:root[data-theme="dark"] .foot-brand .cross-mini { background:#d8b878 }
+:root[data-theme="dark"] .foot-brand .cross-mini::before,
+:root[data-theme="dark"] .foot-brand .cross-mini::after { background:#0a0f1c }
 
 /* 사용자가 명시적으로 dark를 선택했을 때 (시스템 light여도 적용) */
 :root[data-theme="dark"] {
