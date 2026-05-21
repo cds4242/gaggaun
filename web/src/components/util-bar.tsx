@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { LogoutLink } from "@/components/logout-link";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 // 클라이언트에서 supabase 세션을 확인 — 페이지 자체는 static/ISR로 캐싱 가능
 export function UtilBar() {
@@ -45,11 +46,15 @@ export function UtilBar() {
               <span className="sep">|</span>
             </>
           )}
+          <Link href="/search" aria-label="통합 검색" className="util-search">🔍<span className="lbl"> 검색</span></Link>
+          <span className="sep">|</span>
           <Link href="/new-member">새가족등록</Link>
           <span className="sep">|</span>
           <Link href="/notices">교회소식</Link>
           <span className="sep">|</span>
           <Link href="/board">게시판</Link>
+          <span className="sep">|</span>
+          <ThemeToggle />
         </div>
       </div>
     </div>
