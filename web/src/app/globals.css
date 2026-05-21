@@ -1,5 +1,5 @@
 @import "tailwindcss";
-/* mobile data card refresh - dark panel-head fix - theme toggle segmented - admin corner */
+/* mobile data card refresh - dark panel-head fix - theme toggle segmented - admin corner - naver search */
 
 /* 메인 페이지 우측 하단 관리자 링크 — 메인 페이지에만 사용 */
 .admin-corner{
@@ -186,55 +186,55 @@ ul{list-style:none}
   max-width:1240px; margin:0 auto; padding:0 32px;
   min-width:0;
 }
-.util .left{ display:flex; gap:14px; align-items:center; min-width:0 }
-.util .left .util-admin{
-  color:rgba(255,255,255,0.45);
-  font-size:12px;
-  padding:6px 8px;
-  transition:color .2s;
-  flex-shrink:0;
-}
-.util .left .util-admin:hover{ color:var(--gold-2) }
-.util .left .verse{
-  color:var(--gold-2); font-family:var(--serif);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;
-}
-.util .right{ display:flex; gap:8px; align-items:center; flex-shrink:0 }
-.util .right a{
-  padding:6px 12px;
+.util .left{ display:flex; gap:6px; align-items:center; min-width:0 }
+.util .left a{
+  padding:6px 10px;
   color:rgba(255,255,255,0.8);
   transition:color .2s;
 }
-.util .right a:hover{ color:var(--gold-2) }
-.util .right .sep{ color:rgba(255,255,255,0.25) }
+.util .left a:hover{ color:var(--gold-2) }
+.util .left .sep{ color:rgba(255,255,255,0.25) }
+.util .right{ display:flex; gap:8px; align-items:center; flex-shrink:0 }
 
-/* 구글 스타일 원형 검색 버튼 */
-.util .right .util-search-btn{
-  display:inline-flex; align-items:center; justify-content:center;
-  width:32px; height:32px;
-  padding:0 !important;
-  margin-left:6px;
-  border-radius:50%;
-  background:rgba(255,255,255,0.10);
-  border:1px solid rgba(255,255,255,0.18);
-  color:rgba(255,255,255,0.85);
-  transition: background .15s, color .15s, transform .15s;
+/* 네이버 스타일 검색 필 */
+.util .right .util-search-pill{
+  display:inline-flex; align-items:center;
+  background:#ffffff;
+  border-radius:999px;
+  padding:3px 4px 3px 14px;
+  height:32px;
+  width:220px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
 }
-.util .right .util-search-btn:hover{
-  background:var(--gold);
+.util .right .util-search-pill input{
+  flex:1; min-width:0;
+  background:transparent; border:0; outline:none;
+  font:inherit; font-size:13px;
   color:var(--navy-deep);
-  transform: scale(1.06);
+  padding:0 6px 0 0;
 }
-.util .right .util-search-btn svg{ display:block }
+.util .right .util-search-pill input::placeholder{ color:#9aa1ad }
+.util .right .util-search-pill button{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:26px; height:26px;
+  border:0; border-radius:50%;
+  background: linear-gradient(135deg, var(--gold-2) 0%, var(--gold) 100%);
+  color:#ffffff;
+  cursor:pointer;
+  transition: transform .15s, filter .15s;
+  flex-shrink:0;
+}
+.util .right .util-search-pill button:hover{ transform: scale(1.08); filter:brightness(1.05) }
+.util .right .util-search-pill button svg{ display:block }
 
-/* 세그먼티드 다크 모드 토글 — 가로로 누르기 쉬운 형태 */
+/* 세그먼티드 다크 모드 토글 — 테두리 제거, 검색 필과 시각적 분리 */
 .util .right .theme-toggle{
   display:inline-flex; align-items:stretch;
-  background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.18);
+  background:transparent;
+  border:0;
   border-radius:999px;
-  padding:2px;
-  margin-left:6px;
+  padding:0;
+  margin-left:4px;
   overflow:hidden;
   line-height:1;
 }
@@ -256,16 +256,21 @@ ul{list-style:none}
 }
 .util .right .theme-toggle .tt-opt .lbl{ font-size:12px }
 
-@media (max-width:820px){ .util .left .verse{display:none} }
+@media (max-width:820px){
+  .util-row{ flex-wrap:wrap; height:auto; padding:8px 14px; gap:8px; row-gap:8px }
+  .util .left{ order:1; flex:1 1 auto; gap:2px }
+  .util .right{ order:2; flex-shrink:0 }
+}
 @media (max-width:560px){
   .util{ font-size:13px }
-  .util-row{ padding:0 12px; gap:6px; height:44px }
-  .util .right{ gap:0 }
-  .util .right a{ padding:10px 8px; min-height:38px; display:inline-flex; align-items:center }
-  .util .right .sep{ display:none }
-  .util .right .theme-toggle{ margin-left:4px; padding:3px }
-  .util .right .theme-toggle .tt-opt{ padding:7px 10px; min-height:30px; font-size:12px }
-  .util .right .theme-toggle .tt-opt .lbl{ display:inline }
+  .util-row{ padding:8px 12px; gap:6px }
+  .util .left{ width:100%; order:2; justify-content:flex-start; gap:0 }
+  .util .left a{ padding:8px 8px; font-size:12px }
+  .util .left .sep{ display:none }
+  .util .right{ width:100%; order:1; justify-content:space-between; gap:6px }
+  .util .right .util-search-pill{ flex:1; width:auto; min-width:0 }
+  .util .right .theme-toggle{ margin-left:0; flex-shrink:0 }
+  .util .right .theme-toggle .tt-opt{ padding:5px 10px; min-height:30px; min-width:32px; font-size:14px }
 }
 
 /* ============ Header ============ */
