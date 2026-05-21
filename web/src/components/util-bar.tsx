@@ -1,7 +1,29 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { LogoutLink } from "@/components/logout-link";
 
-export function UtilBar({ userEmail }: { userEmail?: string | null }) {
+// 클라이언트에서 supabase 세션을 확인 — 페이지 자체는 static/ISR로 캐싱 가능
+export function UtilBar() {
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    let mounted = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (mounted) setUserEmail(data.user?.email ?? null);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
+      setUserEmail(session?.user?.email ?? null);
+    });
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
   return (
     <div className="util">
       <div className="util-row">

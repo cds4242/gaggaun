@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { SiteShell } from "@/components/site-shell";
-import { createClient, isAdminEmail } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://gaggaun.vercel.app"),
@@ -25,17 +24,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  let userEmail: string | null = null;
-  let admin = false;
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getUser();
-    userEmail = data.user?.email ?? null;
-    admin = await isAdminEmail(userEmail);
-  } catch {}
-  void admin;
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
       <head>
@@ -47,7 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body>
-        <SiteShell userEmail={userEmail}>{children}</SiteShell>
+        <SiteShell>{children}</SiteShell>
       </body>
     </html>
   );

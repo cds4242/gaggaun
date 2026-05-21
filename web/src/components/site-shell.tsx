@@ -7,13 +7,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { FlashMessage } from "@/components/flash-message";
 
-export function SiteShell({
-  children,
-  userEmail,
-}: {
-  children: React.ReactNode;
-  userEmail?: string | null;
-}) {
+export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() ?? "/";
   const bare = pathname.startsWith("/admin") || pathname.startsWith("/login");
 
@@ -29,7 +23,7 @@ export function SiteShell({
   return (
     <>
       <Suspense fallback={null}><FlashMessage /></Suspense>
-      <UtilBar userEmail={userEmail} />
+      <UtilBar />
       <SiteHeader />
       <main>{children}</main>
       <SiteFooter />
