@@ -417,7 +417,8 @@ export default async function Home() {
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 allowFullScreen
-                style={{ width: "100%", height: 460, border: 0, background: "var(--paper)" }}
+                className="loc-iframe"
+                style={{ width: "100%", border: 0, background: "var(--paper)" }}
               />
               <div className="map-actions">
                 <a href={`https://map.naver.com/p/search/${encodeURIComponent("경기 김포시 김포한강11로 234")}`} target="_blank" rel="noopener noreferrer" className="map-btn naver">

@@ -87,6 +87,13 @@ export default async function BoardPage({ searchParams }: { searchParams: Promis
                   <div className="cell c-author">{p.author_name}</div>
                   <div className="cell c-date">{formatDateTime(p.created_at)}</div>
                   <div className="cell c-views">{p.views}</div>
+                  <div className="cell c-meta-mobile" aria-hidden>
+                    <span>{p.author_name}</span>
+                    <span className="dot">·</span>
+                    <span>{formatDateTime(p.created_at)}</span>
+                    <span className="dot">·</span>
+                    <span>조회 {p.views}</span>
+                  </div>
                 </div>
               );
             })}

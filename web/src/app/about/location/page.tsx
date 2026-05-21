@@ -25,7 +25,8 @@ export default function Page() {
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 allowFullScreen
-                style={{ width: "100%", height: 460, border: "1px solid var(--line)", background: "var(--paper)" }}
+                className="loc-iframe"
+                style={{ width: "100%", border: "1px solid var(--line)", background: "var(--paper)" }}
               />
               <div className="map-actions">
                 <a href={naverMapUrl} target="_blank" rel="noopener noreferrer" className="map-btn naver" aria-label="네이버 지도에서 보기">
