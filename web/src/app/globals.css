@@ -187,10 +187,16 @@ ul{list-style:none}
   min-width:0;
 }
 .util .left{ display:flex; gap:6px; align-items:center; min-width:0 }
+.util .left .verse{
+  color:var(--gold-2); font-family:var(--serif);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  min-width:0; margin-right:18px;
+}
 .util .left a{
   padding:6px 10px;
   color:rgba(255,255,255,0.8);
   transition:color .2s;
+  flex-shrink:0;
 }
 .util .left a:hover{ color:var(--gold-2) }
 .util .left .sep{ color:rgba(255,255,255,0.25) }
@@ -256,6 +262,7 @@ ul{list-style:none}
 }
 .util .right .theme-toggle .tt-opt .lbl{ font-size:12px }
 
+@media (max-width:1100px){ .util .left .verse{ display:none } }
 @media (max-width:820px){
   .util-row{ flex-wrap:wrap; height:auto; padding:8px 14px; gap:8px; row-gap:8px }
   .util .left{ order:1; flex:1 1 auto; gap:2px }
