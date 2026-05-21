@@ -2,7 +2,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { Pagination } from "@/components/pagination";
 import { GalleryGrid } from "./gallery-grid";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 export const metadata = { title: "사진갤러리 | 가까운교회" };
 export const revalidate = 60;
@@ -31,7 +31,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
   let total = 0;
   let tableMissing = false;
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     let qb = supabase
       .from("gallery_photos")
       .select("id, title, category, image_url, taken_at, created_at", { count: "exact" })

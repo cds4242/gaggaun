@@ -2,7 +2,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { Pagination } from "@/components/pagination";
 import { SearchBar } from "@/components/search-bar";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import { formatDate } from "@/lib/utils";
 
 export const metadata = { title: "설교영상 | 가까운교회" };
@@ -34,7 +34,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
   let total = 0;
   let tableMissing = false;
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     let qb = supabase
       .from("sermons")
       .select("id, title, preacher, verse, badge, youtube_id, duration, summary, preached_at, created_at", { count: "exact" })
