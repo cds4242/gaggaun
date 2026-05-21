@@ -1,5 +1,23 @@
 @import "tailwindcss";
-/* mobile data card refresh - dark panel-head fix - theme toggle segmented */
+/* mobile data card refresh - dark panel-head fix - theme toggle segmented - admin corner */
+
+/* 메인 페이지 우측 하단 관리자 링크 — 메인 페이지에만 사용 */
+.admin-corner{
+  display:flex; align-items:center; gap:6px;
+  justify-content:flex-end;
+  max-width:1240px; margin:0 auto;
+  padding:14px 32px 18px;
+  font-family:var(--sans); font-size:11px;
+  color:var(--mute);
+}
+.admin-corner a{
+  color:var(--mute);
+  padding:4px 6px;
+  transition:color .15s;
+}
+.admin-corner a:hover{ color:var(--navy) }
+.admin-corner .dot{ color:var(--line) }
+@media (max-width:520px){ .admin-corner{padding:10px 20px 14px} }
 
 :root{
   --paper:#f8f3e8;
@@ -189,7 +207,25 @@ ul{list-style:none}
 }
 .util .right a:hover{ color:var(--gold-2) }
 .util .right .sep{ color:rgba(255,255,255,0.25) }
-.util .right .util-search{ display:inline-flex; align-items:center }
+
+/* 구글 스타일 원형 검색 버튼 */
+.util .right .util-search-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:32px; height:32px;
+  padding:0 !important;
+  margin-left:6px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.10);
+  border:1px solid rgba(255,255,255,0.18);
+  color:rgba(255,255,255,0.85);
+  transition: background .15s, color .15s, transform .15s;
+}
+.util .right .util-search-btn:hover{
+  background:var(--gold);
+  color:var(--navy-deep);
+  transform: scale(1.06);
+}
+.util .right .util-search-btn svg{ display:block }
 
 /* 세그먼티드 다크 모드 토글 — 가로로 누르기 쉬운 형태 */
 .util .right .theme-toggle{
@@ -326,13 +362,7 @@ ul{list-style:none}
 }
 .submenu li a:hover{ color:var(--navy); background:var(--paper) }
 
-.nav-actions{ display:flex; align-items:center; gap:14px }
-.nav-actions .nav-admin{
-  color:var(--mute); font-family:var(--sans); font-size:12px;
-  padding:4px 6px;
-  transition:color .15s;
-}
-.nav-actions .nav-admin:hover{ color:var(--navy) }
+.nav-actions{ display:flex; align-items:center; gap:10px }
 .btn-primary{
   display:inline-flex; align-items:center; gap:10px;
   padding:14px 24px;
@@ -365,7 +395,6 @@ ul{list-style:none}
   .mainmenu{display:none}
   .burger{display:flex}
   .nav-actions .btn-primary{display:none}
-  .nav-actions .nav-admin{display:none}
   .nav-row{height:76px}
   .brand .cross{width:38px;height:38px}
   .brand .text .ko{font-size:22px}
@@ -398,16 +427,6 @@ ul{list-style:none}
 .mobile-menu .cta{
   margin-top:10px;
 }
-.mobile-menu .admin-row{
-  margin-top:18px; padding-top:14px;
-  border-top:1px solid var(--line);
-  display:flex; gap:12px; align-items:center;
-  font-size:12px;
-}
-.mobile-menu .admin-row a{
-  color:var(--mute); font-family:var(--sans); padding:6px 0;
-}
-.mobile-menu .admin-row a:hover{ color:var(--navy) }
 @media (max-width:520px){ .mobile-menu .inner{padding:14px 20px} }
 
 /* ============ Hero ============ */

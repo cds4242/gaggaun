@@ -3,27 +3,12 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { NAV } from "@/lib/nav";
-import { LogoutLink } from "@/components/logout-link";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
-  const [signedIn, setSignedIn] = useState(false);
-
-  useEffect(() => {
-    const supabase = createClient();
-    let mounted = true;
-    supabase.auth.getUser().then(({ data }) => {
-      if (mounted) setSignedIn(!!data.user);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
-      setSignedIn(!!session?.user);
-    });
-    return () => { mounted = false; sub.subscription.unsubscribe(); };
-  }, []);
 
   // 라우트 변경 시 자동 닫힘 (Link 클릭으로 페이지 이동될 때)
   useEffect(() => {
@@ -94,14 +79,6 @@ export function SiteHeader() {
         </ul>
 
         <div className="nav-actions">
-          {signedIn ? (
-            <>
-              <Link className="nav-admin" href="/admin">관리자</Link>
-              <LogoutLink className="nav-admin" />
-            </>
-          ) : (
-            <Link className="nav-admin" href="/login">관리자</Link>
-          )}
           <Link className="btn-primary" href="/new-member">새가족 등록</Link>
           <button
             className="burger"
@@ -134,16 +111,6 @@ export function SiteHeader() {
             <Link className="btn-primary" href="/new-member" onClick={() => setOpen(false)}>
               새가족 등록
             </Link>
-          </div>
-          <div className="admin-row">
-            {signedIn ? (
-              <>
-                <Link href="/admin" onClick={() => setOpen(false)}>관리자</Link>
-                <LogoutLink />
-              </>
-            ) : (
-              <Link href="/login" onClick={() => setOpen(false)}>관리자</Link>
-            )}
           </div>
         </div>
       </div>

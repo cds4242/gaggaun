@@ -13,14 +13,17 @@ export function UtilBar() {
           </span>
         </div>
         <div className="right">
-          <Link href="/search" className="util-search">검색</Link>
-          <span className="sep">|</span>
           <Link href="/new-member">새가족등록</Link>
           <span className="sep">|</span>
           <Link href="/notices">교회소식</Link>
           <span className="sep">|</span>
           <Link href="/board">게시판</Link>
-          <span className="sep">|</span>
+          <Link href="/search" className="util-search-btn" aria-label="통합 검색">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <circle cx="11" cy="11" r="7"/>
+              <line x1="20" y1="20" x2="16.5" y2="16.5"/>
+            </svg>
+          </Link>
           <ThemeToggle />
         </div>
       </div>
