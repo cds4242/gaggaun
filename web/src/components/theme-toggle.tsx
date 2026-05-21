@@ -2,30 +2,34 @@
 
 import { useEffect, useState } from "react";
 
-type Mode = "system" | "light" | "dark";
+type Mode = "light" | "dark";
 const KEY = "theme-mode";
 
 function applyMode(mode: Mode) {
-  const root = document.documentElement;
-  if (mode === "system") root.removeAttribute("data-theme");
-  else root.setAttribute("data-theme", mode);
+  document.documentElement.setAttribute("data-theme", mode);
+}
+
+function detectInitial(): Mode {
+  try {
+    const saved = localStorage.getItem(KEY);
+    if (saved === "light" || saved === "dark") return saved;
+  } catch {}
+  if (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
+  return "light";
 }
 
 export function ThemeToggle() {
-  const [mode, setMode] = useState<Mode>("system");
+  const [mode, setMode] = useState<Mode>("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    const init = detectInitial();
+    setMode(init);
+    applyMode(init);
     setMounted(true);
-    try {
-      const saved = (localStorage.getItem(KEY) as Mode) || "system";
-      setMode(saved);
-      applyMode(saved);
-    } catch {}
   }, []);
 
-  function cycle() {
-    const next: Mode = mode === "system" ? "light" : mode === "light" ? "dark" : "system";
+  function setTo(next: Mode) {
     setMode(next);
     applyMode(next);
     try { localStorage.setItem(KEY, next); } catch {}
@@ -33,18 +37,24 @@ export function ThemeToggle() {
 
   if (!mounted) return null;
 
-  const label = mode === "system" ? "자동" : mode === "light" ? "라이트" : "다크";
-  const icon = mode === "dark" ? "☾" : mode === "light" ? "☀" : "◐";
   return (
-    <button
-      type="button"
-      onClick={cycle}
-      aria-label={`테마 (${label}) 변경`}
-      title={`테마: ${label} (클릭하여 변경)`}
-      className="theme-toggle"
-    >
-      <span aria-hidden>{icon}</span>
-      <span className="lbl">{label}</span>
-    </button>
+    <div className="theme-toggle" role="group" aria-label="테마 전환">
+      <button
+        type="button"
+        onClick={() => setTo("light")}
+        aria-pressed={mode === "light"}
+        className={"tt-opt" + (mode === "light" ? " active" : "")}
+      >
+        <span aria-hidden>☀</span><span className="lbl">라이트</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => setTo("dark")}
+        aria-pressed={mode === "dark"}
+        className={"tt-opt" + (mode === "dark" ? " active" : "")}
+      >
+        <span aria-hidden>☾</span><span className="lbl">다크</span>
+      </button>
+    </div>
   );
 }

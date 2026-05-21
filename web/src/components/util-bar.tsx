@@ -46,7 +46,7 @@ export function UtilBar() {
               <span className="sep">|</span>
             </>
           )}
-          <Link href="/search" aria-label="통합 검색" className="util-search">🔍<span className="lbl"> 검색</span></Link>
+          <Link href="/search" className="util-search">검색</Link>
           <span className="sep">|</span>
           <Link href="/new-member">새가족등록</Link>
           <span className="sep">|</span>
