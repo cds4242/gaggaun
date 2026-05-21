@@ -27,6 +27,10 @@ export function UtilBar() {
           <Link href="/notices">교회소식</Link>
           <span className="sep">|</span>
           <Link href="/board">게시판</Link>
+          <span className="sep">|</span>
+          <Link href="/media/gallery">갤러리</Link>
+          <span className="sep">|</span>
+          <Link href="/about/location">오시는 길</Link>
         </div>
         <div className="right">
           <form className="util-search-pill" onSubmit={onSubmit} role="search">
