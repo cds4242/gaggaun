@@ -78,17 +78,17 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
                   const hasImg = (p.image_urls?.length ?? 0) > 0;
                   return (
                     <tr key={p.id}>
-                      <td className="muted">{total - from - i}</td>
-                      <td>
+                      <td data-label="#" className="muted">{total - from - i}</td>
+                      <td data-label="제목">
                         <Link href={`/board/${p.id}`} className="a-link" target="_blank">
                           {p.title}
                         </Link>
                         {hasImg && <span style={{ marginLeft: 8, color: "var(--gold)", fontSize: 13 }}>📎</span>}
                       </td>
-                      <td>{p.author_name}</td>
-                      <td className="muted">{p.views}</td>
-                      <td className="muted">{formatDate(p.created_at)}</td>
-                      <td>
+                      <td data-label="작성자">{p.author_name}</td>
+                      <td data-label="조회" className="muted">{p.views}</td>
+                      <td data-label="작성일" className="muted">{formatDate(p.created_at)}</td>
+                      <td data-label="관리">
                         <div className="actions">
                           <DeleteButton
                             action={async () => { "use server"; await deleteBoardPost(p.id); }}

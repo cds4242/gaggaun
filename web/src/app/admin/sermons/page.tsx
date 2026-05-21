@@ -85,17 +85,17 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
               <tbody>
                 {rows.map((s) => (
                   <tr key={s.id}>
-                    <td>
+                    <td data-label="썸네일">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={`https://i.ytimg.com/vi/${s.youtube_id}/default.jpg`} alt="" width="80" height="60" style={{ objectFit: "cover", border: "1px solid var(--line)" }} />
                     </td>
-                    <td>
+                    <td data-label="제목">
                       <Link href={`/media/sermon/${s.id}`} className="a-link" target="_blank">{s.title}</Link>
                     </td>
-                    <td>{s.preacher}</td>
-                    <td>{s.badge ?? "-"}</td>
-                    <td className="muted">{s.preached_at ? formatDate(s.preached_at) : "-"}</td>
-                    <td>
+                    <td data-label="설교자">{s.preacher}</td>
+                    <td data-label="유형">{s.badge ?? "-"}</td>
+                    <td data-label="설교일" className="muted">{s.preached_at ? formatDate(s.preached_at) : "-"}</td>
+                    <td data-label="관리">
                       <div className="actions">
                         <Link href={`/admin/sermons/${s.id}/edit`}>수정</Link>
                         <DeleteButton

@@ -72,15 +72,15 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
               <tbody>
                 {rows.map((m) => (
                   <tr key={m.id}>
-                    <td style={{ color: "var(--navy)", fontWeight: 600 }}>{m.name}</td>
-                    <td>{m.phone}</td>
-                    <td>{m.gender === "M" ? "남" : m.gender === "F" ? "여" : "-"}</td>
-                    <td className="muted">{m.visited_at ?? "-"}</td>
-                    <td>{m.invited_by ?? "-"}</td>
-                    <td className="muted" style={{ maxWidth: 320 }}>
+                    <td data-label="이름" style={{ color: "var(--navy)", fontWeight: 600 }}>{m.name}</td>
+                    <td data-label="연락처">{m.phone}</td>
+                    <td data-label="성별">{m.gender === "M" ? "남" : m.gender === "F" ? "여" : "-"}</td>
+                    <td data-label="방문일" className="muted">{m.visited_at ?? "-"}</td>
+                    <td data-label="초청자">{m.invited_by ?? "-"}</td>
+                    <td data-label="기도 제목" className="muted" style={{ maxWidth: 320 }}>
                       <div className="line-clamp-2">{m.prayer_request ?? "-"}</div>
                     </td>
-                    <td className="muted">{formatDate(m.created_at)}</td>
+                    <td data-label="등록일" className="muted">{formatDate(m.created_at)}</td>
                   </tr>
                 ))}
               </tbody>

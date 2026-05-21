@@ -75,10 +75,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
               <tbody>
                 {rows.map((n) => (
                   <tr key={n.id}>
-                    <td><span className={"pill " + (n.pinned ? "notice" : "news")}>{n.pinned ? "공지" : "소식"}</span></td>
-                    <td><Link href={`/notices/${n.id}`} className="a-link" target="_blank">{n.title}</Link></td>
-                    <td className="muted">{formatDate(n.created_at)}</td>
-                    <td>
+                    <td data-label="유형"><span className={"pill " + (n.pinned ? "notice" : "news")}>{n.pinned ? "공지" : "소식"}</span></td>
+                    <td data-label="제목"><Link href={`/notices/${n.id}`} className="a-link" target="_blank">{n.title}</Link></td>
+                    <td data-label="작성일" className="muted">{formatDate(n.created_at)}</td>
+                    <td data-label="관리">
                       <div className="actions">
                         <Link href={`/admin/notices/${n.id}/edit`}>수정</Link>
                         <DeleteButton

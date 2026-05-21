@@ -1,4 +1,5 @@
 @import "tailwindcss";
+/* mobile data card refresh */
 
 :root{
   --paper:#f8f3e8;
@@ -1365,6 +1366,43 @@ section.block{ padding:100px 0; position:relative }
   .simple-table .row.head{display:none}
   .simple-table .row .cell{border-right:0; border-bottom:1px solid var(--line)}
 }
+/* 모바일: 각 행을 하나의 카드로 묶기 — 첫 셀(구분)을 카드 헤더로, 나머지는 메타로 */
+@media (max-width:560px){
+  .simple-table{ background:transparent; border:0; box-shadow:none }
+  .simple-table .row.body{
+    display:grid;
+    grid-template-columns: 1fr;
+    background:var(--white);
+    border:1px solid var(--line);
+    margin-bottom:12px;
+    padding:14px 16px;
+    box-shadow:var(--shadow);
+  }
+  .simple-table .row.body:last-child{ margin-bottom:0 }
+  .simple-table .row.body .cell{
+    border:0 !important;
+    padding:0 !important;
+    margin:0;
+    font-size:14.5px;
+  }
+  /* 첫 셀(구분/팀명 등) — 카드 제목 */
+  .simple-table .row.body .cell:first-child{
+    font-family:var(--serif); font-size:16px; font-weight:700;
+    color:var(--navy);
+    padding-bottom:8px !important;
+    margin-bottom:8px;
+    border-bottom:1px dashed var(--line) !important;
+  }
+  /* 두 번째 셀(시간/대상 등) — 강조 */
+  .simple-table .row.body .cell:nth-child(2){
+    color:var(--burgundy); font-weight:600; font-size:15px;
+    margin-bottom:4px;
+  }
+  /* 나머지 셀 — 보조 정보 */
+  .simple-table .row.body .cell:nth-child(n+3){
+    color:var(--mute); font-size:13.5px; line-height:1.6;
+  }
+}
 
 /* ============ Forms ============ */
 .form-card{
@@ -1374,6 +1412,23 @@ section.block{ padding:100px 0; position:relative }
   padding:48px 48px 56px;
 }
 @media (max-width:720px){ .form-card{padding:32px 22px 40px} }
+@media (max-width:560px){
+  .form-card{ padding:24px 16px 32px }
+  /* iOS Safari 자동 줌 방지 — input 폰트 16px 이상 */
+  .form-row input, .form-row select, .form-row textarea,
+  .admin-form input, .admin-form textarea, .admin-form select{
+    font-size:16px !important;
+  }
+  .form-row{ margin-bottom:18px }
+  .form-row label{ font-size:12.5px }
+  /* 등록/저장 버튼 풀폭 */
+  .form-actions .btn-primary{
+    width:100%;
+    justify-content:center;
+    padding:14px 20px;
+    font-size:15px;
+  }
+}
 .form-card .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:24px }
 @media (max-width:720px){ .form-card .grid2{grid-template-columns:1fr} }
 .form-row{ display:flex; flex-direction:column; gap:8px; margin-bottom:22px }
@@ -1705,6 +1760,43 @@ section.block{ padding:100px 0; position:relative }
 .admin-table .actions a:hover{ background:var(--navy); color:var(--white); border-color:var(--navy) }
 .admin-table .actions .danger{ color:var(--burgundy); border-color:var(--line) }
 .admin-table .actions .danger:hover{ background:var(--burgundy); color:var(--white); border-color:var(--burgundy) }
+/* 모바일: 어드민 테이블을 카드형으로 — 각 row가 한 카드, 컬럼 라벨은 ::before로 */
+@media (max-width:560px){
+  .admin-card .ac-body{ overflow-x:visible; padding:0 }
+  .admin-table{ display:block }
+  .admin-table thead{ display:none }
+  .admin-table tbody, .admin-table tr{ display:block }
+  .admin-table tbody tr{
+    padding:14px 16px;
+    border-bottom:1px solid var(--line);
+    background:var(--white);
+  }
+  .admin-table tbody td{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    padding:6px 0;
+    border:0;
+    font-size:14px;
+    text-align:right;
+  }
+  .admin-table tbody td::before{
+    content: attr(data-label);
+    font-family:var(--sans); font-size:11.5px; font-weight:700;
+    color:var(--mute); text-transform:uppercase; letter-spacing:.05em;
+    flex-shrink:0;
+  }
+  .admin-table tbody td:first-child{
+    border-bottom:1px dashed var(--line);
+    padding-bottom:10px; margin-bottom:6px;
+    font-size:15px;
+  }
+  .admin-table tbody td.muted{ font-size:13px }
+  .admin-table .actions{ justify-content:flex-end }
+  /* a-link 줄바꿈 안 됨 — 모바일에선 자유롭게 */
+  .admin-table .a-link{ text-align:right; word-break:break-all; white-space:normal }
+}
 .admin-empty{
   padding:48px 20px;
   text-align:center;
