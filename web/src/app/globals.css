@@ -1005,6 +1005,40 @@ section.block{ padding:100px 0; position:relative }
   border:1px solid var(--gold);
   box-shadow:var(--shadow);
 }
+.map-wrap{ display:flex; flex-direction:column; background:var(--white) }
+.map-wrap iframe{ display:block; width:100%; }
+.map-actions{
+  display:flex; gap:8px;
+  padding:14px;
+  border-top:1px solid var(--line);
+  background:var(--ivory);
+  flex-wrap:wrap;
+}
+.map-btn{
+  flex:1 1 0; min-width:100px;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:11px 14px;
+  font-family:var(--serif); font-size:14px; font-weight:600;
+  border:1px solid var(--line);
+  background:var(--white); color:var(--ink);
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.map-btn:hover{ border-color:var(--navy); background:var(--paper) }
+.map-btn .mark{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:22px; height:22px;
+  font-family:var(--sans); font-size:12px; font-weight:800;
+  color:#fff;
+  border-radius:4px;
+}
+.map-btn.naver .mark{ background:#03c75a }
+.map-btn.kakao .mark{ background:#3c1e1e; color:#FEE500 }
+.map-btn.google .mark{ background:#4285F4 }
+@media (max-width:520px){
+  .map-actions{ padding:10px; gap:6px }
+  .map-btn{ font-size:13px; padding:9px 10px; min-width:0 }
+}
+
 .loc-info{ padding:60px 56px; display:flex; flex-direction:column; gap:8px }
 .loc-info .eyebrow{
   font-family:var(--display); font-style:italic;
