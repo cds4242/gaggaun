@@ -169,7 +169,7 @@ export default async function Home() {
           <div className="hero-strip-inner">
             <div className="col"><span className="k">금주 주일</span><span className="v">2026. 5. 24 (주일)</span></div>
             <div className="col"><span className="k">주일 예배</span><span className="v">오전 9:00 · 11:00</span></div>
-            <div className="col"><span className="k">설교 본문</span><span className="v">요한복음 13:34-35</span></div>
+            <div className="col"><span className="k">설교 본문</span><span className="v">요한복음 13:34-36</span></div>
             <div className="col"><span className="k">설교자</span><span className="v">김요한 담임목사</span></div>
           </div>
         </div>
