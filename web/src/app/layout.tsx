@@ -3,6 +3,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SiteShell } from "@/components/site-shell";
+import { EditHighlight } from "@/components/edit-highlight";
 import { buildNav } from "@/lib/boards-nav";
 import pwa from "@/lib/pwa-assets.json";
 
@@ -79,6 +80,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <SiteShell nav={nav}>{children}</SiteShell>
+        <EditHighlight />
         <Analytics />
         <SpeedInsights />
       </body>

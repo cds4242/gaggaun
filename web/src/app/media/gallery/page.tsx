@@ -53,8 +53,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
 
   return (
     <>
-      <PageHeader title="갤러리" eyebrow="PHOTO GALLERY" subtitle="가까운교회의 순간들" />
-      <section className="block" style={{ background: "transparent" }}>
+      <PageHeader title="갤러리" eyebrow="PHOTO GALLERY" subtitle="가까운교회의 순간들" editSection="gallery" />
+      <section className="block" style={{ background: "transparent" }} data-edit-section="gallery.filter">
         <div className="wrap">
           {tableMissing ? (
             <div className="prose-box" style={{ textAlign: "center", color: "var(--mute)" }}>

@@ -14,8 +14,8 @@ const googleEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(ADDRE
 export default function Page() {
   return (
     <>
-      <PageHeader title="오시는 길" eyebrow="VISIT US" subtitle="경기 김포시 한강신도시 운양동" />
-      <section className="block">
+      <PageHeader title="오시는 길" eyebrow="VISIT US" subtitle="경기 김포시 한강신도시 운양동" editSection="location" />
+      <section className="block" data-edit-section="location.info">
         <div className="wrap">
           <div className="loc-grid">
             <div className="map-wrap">
@@ -49,7 +49,7 @@ export default function Page() {
                 <dt>주소</dt>
                 <dd>{ADDRESS}<span className="small">김포한강신도시 운양동</span></dd>
                 <dt>전화</dt>
-                <dd>031 — 000 — 0000<span className="small">평일 오전 9:00 – 오후 6:00</span></dd>
+                <dd>031-999-9999<span className="small">평일 오전 9:00 – 오후 6:00</span></dd>
                 <dt>이메일</dt>
                 <dd>office@nearchurch.kr</dd>
                 <dt>대중교통</dt>

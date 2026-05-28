@@ -11,8 +11,8 @@ const items = [
 export default function Page() {
   return (
     <>
-      <PageHeader title="비전과 사명" eyebrow="OUR VISION" subtitle="가까운교회가 추구하는 세 가지 가치" />
-      <section className="block">
+      <PageHeader title="비전과 사명" eyebrow="OUR VISION" subtitle="가까운교회가 추구하는 세 가지 가치" editSection="vision" />
+      <section className="block" data-edit-section="vision.values">
         <div className="wrap">
           <div className="idx-grid">
             {items.map((v) => (

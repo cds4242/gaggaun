@@ -4,6 +4,73 @@
 
 ---
 
+## 2026-05-28 (3) — 관리자 피드백 도구(edit/) + 금주 정보 어드민
+
+### 한 줄 요약
+
+교회 관리자가 사이트를 보면서 "이 글자/이 사진을 이렇게" 피드백을 정확히 전달할
+수 있는 정적 편집 도구(`edit/index.html`)를 추가. 매주 바뀌는 "금주 정보"는
+편집기에서 빼고 어드민 페이지(`/admin/this-week`)에서 직접 DB로 수정하게 분리.
+
+### 새로 추가된 것
+
+**`edit/index.html` — 관리자용 피드백 도구 (정적, 서버 불필요)**
+- 파일을 더블클릭하면 브라우저로 열림. file:// 로 동작.
+- 9개 페이지(상단메뉴/홈/교회소개/인사말/비전/연혁/오시는길/갤러리)의 179개
+  편집 가능 항목을 카드로 나열. 텍스트 짧은글/긴글, 이미지(드래그앤드롭+base64),
+  메뉴 구조(추가/삭제/순서/하위메뉴) 모두 편집.
+- localStorage 자동 저장 → 중간에 닫아도 복구. "내보내기"로 JSON 다운로드 →
+  담당자가 Claude Code에게 던지면 카탈로그 id로 코드 위치를 찾아 수정.
+- 각 섹션 헤더에 "↗ 사이트에서 위치 보기" 버튼. 클릭하면
+  `${LIVE_SITE}${path}?edit=ID` 새 탭으로 열림.
+- `edit/README.md` — 관리자용 사용법 + 담당자용 JSON 구조 설명.
+
+**`?edit=ID` 하이라이트 동작 (사이트 측)**
+- `web/src/components/edit-highlight.tsx` — 클라이언트 컴포넌트.
+  URL 쿼리 `edit=ID`를 읽어 `[data-edit-section="ID"]` 요소로 스크롤 + 4초간
+  금색 outline + 펄스 애니메이션 + "편집 도구가 가리킨 위치: ID" 토스트.
+- `web/src/app/page.tsx`의 8개 섹션과 정적 페이지들에 `data-edit-section` 부여.
+- `PageHeader`에 optional `editSection` prop 추가 (정적 페이지 헤더 일괄 처리).
+- `globals.css`에 `.edit-highlight-pulse` / `.edit-highlight-toast` 스타일 추가.
+- `layout.tsx`에 `<EditHighlight />` 마운트.
+
+**`/admin/this-week` — 금주 정보 어드민**
+- 새 테이블 `site_settings` (key, value, label, description, group_key,
+  sort_order, updated_at, updated_by). RLS: select public, modify is_admin.
+  초기 시드로 `home.strip.*` 4개 값 삽입.
+- `lib/site-settings.ts` — `getThisWeekSettings()` / `getSettingsByGroup()`.
+  DB 실패 시 DEFAULTS로 fallback (사이트가 무조건 뜸).
+- `app/admin/this-week/page.tsx` + `actions.ts` — 폼 + 서버 액션.
+  저장 시 `revalidatePath('/')`로 60초 캐시와 무관하게 즉시 갱신.
+- `admin-side.tsx`에 "금주 정보" 메뉴 추가, `/admin` 대시보드에도 카드 추가.
+- 편집기 카탈로그에서 `home.strip.*` 8개 항목 제거 → 안내 카드로 교체
+  ("관리자 페이지에서 관리합니다 → 관리자 페이지 열기").
+
+### 부가 수정
+
+- 직전 피드백 반영: `home.hero.cta2` ("처음 오시는 분" → "처음 방문하시는 분"),
+  `home.loc.phone` ("031 — 000 — 0000" → "031-999-9999"). 같은 번호가 있던
+  `about/location/page.tsx`와 `site-footer.tsx`도 통일.
+
+### 추적되지 않는 의도
+
+- **편집기 vs 어드민의 경계**: 자주 바뀌는 운영 정보(금주 정보, 연락처 등)는 어드민
+  쪽으로, 어감/구조/문구 다듬기 같은 진짜 피드백은 편집기 → Claude 코드 수정 흐름.
+  이 분리 때문에 `site_settings` 테이블은 일부러 generic하게 설계 (group_key로
+  확장 가능 — 다음 후보: 연락처 4종, 소셜 링크).
+- **`data-edit-section`을 섹션 단위로만 박은 이유**: 187개 항목 전부에 attribute
+  박으면 코드가 지저분해지고 강조도 너무 좁아져서 어디인지 알기 어려움. "영역"
+  단위가 사람이 보기에 자연스러움.
+
+### 알려진 한계
+
+- 갤러리 페이지 사진 자체는 이미 별도 어드민에서 관리 (편집기에서는 텍스트만).
+- 푸터, 예배 상세 페이지들, 새가족 페이지는 아직 편집기 카탈로그에 없음. 필요해지면
+  카탈로그에 섹션 추가하면 자동 렌더.
+- LIVE_SITE 상수가 `edit/index.html`에 하드코딩. 도메인 바뀌면 거기 수정 필요.
+
+---
+
 ## 2026-05-28 (2) — NAV 동적화: 보드를 상단 메뉴에 자동 노출
 
 - `boards.category`가 `TOP_CATEGORIES` 라벨(교회소개/예배안내/설교말씀/교회소식/공동체)과

@@ -2,13 +2,15 @@ export function PageHeader({
   title,
   subtitle,
   eyebrow,
+  editSection,
 }: {
   title: string;
   subtitle?: string;
   eyebrow?: string;
+  editSection?: string;
 }) {
   return (
-    <section className="page-head">
+    <section className="page-head" data-edit-section={editSection ? `${editSection}.header` : undefined}>
       <div className="inner">
         {eyebrow && (
           <div className="eyebrow">

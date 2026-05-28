@@ -63,6 +63,20 @@ export default async function AdminHome() {
         <StatCard label="THIS WEEK" value={mc7 ?? 0} sub="최근 7일 신규" href="/admin/new-members" />
       </div>
 
+      <div className="admin-card" style={{ marginTop: 20 }}>
+        <div className="ac-head">
+          <h3>홈 화면 — 금주 정보</h3>
+          <Link href="/admin/this-week" style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--navy)" }}>
+            편집 →
+          </Link>
+        </div>
+        <div className="ac-body">
+          <p style={{ margin: 0, fontSize: 13, color: "var(--mute)" }}>
+            홈 히어로 띠에 표시되는 금주 주일·예배 시간·설교 본문·설교자를 코드 수정 없이 바로 바꿀 수 있습니다.
+          </p>
+        </div>
+      </div>
+
       {pendingMembers.length > 0 && (
         <div className="admin-alert" role="region" aria-label="미응대 새가족">
           <div className="ah-head">

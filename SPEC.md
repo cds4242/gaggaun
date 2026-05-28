@@ -396,15 +396,55 @@ node scripts/image-cycle-10.mjs # 이미지 업로드 + 게시글 사이클 10�
 
 | 페이지 | Supabase 테이블 | 폴백 |
 | --- | --- | --- |
-| `/` | `notices` (id, title, created_at, pinned) | 폴백 더미 6건 |
+| `/` | `notices` (id, title, created_at, pinned), `site_settings` (this_week 그룹) | 공지 폴백 더미 6건, 금주 정보 DEFAULTS |
 | `/notices`, `/notices/[id]` | `notices` | 비어 있으면 "등록된 공지가 없습니다." |
 | `/board` | `boards` (활성 보드 목록) | 보드 0건이면 안내 |
 | `/board/[slug]`, `/board/[slug]/[id]`, `/board/[slug]/new` | `boards` + `board_posts` (board_id FK) | 비어 있으면 "아직 등록된 게시글이 없습니다." |
 | `/admin/boards` | `boards` (CRUD) | 게시판 마스터 관리 |
 | `/admin/board` | `board_posts` + `boards` (filter) | 보드 셀렉터로 필터링 |
 | `/admin/notices` | `notices` (CRUD) | — |
+| `/admin/this-week` | `site_settings` (group_key=this_week) | 시드 안 됐으면 안내 |
 | `/admin/new-members` | `new_members` | — |
 | 인증 | Supabase Auth | `isAdminEmail`로 관리자 판별 |
 
 `createClient()` 호출이 실패하면 홈은 try/catch로 빈 배열을 반환하고
 폴백 데이터로 렌더링한다 (`web/src/app/page.tsx`).
+
+### 8.1 `site_settings` 테이블 (key-value 사이트 설정)
+
+자주 바뀌는 사이트 콘텐츠를 코드 수정 없이 어드민에서 관리하기 위한 generic 테이블.
+
+| 컬럼 | 용도 |
+| --- | --- |
+| `key` | PK. 카탈로그 ID 형식 (예: `home.strip.date`) |
+| `value` | 실제 표시되는 값 |
+| `label`, `description` | 어드민 폼에 표시되는 한글 라벨/설명 |
+| `group_key` | 어드민에서 폼 그룹화용. 1차: `this_week` |
+| `sort_order` | 폼 내 표시 순서 |
+
+RLS: select public / modify is_admin. fetcher (`lib/site-settings.ts`)는 DB 실패 시
+`DEFAULTS`로 fallback해서 사이트가 무조건 뜨도록.
+
+확장 후보: 연락처(전화·이메일·주소), 소셜 링크.
+
+---
+
+## 9. 관리자 피드백 도구 (`edit/`)
+
+비개발자(교회 관리자)가 홈페이지의 텍스트/이미지/메뉴 변경 요청을 정확히 전달하기 위한
+정적 편집 도구. Next.js 앱과 분리되어 있으며 빌드 산출물이 아님.
+
+| 항목 | 값 |
+| --- | --- |
+| 위치 | `edit/index.html` (단일 파일) + `edit/README.md` (사용법) |
+| 실행 | 브라우저로 파일 직접 열기 (서버 불필요, 인터넷 불필요) |
+| 출력 | `church-edits-YYYY-MM-DD.json` 다운로드 |
+| 라이브 URL 점프 | 카드의 "↗ 사이트에서 위치 보기" → `https://gaggaun.vercel.app/path?edit=ID` |
+
+사이트 측 통합:
+- `data-edit-section="ID"` 속성을 섹션 단위로 부여 (개별 텍스트마다 X)
+- `web/src/components/edit-highlight.tsx` 가 `?edit=ID` 쿼리를 읽어 해당 섹션을
+  스크롤 + 강조 + 토스트 안내
+- 카탈로그 ID는 `edit/index.html` 내부 `CATALOG` 상수가 단일 출처
+
+JSON을 Claude Code에 던지면 카탈로그 ID로 코드 위치를 찾아 텍스트/이미지/메뉴를 수정.

@@ -5,8 +5,8 @@ export const metadata = { title: "인사말 | 가까운교회" };
 export default function Page() {
   return (
     <>
-      <PageHeader title="인사말" eyebrow="PASTOR'S GREETING" subtitle="담임목사가 드리는 짧은 편지" />
-      <ProseSection eyebrow="A Letter" title="가까운 교회, 가까운 마음">
+      <PageHeader title="인사말" eyebrow="PASTOR'S GREETING" subtitle="담임목사가 드리는 짧은 편지" editSection="greeting" />
+      <div data-edit-section="greeting.body"><ProseSection eyebrow="A Letter" title="가까운 교회, 가까운 마음">
         <p>주님의 평강이 함께 하시기를 기도합니다.</p>
         <p>
           가까운교회는 김포 한강신도시 운양동에 위치한, 이웃과 가깝고 하나님과 가까운 공동체입니다.
@@ -24,7 +24,7 @@ export default function Page() {
         <p style={{ textAlign: "right", marginTop: 32, fontFamily: "var(--display)", fontStyle: "italic", color: "var(--gold)" }}>
           — 담임목사 김요한 드림
         </p>
-      </ProseSection>
+      </ProseSection></div>
     </>
   );
 }

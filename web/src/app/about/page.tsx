@@ -13,8 +13,8 @@ const items = [
 export default function Page() {
   return (
     <>
-      <PageHeader title="교회소개" eyebrow="ABOUT US" subtitle="가까운교회를 소개합니다" />
-      <section className="block">
+      <PageHeader title="교회소개" eyebrow="ABOUT US" subtitle="가까운교회를 소개합니다" editSection="about" />
+      <section className="block" data-edit-section="about.items">
         <div className="wrap">
           <SectionGrid items={items} />
         </div>

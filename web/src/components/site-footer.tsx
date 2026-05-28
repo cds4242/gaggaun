@@ -36,7 +36,7 @@ export function SiteFooter() {
             <ul>
               <li>경기도 김포시 운양동</li>
               <li>(한강신도시)</li>
-              <li>Tel. 031-000-0000</li>
+              <li>Tel. 031-999-9999</li>
               <li>office@nearchurch.kr</li>
             </ul>
           </div>

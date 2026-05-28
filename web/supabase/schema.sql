@@ -261,6 +261,39 @@ create policy sermons_modify on public.sermons
   for all using (public.is_admin()) with check (public.is_admin());
 
 -- ───────────────────────────────────────────────────────────────
+-- 7) 사이트 설정 (site_settings)
+-- 어드민에서 자주 바뀌는 값을 코드 수정 없이 관리한다.
+-- 1차 적용 범위: 홈 히어로 띠의 금주 정보 4종.
+-- ───────────────────────────────────────────────────────────────
+create table if not exists public.site_settings (
+  key text primary key,
+  value text not null,
+  label text not null,                -- 어드민 UI에 표시할 한글 라벨
+  description text,                   -- 보충 설명
+  group_key text not null default 'general',  -- 어드민에서 폼 그룹화용
+  sort_order int not null default 0,
+  updated_at timestamptz not null default now(),
+  updated_by text
+);
+
+alter table public.site_settings enable row level security;
+
+drop policy if exists site_settings_select on public.site_settings;
+create policy site_settings_select on public.site_settings for select using (true);
+
+drop policy if exists site_settings_modify on public.site_settings;
+create policy site_settings_modify on public.site_settings
+  for all using (public.is_admin()) with check (public.is_admin());
+
+-- 금주 정보 초기 시드 (이미 있으면 건너뜀)
+insert into public.site_settings (key, value, label, description, group_key, sort_order) values
+  ('home.strip.date',      '2026. 5. 24 (주일)',  '금주 주일',    '히어로 띠 1열에 표시되는 날짜', 'this_week', 10),
+  ('home.strip.worship',   '오전 9:00 · 11:00',  '주일 예배 시간', '히어로 띠 2열',                'this_week', 20),
+  ('home.strip.text',      '요한복음 13:34-36',   '설교 본문',    '히어로 띠 3열',                'this_week', 30),
+  ('home.strip.preacher',  '김요한 담임목사',     '설교자',       '히어로 띠 4열',                'this_week', 40)
+on conflict (key) do nothing;
+
+-- ───────────────────────────────────────────────────────────────
 -- Storage 버킷
 -- 대시보드에서 "board-images", "gallery" 버킷을 public 으로 만들어두세요.
 -- 또는 아래 SQL 실행:

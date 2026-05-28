@@ -1,0 +1,1218 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>가까운교회 — 홈페이지 피드백 도구</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#fbfaf7;--bg2:#f3efe7;--ink:#1a1a1a;--ink-soft:#4a4a4a;--mute:#7a7a7a;
+    --line:#e6dfd1;--line-strong:#cdc4b0;
+    --accent:#8a1a2b;--accent-soft:#f7e6e8;--gold:#b88a2a;
+    --ok:#2e7d4f;--warn:#b85c00;--danger:#b00020;
+    --paper:#fff;--shadow:0 4px 14px rgba(0,0,0,.06);--radius:10px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+    font-size:15px;line-height:1.65;word-break:keep-all;overflow-wrap:break-word}
+
+  /* ====== layout ====== */
+  .app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+  .side{background:var(--bg2);border-right:1px solid var(--line);
+        padding:24px 18px;position:sticky;top:0;height:100vh;overflow:auto}
+  .side h1{font-size:18px;margin:0 0 4px;color:var(--accent)}
+  .side .sub{font-size:12px;color:var(--mute);margin-bottom:18px}
+  .side .group{margin-bottom:14px}
+  .side .group-label{font-size:11px;letter-spacing:.18em;color:var(--mute);
+    text-transform:uppercase;margin-bottom:6px;padding-left:6px}
+  .side a.nav{display:flex;align-items:center;justify-content:space-between;
+    padding:7px 10px;border-radius:6px;color:var(--ink);text-decoration:none;
+    font-size:14px;cursor:pointer;border:1px solid transparent}
+  .side a.nav:hover{background:#fff;border-color:var(--line)}
+  .side a.nav.active{background:#fff;border-color:var(--accent);color:var(--accent);font-weight:700}
+  .side a.nav .count{font-size:11px;color:var(--mute);
+    background:var(--line);border-radius:10px;padding:1px 7px}
+  .side a.nav.active .count{background:var(--accent-soft);color:var(--accent)}
+
+  .side .actions{margin-top:24px;display:flex;flex-direction:column;gap:8px}
+  .side .actions button{padding:10px 12px;border-radius:8px;border:1px solid var(--line-strong);
+    background:#fff;cursor:pointer;font-family:inherit;font-size:13px}
+  .side .actions button.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+  .side .actions button.warn{color:var(--danger);border-color:#e6c4c4}
+  .side .actions button:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+  .side .status{margin-top:14px;font-size:11px;color:var(--mute);
+    padding:8px 10px;background:#fff;border:1px solid var(--line);border-radius:6px}
+
+  .main{padding:32px 40px 100px;max-width:980px}
+  .crumbs{font-size:12px;color:var(--mute);letter-spacing:.1em;margin-bottom:6px}
+  .page-title{font-size:26px;margin:0 0 8px;color:var(--accent)}
+  .page-desc{color:var(--ink-soft);margin:0 0 24px;font-size:14px}
+
+  /* ====== onboarding ====== */
+  .onboard{background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:28px 32px;margin-bottom:24px}
+  .onboard h2{margin:0 0 12px;font-size:18px;color:var(--accent)}
+  .onboard ol{margin:0;padding-left:20px;color:var(--ink-soft);font-size:14px}
+  .onboard ol li{margin-bottom:6px}
+  .onboard .tip{margin-top:14px;padding:12px 14px;background:var(--accent-soft);
+    border-left:3px solid var(--accent);border-radius:0 6px 6px 0;
+    font-size:13px;color:var(--ink-soft)}
+
+  /* ====== card ====== */
+  .section-head{display:flex;align-items:baseline;gap:12px;
+    padding:14px 0 10px;border-bottom:2px solid var(--line);margin:24px 0 14px;flex-wrap:wrap}
+  .section-head h3{margin:0;font-size:17px}
+  .section-head .hint{font-size:12px;color:var(--mute)}
+  .section-head .view-on-site{margin-left:auto;font-size:12px;color:var(--accent);
+    text-decoration:none;padding:4px 10px;border:1px solid var(--accent);border-radius:14px;
+    background:#fff;font-family:inherit;cursor:pointer}
+  .section-head .view-on-site:hover{background:var(--accent-soft)}
+
+  .page-view-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;
+    color:var(--accent);text-decoration:none;padding:6px 12px;border:1px solid var(--accent);
+    border-radius:16px;background:#fff;margin-bottom:12px}
+  .page-view-link:hover{background:var(--accent-soft)}
+  .page-view-link::after{content:"↗"}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 20px;margin-bottom:14px;transition:border-color .15s}
+  .card.changed{border-color:var(--gold);box-shadow:0 0 0 2px rgba(184,138,42,.12)}
+  .card .head{display:flex;align-items:center;justify-content:space-between;
+    gap:10px;margin-bottom:10px}
+  .card .label{font-size:12px;letter-spacing:.05em;color:var(--mute);font-weight:700}
+  .card .label .pill{display:inline-block;margin-left:6px;font-size:10px;
+    background:var(--bg2);padding:2px 7px;border-radius:10px;letter-spacing:0}
+  .card .reset{font-size:11px;background:none;border:none;color:var(--mute);
+    cursor:pointer;text-decoration:underline;padding:0}
+  .card .reset:hover{color:var(--danger)}
+  .card .badge-changed{display:none;font-size:11px;color:var(--gold);font-weight:700}
+  .card.changed .badge-changed{display:inline}
+
+  .field{margin-bottom:10px}
+  .field-label{font-size:11px;color:var(--mute);margin-bottom:4px;letter-spacing:.04em}
+  .orig{padding:10px 12px;background:var(--bg2);border-radius:6px;
+    white-space:pre-wrap;font-size:14px;color:var(--ink-soft)}
+  .orig.long{max-height:140px;overflow:auto}
+  textarea,input[type=text]{width:100%;padding:10px 12px;border-radius:6px;
+    border:1px solid var(--line-strong);background:#fff;font-family:inherit;
+    font-size:14px;line-height:1.6;resize:vertical}
+  textarea:focus,input[type=text]:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:transparent}
+  textarea.short{min-height:42px}
+  textarea.long{min-height:120px}
+  .comment{font-style:italic;background:#fffdf6;border-color:#e8dfb8}
+
+  /* ====== image card ====== */
+  .img-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+  .img-box{position:relative;border:1px dashed var(--line-strong);border-radius:6px;
+    aspect-ratio:4/3;background:var(--bg2);overflow:hidden;display:flex;
+    align-items:center;justify-content:center;color:var(--mute);font-size:12px;
+    cursor:pointer;transition:border-color .15s}
+  .img-box.has-img{border-style:solid;cursor:default}
+  .img-box.dragover{border-color:var(--accent);background:var(--accent-soft)}
+  .img-box img{width:100%;height:100%;object-fit:cover;display:block}
+  .img-box .placeholder{padding:14px;text-align:center;line-height:1.5}
+  .img-box .ph-strong{color:var(--accent);font-weight:700;display:block;margin-bottom:4px}
+  .img-replace-btn{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.7);
+    color:#fff;border:none;padding:5px 10px;border-radius:4px;font-size:11px;
+    cursor:pointer;font-family:inherit}
+  .img-replace-btn:hover{background:#000}
+  .img-info{font-size:12px;color:var(--mute);margin-top:6px;word-break:break-all}
+
+  /* ====== menu editor ====== */
+  .menu-block{background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px 22px;margin-bottom:14px}
+  .menu-item{border:1px solid var(--line);border-radius:8px;padding:12px 14px;
+    margin-bottom:10px;background:var(--bg)}
+  .menu-item.changed{border-color:var(--gold);background:#fffdf6}
+  .menu-item-head{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .menu-item-head input.title{flex:1;font-weight:700;font-size:15px}
+  .menu-item-head input.href{width:200px;font-family:'Courier New',monospace;font-size:13px}
+  .menu-btn{padding:6px 10px;font-size:12px;border-radius:6px;border:1px solid var(--line-strong);
+    background:#fff;cursor:pointer;font-family:inherit}
+  .menu-btn.del{color:var(--danger);border-color:#e6c4c4}
+  .menu-btn:hover{background:var(--bg2)}
+  .submenu-list{margin-left:18px;padding-left:14px;border-left:2px solid var(--line)}
+  .submenu-item{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+  .submenu-item input.title{flex:1;padding:6px 10px;font-size:13px}
+  .submenu-item input.href{width:200px;padding:6px 10px;font-family:'Courier New',monospace;font-size:12px}
+  .add-submenu{margin-top:6px;font-size:12px;background:none;border:1px dashed var(--line-strong);
+    padding:6px 12px;border-radius:6px;cursor:pointer;color:var(--mute);font-family:inherit}
+  .add-submenu:hover{color:var(--accent);border-color:var(--accent)}
+  .add-top{margin-top:14px;width:100%;padding:12px;border:1px dashed var(--line-strong);
+    background:none;border-radius:8px;cursor:pointer;color:var(--mute);font-family:inherit;font-size:14px}
+  .add-top:hover{color:var(--accent);border-color:var(--accent)}
+
+  /* ====== modal ====== */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;
+    align-items:center;justify-content:center;padding:20px}
+  .modal-bg.show{display:flex}
+  .modal{background:#fff;border-radius:12px;max-width:600px;width:100%;
+    max-height:80vh;overflow:auto;padding:28px 32px}
+  .modal h3{margin:0 0 14px;color:var(--accent)}
+  .modal pre{background:var(--bg2);padding:14px;border-radius:6px;font-size:12px;
+    overflow:auto;max-height:300px}
+  .modal-actions{margin-top:18px;display:flex;gap:10px;justify-content:flex-end}
+  .modal-actions button{padding:10px 18px;border-radius:6px;border:1px solid var(--line-strong);
+    background:#fff;cursor:pointer;font-family:inherit;font-size:14px}
+  .modal-actions button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  /* toast */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:var(--ink);color:#fff;padding:12px 22px;border-radius:24px;
+    font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:200}
+  .toast.show{opacity:1}
+
+  @media (max-width:900px){
+    .app{grid-template-columns:1fr}
+    .side{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}
+    .main{padding:24px 20px 80px}
+    .img-wrap{grid-template-columns:1fr}
+    .menu-item-head{flex-wrap:wrap}
+    .menu-item-head input.href{width:100%}
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="side">
+    <h1>가까운교회</h1>
+    <div class="sub">홈페이지 피드백 도구</div>
+    <nav id="nav-list"></nav>
+    <div class="actions">
+      <button class="primary" id="btn-export">내보내기 (JSON 저장)</button>
+      <button id="btn-summary">변경 요약 보기</button>
+      <button id="btn-import">불러오기</button>
+      <button class="warn" id="btn-reset-all">전부 되돌리기</button>
+    </div>
+    <div class="status" id="status">변경 없음</div>
+  </aside>
+
+  <main class="main" id="main"></main>
+</div>
+
+<!-- summary modal -->
+<div class="modal-bg" id="modal-summary">
+  <div class="modal">
+    <h3>변경 요약</h3>
+    <div id="summary-content"></div>
+    <div class="modal-actions">
+      <button onclick="closeModal('modal-summary')">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- import modal -->
+<div class="modal-bg" id="modal-import">
+  <div class="modal">
+    <h3>JSON 불러오기</h3>
+    <p style="font-size:13px;color:var(--mute);margin:0 0 12px">
+      이전에 저장한 JSON 내용을 붙여넣으세요. 진행하던 작업을 이어서 할 수 있습니다.
+    </p>
+    <textarea id="import-text" style="min-height:200px;font-family:'Courier New',monospace;font-size:12px" placeholder='{"version":1,...}'></textarea>
+    <div class="modal-actions">
+      <button onclick="closeModal('modal-import')">취소</button>
+      <button class="primary" onclick="doImport()">불러오기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<input type="file" id="file-input" accept="image/*" style="display:none">
+
+<script>
+// ============================================================
+//  카탈로그 — 가까운교회 홈페이지의 편집 가능한 모든 텍스트/이미지
+//  id는 절대 바꾸지 말 것. Claude Code가 이 id로 코드 위치를 찾음.
+// ============================================================
+const LIVE_SITE = "https://gaggaun.vercel.app";
+const CATALOG = {
+  pages: [
+    /* ============ 상단 메뉴 ============ */
+    {
+      id: "menu", title: "상단 메뉴", desc: "사이트 상단의 네비게이션 메뉴와 하위 메뉴를 편집합니다.",
+      file: "web/src/lib/nav.ts + web/src/components/site-header.tsx",
+      path: "/", noPreview: true,
+      type: "menu",
+      brand: {
+        ko: "가까운교회",
+        en: "The Near Church · Gimpo",
+      },
+      cta: { label: "새가족 등록", href: "/new-member" },
+      nav: [
+        { label: "교회소개", href: "/about", children: [
+          { label: "인사말", href: "/about/greeting" },
+          { label: "비전과 사명", href: "/about/vision" },
+          { label: "교회 연혁", href: "/about/history" },
+          { label: "오시는 길", href: "/about/location" },
+        ]},
+        { label: "예배안내", href: "/worship", children: [
+          { label: "주일예배", href: "/worship/sunday" },
+          { label: "수요예배", href: "/worship/wednesday" },
+          { label: "새벽예배", href: "/worship/dawn" },
+          { label: "금요철야", href: "/worship/friday" },
+        ]},
+        { label: "설교말씀", href: "/media/sermon", children: [
+          { label: "설교 영상", href: "/media/sermon" },
+          { label: "갤러리", href: "/media/gallery" },
+        ]},
+        { label: "교회소식", href: "/notices", children: [
+          { label: "공지사항", href: "/notices" },
+          { label: "자유게시판", href: "/board" },
+          { label: "갤러리", href: "/media/gallery" },
+        ]},
+        { label: "공동체", href: "/community", children: [
+          { label: "구역모임", href: "/community/cell" },
+          { label: "남선교회", href: "/community/men" },
+          { label: "여전도회", href: "/community/women" },
+          { label: "청년부", href: "/ministry/youth" },
+          { label: "주일학교", href: "/ministry/children" },
+        ]},
+      ],
+    },
+
+    /* ============ 홈(메인) ============ */
+    {
+      id: "home", title: "홈(메인) 페이지", desc: "방문자가 처음 보는 메인 화면입니다. 가장 중요한 페이지예요.",
+      file: "web/src/app/page.tsx", path: "/",
+      sections: [
+        { id: "hero", title: "히어로 (최상단 배너)", items: [
+          { id: "home.hero.eyebrow", type: "text", label: "환영 문구 (윗줄)", original: "WELCOME · 김포 한강신도시 운양동" },
+          { id: "home.hero.title.line1", type: "text", label: "큰 제목 1행", original: "가깝게, 따뜻하게" },
+          { id: "home.hero.title.line2", type: "text", label: "큰 제목 2행 (금색)", original: "함께 걸어가는 교회" },
+          { id: "home.hero.verse.text", type: "longtext", label: "성구 본문", original: "“수고하고 무거운 짐 진 자들아 다 내게로 오라\n내가 너희를 쉬게 하리라.”" },
+          { id: "home.hero.verse.cite", type: "text", label: "성구 출처", original: "— 마태복음 11:28" },
+          { id: "home.hero.cta1", type: "text", label: "버튼1 (금색)", original: "예배 시간 안내" },
+          { id: "home.hero.cta2", type: "text", label: "버튼2", original: "처음 오시는 분" },
+          { id: "home.hero.cta3", type: "text", label: "버튼3", original: "이번 주 공지" },
+          { id: "home.hero.bg", type: "image", label: "히어로 배경 사진", original: "현재: 본당 외관 사진" },
+        ]},
+        { id: "hero-strip", title: "히어로 아래 띠 (금주 정보)", managedByAdmin: "/admin/this-week",
+          managedNote: "금주 주일·예배 시간·설교 본문·설교자는 관리자 페이지에서 직접 바꾸실 수 있습니다. 매주 바뀌는 정보라 코드 수정 없이 즉시 반영됩니다.",
+          items: [] },
+        { id: "quick", title: "빠른 이동 카드 4개", items: [
+          { id: "home.quick.1.title", type: "text", label: "카드1 제목", original: "예배안내" },
+          { id: "home.quick.1.desc", type: "text", label: "카드1 설명", original: "주일·수요·새벽예배 시간과 본당 안내를 확인하세요." },
+          { id: "home.quick.2.title", type: "text", label: "카드2 제목", original: "설교말씀" },
+          { id: "home.quick.2.desc", type: "text", label: "카드2 설명", original: "매주 선포된 말씀을 영상과 글로 다시 들으실 수 있습니다." },
+          { id: "home.quick.3.title", type: "text", label: "카드3 제목", original: "교회소식" },
+          { id: "home.quick.3.desc", type: "text", label: "카드3 설명", original: "공지사항, 주간 일정, 행사 소식을 한눈에 확인하세요." },
+          { id: "home.quick.4.title", type: "text", label: "카드4 제목", original: "새가족등록" },
+          { id: "home.quick.4.desc", type: "text", label: "카드4 설명", original: "처음 오신 분, 등록하실 분은 이곳에서 안내받으세요." },
+        ]},
+        { id: "worship-block", title: "예배 안내 표", items: [
+          { id: "home.worship.eyebrow", type: "text", label: "윗 라벨", original: "Worship Service" },
+          { id: "home.worship.title", type: "text", label: "큰 제목", original: "한 주의 예배를 안내해 드립니다" },
+          { id: "home.worship.subtitle", type: "longtext", label: "부제", original: "예배는 한 주의 가장 깊은 자리에 놓이는 시간입니다.\n온 가족이 한 자리에 모여 주님 앞에 나아갑니다." },
+          { id: "home.worship.r1.name", type: "text", label: "주일 1부 — 이름", original: "주일 1부 예배" },
+          { id: "home.worship.r1.sub", type: "text", label: "주일 1부 — 설명", original: "조용히 시작하는 이른 아침 예배" },
+          { id: "home.worship.r1.time", type: "text", label: "주일 1부 — 시간", original: "09 : 00" },
+          { id: "home.worship.r1.dur", type: "text", label: "주일 1부 — 소요시간", original: "약 70분" },
+          { id: "home.worship.r1.pastor", type: "text", label: "주일 1부 — 설교자", original: "김요한 담임목사" },
+          { id: "home.worship.r1.place", type: "text", label: "주일 1부 — 장소", original: "본당 · 2층" },
+          { id: "home.worship.r2.name", type: "text", label: "주일 2부 — 이름", original: "주일 2부 예배" },
+          { id: "home.worship.r2.sub", type: "text", label: "주일 2부 — 설명", original: "온 가족이 함께 드리는 본 예배" },
+          { id: "home.worship.r2.time", type: "text", label: "주일 2부 — 시간", original: "11 : 00" },
+          { id: "home.worship.r2.dur", type: "text", label: "주일 2부 — 소요시간", original: "약 80분" },
+          { id: "home.worship.r2.pastor", type: "text", label: "주일 2부 — 설교자", original: "김요한 담임목사" },
+          { id: "home.worship.r2.place", type: "text", label: "주일 2부 — 장소", original: "본당 · 2층 / 영상 송출 · 3층" },
+          { id: "home.worship.r3.name", type: "text", label: "수요예배 — 이름", original: "수요 강해예배" },
+          { id: "home.worship.r3.sub", type: "text", label: "수요예배 — 설명", original: "말씀과 기도의 자리" },
+          { id: "home.worship.r3.time", type: "text", label: "수요예배 — 시간", original: "19 : 30" },
+          { id: "home.worship.r3.dur", type: "text", label: "수요예배 — 소요시간", original: "약 60분" },
+          { id: "home.worship.r3.pastor", type: "text", label: "수요예배 — 설교자", original: "이은혜 부목사" },
+          { id: "home.worship.r3.place", type: "text", label: "수요예배 — 장소", original: "본당 · 2층" },
+          { id: "home.worship.r4.name", type: "text", label: "금요예배 — 이름", original: "금요 기도회" },
+          { id: "home.worship.r4.sub", type: "text", label: "금요예배 — 설명", original: "한 주를 정돈하는 합심 기도" },
+          { id: "home.worship.r4.time", type: "text", label: "금요예배 — 시간", original: "20 : 00" },
+          { id: "home.worship.r4.dur", type: "text", label: "금요예배 — 소요시간", original: "약 90분" },
+          { id: "home.worship.r4.pastor", type: "text", label: "금요예배 — 설교자", original: "교역자 순번" },
+          { id: "home.worship.r4.place", type: "text", label: "금요예배 — 장소", original: "본당 · 2층" },
+          { id: "home.worship.r5.name", type: "text", label: "새벽기도 — 이름", original: "새벽 기도회" },
+          { id: "home.worship.r5.sub", type: "text", label: "새벽기도 — 설명", original: "하루를 주님과 함께 여는 자리" },
+          { id: "home.worship.r5.time", type: "text", label: "새벽기도 — 시간", original: "05 : 30" },
+          { id: "home.worship.r5.dur", type: "text", label: "새벽기도 — 소요시간", original: "약 60분" },
+          { id: "home.worship.r5.pastor", type: "text", label: "새벽기도 — 설교자", original: "담임 · 부목사" },
+          { id: "home.worship.r5.place", type: "text", label: "새벽기도 — 장소", original: "본당 · 2층" },
+        ]},
+        { id: "pastor", title: "담임목사 인사말 영역", items: [
+          { id: "home.pastor.eyebrow", type: "text", label: "윗 라벨", original: "Pastor's Greeting" },
+          { id: "home.pastor.title", type: "longtext", label: "큰 제목", original: "인사말 — 한 분, 한 분을\n마음 다해 환영합니다." },
+          { id: "home.pastor.lead", type: "longtext", label: "리드 인용문", original: "“우리 교회는 큰 교회가 되기를 구하지 않습니다.\n다만, 우리 동네에서 가장 ‘가까운’ 교회가 되기를 기도합니다.”" },
+          { id: "home.pastor.p1", type: "longtext", label: "본문 1단락", original: "가까운교회는 2015년, 김포 한강신도시 운양동의 작은 상가 한 칸에서 일곱 가정으로 시작되었습니다. 화려한 무대보다 한 사람의 영혼을 더 귀하게 여기며, 매주 예배 안에서 하나님과 가까이, 이웃과 가까이 살아가는 길을 함께 걷고자 합니다." },
+          { id: "home.pastor.p2", type: "longtext", label: "본문 2단락", original: "지친 마음, 무거운 짐을 안고 오시는 분께 따뜻한 차 한 잔과 함께 자리를 내어 드리는 교회 — 그것이 저희가 바라는 작고 분명한 모습입니다. 언제든 편안한 마음으로 한 발 가까이 와 주십시오." },
+          { id: "home.pastor.role", type: "text", label: "직책", original: "담임목사 · Senior Pastor" },
+          { id: "home.pastor.name", type: "text", label: "이름", original: "김 요 한 목사" },
+          { id: "home.pastor.photo", type: "image", label: "담임목사 사진", original: "현재: 자리표시자(없음). 사진을 올리면 표시됩니다." },
+        ]},
+        { id: "sermons", title: "최근 설교말씀", items: [
+          { id: "home.sermons.eyebrow", type: "text", label: "윗 라벨", original: "Recent Sermons" },
+          { id: "home.sermons.title", type: "text", label: "큰 제목", original: "최근 설교말씀" },
+          { id: "home.sermons.empty.msg", type: "text", label: "설교 없을 때 메시지", original: "설교 영상이 곧 업데이트됩니다." },
+          { id: "home.sermons.more", type: "text", label: "더보기 링크 텍스트", original: "전체 설교 보기" },
+        ]},
+        { id: "notices", title: "공지사항/이번 주 일정 패널", items: [
+          { id: "home.notices.title", type: "text", label: "공지 패널 제목", original: "교회 공지사항" },
+          { id: "home.weekly.title", type: "text", label: "일정 패널 제목", original: "이번 주 일정" },
+        ]},
+        { id: "gallery", title: "갤러리 (홈 메인의 8장)", items: [
+          { id: "home.gallery.eyebrow", type: "text", label: "윗 라벨", original: "Photo Gallery" },
+          { id: "home.gallery.title", type: "text", label: "큰 제목", original: "가까운교회의 순간들" },
+          { id: "home.gallery.subtitle", type: "longtext", label: "부제", original: "함께 드린 예배, 함께 나눈 식탁, 함께 걸은 골목.\n우리 교회의 작은 이야기를 담았습니다." },
+          { id: "home.gallery.cap.1.t", type: "text", label: "사진1 제목", original: "본당 외관" },
+          { id: "home.gallery.cap.1.d", type: "text", label: "사진1 설명", original: "운양동 한강신도시" },
+          { id: "home.gallery.cap.2.t", type: "text", label: "사진2 제목", original: "1층 로비" },
+          { id: "home.gallery.cap.2.d", type: "text", label: "사진2 설명", original: "맞이의 공간" },
+          { id: "home.gallery.cap.3.t", type: "text", label: "사진3 제목", original: "예배의 자리" },
+          { id: "home.gallery.cap.3.d", type: "text", label: "사진3 설명", original: "주일 본당" },
+          { id: "home.gallery.cap.4.t", type: "text", label: "사진4 제목", original: "공동체의 자리" },
+          { id: "home.gallery.cap.4.d", type: "text", label: "사진4 설명", original: "친교실 · 모임" },
+          { id: "home.gallery.cap.5.t", type: "text", label: "사진5 제목", original: "본당 내부" },
+          { id: "home.gallery.cap.5.d", type: "text", label: "사진5 설명", original: "함께 드리는 예배" },
+          { id: "home.gallery.cap.6.t", type: "text", label: "사진6 제목", original: "건물 디테일" },
+          { id: "home.gallery.cap.6.d", type: "text", label: "사진6 설명", original: "노출 콘크리트" },
+          { id: "home.gallery.cap.7.t", type: "text", label: "사진7 제목", original: "공간의 빛" },
+          { id: "home.gallery.cap.7.d", type: "text", label: "사진7 설명", original: "창과 십자가" },
+          { id: "home.gallery.cap.8.t", type: "text", label: "사진8 제목", original: "오시는 길" },
+          { id: "home.gallery.cap.8.d", type: "text", label: "사진8 설명", original: "교회 앞 풍경" },
+          { id: "home.gallery.photo.1", type: "image", label: "갤러리 사진 1", original: "현재 사이트의 1번 사진" },
+          { id: "home.gallery.photo.2", type: "image", label: "갤러리 사진 2", original: "현재 사이트의 2번 사진" },
+          { id: "home.gallery.photo.3", type: "image", label: "갤러리 사진 3", original: "현재 사이트의 3번 사진" },
+          { id: "home.gallery.photo.4", type: "image", label: "갤러리 사진 4", original: "현재 사이트의 4번 사진" },
+          { id: "home.gallery.photo.5", type: "image", label: "갤러리 사진 5", original: "현재 사이트의 5번 사진" },
+          { id: "home.gallery.photo.6", type: "image", label: "갤러리 사진 6", original: "현재 사이트의 6번 사진" },
+          { id: "home.gallery.photo.7", type: "image", label: "갤러리 사진 7", original: "현재 사이트의 7번 사진" },
+          { id: "home.gallery.photo.8", type: "image", label: "갤러리 사진 8", original: "현재 사이트의 8번 사진" },
+        ]},
+        { id: "location", title: "오시는 길 (홈 하단)", items: [
+          { id: "home.loc.eyebrow", type: "text", label: "윗 라벨", original: "Visit Us" },
+          { id: "home.loc.title", type: "text", label: "큰 제목", original: "오시는 길" },
+          { id: "home.loc.name", type: "text", label: "교회명", original: "가까운교회" },
+          { id: "home.loc.sub", type: "text", label: "위치 요약", original: "경기 김포시 한강신도시 운양동" },
+          { id: "home.loc.address", type: "text", label: "주소", original: "경기 김포시 김포한강11로 234" },
+          { id: "home.loc.address.sub", type: "text", label: "주소 부가설명", original: "김포한강신도시 운양동" },
+          { id: "home.loc.phone", type: "text", label: "전화번호", original: "031 — 000 — 0000" },
+          { id: "home.loc.phone.sub", type: "text", label: "전화 운영시간", original: "평일 오전 9:00 – 오후 6:00" },
+          { id: "home.loc.email", type: "text", label: "이메일", original: "office@nearchurch.kr" },
+          { id: "home.loc.transit", type: "text", label: "대중교통", original: "김포골드라인 운양역" },
+          { id: "home.loc.transit.sub", type: "text", label: "대중교통 부가", original: "도보 약 10분 거리" },
+          { id: "home.loc.parking", type: "text", label: "주차", original: "교회 지하 주차장" },
+          { id: "home.loc.parking.sub", type: "text", label: "주차 부가", original: "주일 예배 시 인근 공영주차장 무료" },
+        ]},
+      ],
+    },
+
+    /* ============ 교회소개 ============ */
+    {
+      id: "about", title: "교회소개 (목록 페이지)", desc: "/about 페이지 — 교회소개 메뉴의 4개 항목 목록입니다.",
+      file: "web/src/app/about/page.tsx", path: "/about",
+      sections: [
+        { id: "header", title: "페이지 헤더", items: [
+          { id: "about.header.eyebrow", type: "text", label: "윗 라벨", original: "ABOUT US" },
+          { id: "about.header.title", type: "text", label: "큰 제목", original: "교회소개" },
+          { id: "about.header.subtitle", type: "text", label: "부제", original: "가까운교회를 소개합니다" },
+        ]},
+        { id: "items", title: "하위 항목 카드 (4개)", items: [
+          { id: "about.item.1.label", type: "text", label: "카드1 한글", original: "인사말" },
+          { id: "about.item.1.en", type: "text", label: "카드1 영문", original: "Greeting" },
+          { id: "about.item.1.desc", type: "text", label: "카드1 설명", original: "담임목사가 드리는 짧은 편지" },
+          { id: "about.item.2.label", type: "text", label: "카드2 한글", original: "비전과 사명" },
+          { id: "about.item.2.en", type: "text", label: "카드2 영문", original: "Vision" },
+          { id: "about.item.2.desc", type: "text", label: "카드2 설명", original: "세 가지 가치 — 예배, 양육, 섬김" },
+          { id: "about.item.3.label", type: "text", label: "카드3 한글", original: "교회 연혁" },
+          { id: "about.item.3.en", type: "text", label: "카드3 영문", original: "History" },
+          { id: "about.item.3.desc", type: "text", label: "카드3 설명", original: "걸어온 발자취" },
+          { id: "about.item.4.label", type: "text", label: "카드4 한글", original: "오시는 길" },
+          { id: "about.item.4.en", type: "text", label: "카드4 영문", original: "Location" },
+          { id: "about.item.4.desc", type: "text", label: "카드4 설명", original: "운양역에서 도보 10분" },
+        ]},
+      ],
+    },
+
+    /* ============ 인사말 ============ */
+    {
+      id: "greeting", title: "인사말", desc: "/about/greeting — 담임목사 편지 페이지.",
+      file: "web/src/app/about/greeting/page.tsx", path: "/about/greeting",
+      sections: [
+        { id: "header", title: "페이지 헤더", items: [
+          { id: "greeting.header.eyebrow", type: "text", label: "윗 라벨", original: "PASTOR'S GREETING" },
+          { id: "greeting.header.title", type: "text", label: "큰 제목", original: "인사말" },
+          { id: "greeting.header.subtitle", type: "text", label: "부제", original: "담임목사가 드리는 짧은 편지" },
+        ]},
+        { id: "body", title: "본문", items: [
+          { id: "greeting.body.eyebrow", type: "text", label: "본문 윗 라벨", original: "A Letter" },
+          { id: "greeting.body.title", type: "text", label: "본문 제목", original: "가까운 교회, 가까운 마음" },
+          { id: "greeting.body.p1", type: "longtext", label: "본문 1단락", original: "주님의 평강이 함께 하시기를 기도합니다." },
+          { id: "greeting.body.p2", type: "longtext", label: "본문 2단락", original: "가까운교회는 김포 한강신도시 운양동에 위치한, 이웃과 가깝고 하나님과 가까운 공동체입니다. 매주 새로운 한 주를 시작하기 전에 우리는 예배 안에서 하나님의 음성을 듣고, 말씀을 통해 삶의 방향을 다시 잡습니다." },
+          { id: "greeting.body.p3", type: "longtext", label: "본문 3단락", original: "교회의 크기보다 중요한 것은 한 영혼을 향한 사랑입니다. 우리 교회는 작지만 따뜻하고, 서로의 이름을 부르며 기도하는 공동체가 되기를 원합니다." },
+          { id: "greeting.body.p4", type: "longtext", label: "본문 4단락", original: "누구든지 처음 오시는 분들도 편안하게 예배에 참여하실 수 있도록 안내드립니다. 언제든 오셔서 하나님의 사랑을 함께 경험하시기를 환영합니다." },
+          { id: "greeting.body.sign", type: "text", label: "서명", original: "— 담임목사 김요한 드림" },
+        ]},
+      ],
+    },
+
+    /* ============ 비전 ============ */
+    {
+      id: "vision", title: "비전과 사명", desc: "/about/vision — 세 가지 가치 카드.",
+      file: "web/src/app/about/vision/page.tsx", path: "/about/vision",
+      sections: [
+        { id: "header", title: "페이지 헤더", items: [
+          { id: "vision.header.eyebrow", type: "text", label: "윗 라벨", original: "OUR VISION" },
+          { id: "vision.header.title", type: "text", label: "큰 제목", original: "비전과 사명" },
+          { id: "vision.header.subtitle", type: "text", label: "부제", original: "가까운교회가 추구하는 세 가지 가치" },
+        ]},
+        { id: "values", title: "세 가지 가치 카드", items: [
+          { id: "vision.v1.t", type: "text", label: "가치1 — 한글", original: "예배하는 교회" },
+          { id: "vision.v1.en", type: "text", label: "가치1 — 영문", original: "Worship" },
+          { id: "vision.v1.d", type: "longtext", label: "가치1 — 설명", original: "신령과 진정으로 드리는 예배 안에서 하나님을 깊이 만나는 교회를 추구합니다." },
+          { id: "vision.v2.t", type: "text", label: "가치2 — 한글", original: "양육하는 교회" },
+          { id: "vision.v2.en", type: "text", label: "가치2 — 영문", original: "Disciple" },
+          { id: "vision.v2.d", type: "longtext", label: "가치2 — 설명", original: "말씀과 기도로 그리스도의 제자를 차근차근 세우고 양육합니다." },
+          { id: "vision.v3.t", type: "text", label: "가치3 — 한글", original: "섬기는 교회" },
+          { id: "vision.v3.en", type: "text", label: "가치3 — 영문", original: "Serve" },
+          { id: "vision.v3.d", type: "longtext", label: "가치3 — 설명", original: "지역사회와 이웃을 섬기며 예수님의 사랑을 일상에서 전합니다." },
+        ]},
+      ],
+    },
+
+    /* ============ 연혁 ============ */
+    {
+      id: "history", title: "교회 연혁", desc: "/about/history — 걸어온 발자취 타임라인.",
+      file: "web/src/app/about/history/page.tsx", path: "/about/history",
+      sections: [
+        { id: "header", title: "페이지 헤더", items: [
+          { id: "history.header.eyebrow", type: "text", label: "윗 라벨", original: "HISTORY" },
+          { id: "history.header.title", type: "text", label: "큰 제목", original: "교회 연혁" },
+          { id: "history.header.subtitle", type: "text", label: "부제", original: "걸어온 발자취" },
+        ]},
+        { id: "timeline", title: "타임라인", items: [
+          { id: "history.y1.year", type: "text", label: "1번 — 연도", original: "2015" },
+          { id: "history.y1.e1", type: "text", label: "1번 — 사건1", original: "가까운교회 설립" },
+          { id: "history.y1.e2", type: "text", label: "1번 — 사건2", original: "김포 운양동 임시 예배 시작" },
+          { id: "history.y2.year", type: "text", label: "2번 — 연도", original: "2017" },
+          { id: "history.y2.e1", type: "text", label: "2번 — 사건1", original: "한강신도시 본당 입당" },
+          { id: "history.y2.e2", type: "text", label: "2번 — 사건2", original: "주일학교 신설" },
+          { id: "history.y3.year", type: "text", label: "3번 — 연도", original: "2019" },
+          { id: "history.y3.e1", type: "text", label: "3번 — 사건1", original: "청년부 출범" },
+          { id: "history.y3.e2", type: "text", label: "3번 — 사건2", original: "지역사회 섬김 사역 시작" },
+          { id: "history.y4.year", type: "text", label: "4번 — 연도", original: "2022" },
+          { id: "history.y4.e1", type: "text", label: "4번 — 사건1", original: "선교부 발족" },
+          { id: "history.y4.e2", type: "text", label: "4번 — 사건2", original: "온라인 예배 시스템 구축" },
+        ]},
+      ],
+    },
+
+    /* ============ 오시는 길 (정적 페이지) ============ */
+    {
+      id: "location", title: "오시는 길 (상세 페이지)", desc: "/about/location — 주소와 연락처 상세.",
+      file: "web/src/app/about/location/page.tsx", path: "/about/location",
+      sections: [
+        { id: "header", title: "페이지 헤더", items: [
+          { id: "location.header.eyebrow", type: "text", label: "윗 라벨", original: "VISIT US" },
+          { id: "location.header.title", type: "text", label: "큰 제목", original: "오시는 길" },
+          { id: "location.header.subtitle", type: "text", label: "부제", original: "경기 김포시 한강신도시 운양동" },
+        ]},
+        { id: "info", title: "주소·연락처", items: [
+          { id: "location.name", type: "text", label: "교회명", original: "가까운교회" },
+          { id: "location.sub", type: "text", label: "위치 요약", original: "경기 김포시 한강신도시 운양동" },
+          { id: "location.address", type: "text", label: "주소", original: "경기 김포시 김포한강11로 234" },
+          { id: "location.address.sub", type: "text", label: "주소 부가", original: "김포한강신도시 운양동" },
+          { id: "location.phone", type: "text", label: "전화", original: "031 — 000 — 0000" },
+          { id: "location.phone.sub", type: "text", label: "전화 운영시간", original: "평일 오전 9:00 – 오후 6:00" },
+          { id: "location.email", type: "text", label: "이메일", original: "office@nearchurch.kr" },
+          { id: "location.transit", type: "text", label: "대중교통", original: "김포골드라인 운양역" },
+          { id: "location.transit.sub", type: "text", label: "대중교통 부가", original: "도보 약 10분 거리" },
+          { id: "location.parking", type: "text", label: "주차", original: "교회 지하 주차장" },
+          { id: "location.parking.sub", type: "text", label: "주차 부가", original: "주일 예배 시 인근 공영주차장 무료" },
+        ]},
+      ],
+    },
+
+    /* ============ 갤러리 페이지 (정적 텍스트만) ============ */
+    {
+      id: "gallery", title: "갤러리 페이지 (목록)", desc: "/media/gallery — 사진 목록 페이지의 정적 텍스트만 편집합니다. 사진 자체는 어드민 페이지에서 업로드해주세요.",
+      file: "web/src/app/media/gallery/page.tsx", path: "/media/gallery",
+      sections: [
+        { id: "header", title: "페이지 헤더", items: [
+          { id: "gallery.header.eyebrow", type: "text", label: "윗 라벨", original: "PHOTO GALLERY" },
+          { id: "gallery.header.title", type: "text", label: "큰 제목", original: "갤러리" },
+          { id: "gallery.header.subtitle", type: "text", label: "부제", original: "가까운교회의 순간들" },
+        ]},
+        { id: "filter", title: "카테고리 필터", items: [
+          { id: "gallery.cat.1", type: "text", label: "카테고리1", original: "전체" },
+          { id: "gallery.cat.2", type: "text", label: "카테고리2", original: "예배" },
+          { id: "gallery.cat.3", type: "text", label: "카테고리3", original: "행사" },
+          { id: "gallery.cat.4", type: "text", label: "카테고리4", original: "교제" },
+          { id: "gallery.cat.5", type: "text", label: "카테고리5", original: "봉사" },
+          { id: "gallery.cat.6", type: "text", label: "카테고리6", original: "기타" },
+        ]},
+      ],
+    },
+  ],
+};
+
+// ============================================================
+//  상태 관리 (localStorage 자동 저장)
+// ============================================================
+const STORAGE_KEY = "church-edit-state-v1";
+
+let state = loadState();
+let currentPageId = state.currentPageId || "home";
+
+function loadState(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState();
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.version === 1) return parsed;
+  } catch(e){}
+  return defaultState();
+}
+function defaultState(){
+  return {
+    version: 1,
+    createdAt: new Date().toISOString(),
+    currentPageId: "home",
+    edits: {},     // id -> { value, comment, imgData, imgName, imgType }
+    menuEdits: null, // null = 변경 안 함. 객체면 {brand, cta, nav} 전체 덮어쓰기
+  };
+}
+function saveState(){
+  state.currentPageId = currentPageId;
+  state.updatedAt = new Date().toISOString();
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e){
+    toast("저장 공간이 부족합니다. 큰 이미지는 줄여주세요.");
+  }
+  renderStatus();
+  refreshNavCounts();
+}
+
+// ============================================================
+//  렌더링
+// ============================================================
+function pageById(id){ return CATALOG.pages.find(p => p.id === id); }
+
+function countChanges(pageId){
+  let n = 0;
+  if (pageId === "menu") return state.menuEdits ? 1 : 0;
+  const page = pageById(pageId);
+  if (!page || !page.sections) return 0;
+  page.sections.forEach(s => s.items.forEach(it => {
+    const e = state.edits[it.id];
+    if (!e) return;
+    if (it.type === "image") { if (e.imgData) n++; }
+    else { if (e.value && e.value !== it.original) n++; }
+    if (e.comment) n++;
+  }));
+  return n;
+}
+
+function renderNav(){
+  const el = document.getElementById("nav-list");
+  el.innerHTML = "";
+  const groups = [
+    { label: "메뉴", ids: ["menu"] },
+    { label: "메인", ids: ["home"] },
+    { label: "교회소개", ids: ["about","greeting","vision","history","location"] },
+    { label: "기타", ids: ["gallery"] },
+  ];
+  groups.forEach(g => {
+    const div = document.createElement("div");
+    div.className = "group";
+    div.innerHTML = `<div class="group-label">${g.label}</div>`;
+    g.ids.forEach(pid => {
+      const p = pageById(pid);
+      if (!p) return;
+      const a = document.createElement("a");
+      a.className = "nav" + (pid === currentPageId ? " active" : "");
+      a.dataset.pid = pid;
+      const c = countChanges(pid);
+      a.innerHTML = `<span>${p.title}</span><span class="count" style="${c?'':'display:none'}">${c}</span>`;
+      a.onclick = () => { currentPageId = pid; saveState(); renderAll(); window.scrollTo(0,0); };
+      div.appendChild(a);
+    });
+    el.appendChild(div);
+  });
+}
+
+function refreshNavCounts(){
+  document.querySelectorAll(".side a.nav").forEach(a => {
+    const c = countChanges(a.dataset.pid);
+    const cnt = a.querySelector(".count");
+    cnt.textContent = c;
+    cnt.style.display = c ? "" : "none";
+  });
+}
+
+function renderStatus(){
+  const total = CATALOG.pages.reduce((acc,p) => acc + countChanges(p.id), 0);
+  const el = document.getElementById("status");
+  if (total === 0){
+    el.textContent = "변경 없음";
+    el.style.color = "var(--mute)";
+  } else {
+    el.innerHTML = `<strong style="color:var(--gold)">${total}건</strong> 변경됨 · 자동 저장됨`;
+  }
+}
+
+function renderAll(){
+  renderNav();
+  renderStatus();
+  renderMain();
+}
+
+function renderMain(){
+  const main = document.getElementById("main");
+  const page = pageById(currentPageId);
+  if (!page){ main.innerHTML = ""; return; }
+
+  const previewUrl = page.path && !page.noPreview ? `${LIVE_SITE}${page.path}` : null;
+  let html = `
+    <div class="crumbs">${page.id === "home" ? "홈" : page.title}</div>
+    <h2 class="page-title">${page.title}</h2>
+    <p class="page-desc">${page.desc}</p>
+    ${previewUrl ? `<a class="page-view-link" href="${previewUrl}" target="_blank" rel="noopener">이 페이지를 실제 사이트에서 보기</a>` : ""}
+  `;
+
+  if (currentPageId === "home"){
+    html += `
+      <div class="onboard">
+        <h2>처음이신가요?</h2>
+        <ol>
+          <li>왼쪽 메뉴에서 편집할 페이지를 고릅니다.</li>
+          <li>바꾸고 싶은 항목의 <b>"바꾸려는 내용"</b> 칸에 새 글자를 적습니다. 그대로 둘 항목은 비워두세요.</li>
+          <li>설명이 필요하면 <b>"코멘트"</b>에 자유롭게 적어주세요. (예: "여기 좀 더 따뜻한 느낌으로", "이 단어 빼주세요")</li>
+          <li>사진을 바꾸려면 이미지 영역에 새 사진 파일을 끌어다 놓거나 클릭해서 고르세요.</li>
+          <li>다 하셨으면 왼쪽 아래 <b>"내보내기"</b>를 눌러 파일을 저장하고 담당자에게 보내주시면 됩니다.</li>
+        </ol>
+        <div class="tip">💡 작업한 내용은 브라우저에 자동 저장됩니다. 닫았다 다시 열어도 이어서 작업할 수 있어요.</div>
+      </div>
+    `;
+  }
+
+  main.innerHTML = html;
+
+  if (page.type === "menu"){
+    renderMenuEditor(main);
+  } else {
+    page.sections.forEach(s => renderSection(main, s));
+  }
+}
+
+// 섹션 id를 사이트의 data-edit-section 값으로 매핑.
+// 명시적 매핑이 있는 케이스는 여기서 처리하고, 없으면 첫 아이템 id의 앞 2개 토큰을 사용.
+const SECTION_ANCHOR_OVERRIDES = {
+  "home.notices": "home.notices",       // 공지/이번 주 패널을 묶어둠
+  "vision.values": "vision.values",
+  "history.timeline": "history.timeline",
+  "about.items": "about.items",
+  "greeting.body": "greeting.body",
+  "location.info": "location.info",
+  "gallery.filter": "gallery.filter",
+};
+function sectionAnchor(page, section){
+  const key = `${page.id}.${section.id}`;
+  if (SECTION_ANCHOR_OVERRIDES[key]) return SECTION_ANCHOR_OVERRIDES[key];
+  // 헤더 섹션은 {page}.header
+  if (section.id === "header") return `${page.id}.header`;
+  // 그 외는 첫 아이템 id에서 앞 2개 토큰
+  const first = section.items[0];
+  if (!first) return null;
+  return first.id.split(".").slice(0, 2).join(".");
+}
+
+function renderSection(main, section){
+  const page = pageById(currentPageId);
+  const head = document.createElement("div");
+  head.className = "section-head";
+  let inner = `<h3>${section.title}</h3>`;
+  if (section.managedByAdmin){
+    inner += `<span class="hint">관리자 페이지에서 관리</span>`;
+  } else {
+    inner += `<span class="hint">${section.items.length}개 항목</span>`;
+    const anchor = sectionAnchor(page, section);
+    if (page.path && !page.noPreview && anchor){
+      const url = `${LIVE_SITE}${page.path}?edit=${encodeURIComponent(anchor)}`;
+      inner += `<a class="view-on-site" href="${url}" target="_blank" rel="noopener" title="이 영역을 사이트에서 강조해서 보여줍니다">↗ 사이트에서 위치 보기</a>`;
+    }
+  }
+  head.innerHTML = inner;
+  main.appendChild(head);
+
+  if (section.managedByAdmin){
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.background = "var(--bg2)";
+    card.style.borderStyle = "dashed";
+    card.innerHTML = `
+      <div class="label" style="margin-bottom:8px">관리자 페이지에서 관리합니다</div>
+      <p style="margin:0 0 12px;font-size:14px;color:var(--ink-soft)">${section.managedNote || ""}</p>
+      <a href="${LIVE_SITE}${section.managedByAdmin}" target="_blank" rel="noopener"
+         class="page-view-link" style="margin:0">관리자 페이지 열기</a>
+    `;
+    main.appendChild(card);
+    return;
+  }
+
+  section.items.forEach(it => main.appendChild(renderItem(it)));
+}
+
+function isChanged(it){
+  const e = state.edits[it.id];
+  if (!e) return false;
+  if (it.type === "image") return !!e.imgData;
+  return (e.value && e.value !== it.original) || !!e.comment;
+}
+
+function renderItem(it){
+  const card = document.createElement("div");
+  card.className = "card" + (isChanged(it) ? " changed" : "");
+  card.dataset.id = it.id;
+
+  const head = document.createElement("div");
+  head.className = "head";
+  head.innerHTML = `
+    <div class="label">${it.label}
+      <span class="pill">${it.type === "image" ? "이미지" : (it.type === "longtext" ? "긴글" : "짧은글")}</span>
+      <span class="badge-changed">● 변경됨</span>
+    </div>
+    <button class="reset" type="button">되돌리기</button>
+  `;
+  head.querySelector(".reset").onclick = () => {
+    delete state.edits[it.id];
+    saveState();
+    renderMain();
+  };
+  card.appendChild(head);
+
+  if (it.type === "image"){
+    card.appendChild(renderImageBody(it));
+  } else {
+    card.appendChild(renderTextBody(it));
+  }
+
+  return card;
+}
+
+function renderTextBody(it){
+  const wrap = document.createElement("div");
+  const e = state.edits[it.id] || {};
+  const isLong = it.type === "longtext";
+
+  wrap.innerHTML = `
+    <div class="field">
+      <div class="field-label">현재 사이트 내용</div>
+      <div class="orig ${isLong ? 'long' : ''}"></div>
+    </div>
+    <div class="field">
+      <div class="field-label">바꾸려는 내용 (그대로 둘 거면 비워두세요)</div>
+      <textarea class="new-val ${isLong ? 'long' : 'short'}" placeholder="여기에 새 글자를 적어주세요"></textarea>
+    </div>
+    <div class="field">
+      <div class="field-label">코멘트 (선택)</div>
+      <textarea class="comment short" placeholder="더 설명할 게 있으면 적어주세요. 예: 좀 더 따뜻한 느낌으로 / 이 단어는 빼주세요"></textarea>
+    </div>
+  `;
+  wrap.querySelector(".orig").textContent = it.original;
+  const newVal = wrap.querySelector(".new-val");
+  const cmt = wrap.querySelector(".comment");
+  newVal.value = e.value || "";
+  cmt.value = e.comment || "";
+
+  function update(){
+    const cur = state.edits[it.id] || {};
+    cur.value = newVal.value;
+    cur.comment = cmt.value;
+    if (!cur.value && !cur.comment) delete state.edits[it.id];
+    else state.edits[it.id] = cur;
+    // 카드 강조만 즉시 토글, 전체 리렌더는 하지 않음(입력 흐름 유지)
+    const card = wrap.closest(".card");
+    if (isChanged(it)) card.classList.add("changed");
+    else card.classList.remove("changed");
+    refreshNavCounts();
+    renderStatus();
+    debouncedSave();
+  }
+  newVal.addEventListener("input", update);
+  cmt.addEventListener("input", update);
+  return wrap;
+}
+
+function renderImageBody(it){
+  const wrap = document.createElement("div");
+  const e = state.edits[it.id] || {};
+  wrap.innerHTML = `
+    <div class="img-wrap">
+      <div>
+        <div class="field-label">현재</div>
+        <div class="img-box" style="cursor:default"><div class="placeholder">${it.original}</div></div>
+      </div>
+      <div>
+        <div class="field-label">새 이미지 (드래그앤드롭 또는 클릭)</div>
+        <div class="img-box new-img-box">
+          <div class="placeholder">
+            <span class="ph-strong">사진 끌어 놓기</span>
+            또는 클릭하여 선택
+          </div>
+        </div>
+        <div class="img-info"></div>
+      </div>
+    </div>
+    <div class="field" style="margin-top:12px">
+      <div class="field-label">코멘트 (어떤 사진이면 좋겠는지)</div>
+      <textarea class="comment short" placeholder="예: 주일 1부 예배 때 찍은 사진으로 / 외관 사진은 가로 비율로"></textarea>
+    </div>
+  `;
+  const box = wrap.querySelector(".new-img-box");
+  const info = wrap.querySelector(".img-info");
+  const cmt = wrap.querySelector(".comment");
+  cmt.value = e.comment || "";
+
+  function paintImg(data, name, size){
+    box.classList.add("has-img");
+    box.innerHTML = "";
+    const img = document.createElement("img");
+    img.src = data;
+    box.appendChild(img);
+    const btn = document.createElement("button");
+    btn.className = "img-replace-btn";
+    btn.textContent = "다른 사진으로";
+    btn.onclick = (ev) => { ev.stopPropagation(); pickFile(); };
+    box.appendChild(btn);
+    info.textContent = `${name} · ${Math.round(size/1024)}KB`;
+  }
+  if (e.imgData) paintImg(e.imgData, e.imgName, e.imgSize || 0);
+
+  function handleFile(file){
+    if (!file) return;
+    if (!file.type.startsWith("image/")){ toast("이미지 파일만 올릴 수 있어요."); return; }
+    if (file.size > 4 * 1024 * 1024){
+      if (!confirm("이미지가 큽니다 (" + Math.round(file.size/1024) + "KB). 그래도 진행할까요? 너무 크면 저장이 안될 수 있어요.")) return;
+    }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const data = ev.target.result;
+      const cur = state.edits[it.id] || {};
+      cur.imgData = data; cur.imgName = file.name; cur.imgType = file.type; cur.imgSize = file.size;
+      state.edits[it.id] = cur;
+      paintImg(data, file.name, file.size);
+      const card = wrap.closest(".card");
+      card.classList.add("changed");
+      refreshNavCounts(); renderStatus(); saveState();
+    };
+    reader.readAsDataURL(file);
+  }
+  function pickFile(){
+    const inp = document.getElementById("file-input");
+    inp.value = "";
+    inp.onchange = () => handleFile(inp.files[0]);
+    inp.click();
+  }
+
+  box.addEventListener("click", pickFile);
+  box.addEventListener("dragover", e => { e.preventDefault(); box.classList.add("dragover"); });
+  box.addEventListener("dragleave", () => box.classList.remove("dragover"));
+  box.addEventListener("drop", e => {
+    e.preventDefault(); box.classList.remove("dragover");
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+
+  cmt.addEventListener("input", () => {
+    const cur = state.edits[it.id] || {};
+    cur.comment = cmt.value;
+    if (!cur.value && !cur.comment && !cur.imgData) delete state.edits[it.id];
+    else state.edits[it.id] = cur;
+    const card = wrap.closest(".card");
+    if (isChanged(it)) card.classList.add("changed"); else card.classList.remove("changed");
+    refreshNavCounts(); renderStatus(); debouncedSave();
+  });
+
+  return wrap;
+}
+
+// ============================================================
+//  메뉴 편집기
+// ============================================================
+function getCurrentMenu(){
+  if (state.menuEdits) return JSON.parse(JSON.stringify(state.menuEdits));
+  const page = pageById("menu");
+  return { brand: {...page.brand}, cta: {...page.cta}, nav: JSON.parse(JSON.stringify(page.nav)) };
+}
+function setMenu(m){
+  const page = pageById("menu");
+  const def = JSON.stringify({brand: page.brand, cta: page.cta, nav: page.nav});
+  state.menuEdits = (JSON.stringify(m) === def) ? null : m;
+  saveState();
+}
+
+function renderMenuEditor(main){
+  const m = getCurrentMenu();
+
+  // 브랜드
+  const brand = document.createElement("div");
+  brand.className = "menu-block";
+  brand.innerHTML = `
+    <h3 style="margin:0 0 10px">로고 영역 (좌측 상단)</h3>
+    <div class="field"><div class="field-label">한글 이름</div><input type="text" id="brand-ko" value=""></div>
+    <div class="field"><div class="field-label">영문 부제</div><input type="text" id="brand-en" value=""></div>
+  `;
+  main.appendChild(brand);
+  brand.querySelector("#brand-ko").value = m.brand.ko;
+  brand.querySelector("#brand-en").value = m.brand.en;
+
+  // CTA
+  const cta = document.createElement("div");
+  cta.className = "menu-block";
+  cta.innerHTML = `
+    <h3 style="margin:0 0 10px">우측 강조 버튼</h3>
+    <div class="field"><div class="field-label">버튼 글자</div><input type="text" id="cta-label" value=""></div>
+    <div class="field"><div class="field-label">연결 주소</div><input type="text" id="cta-href" value="" style="font-family:'Courier New',monospace"></div>
+  `;
+  main.appendChild(cta);
+  cta.querySelector("#cta-label").value = m.cta.label;
+  cta.querySelector("#cta-href").value = m.cta.href;
+
+  // 메인 메뉴
+  const navHead = document.createElement("div");
+  navHead.className = "section-head";
+  navHead.innerHTML = `<h3>메인 메뉴 ${m.nav.length}개</h3><span class="hint">↑↓ 순서 / 클릭하여 수정 / 삭제 / 추가</span>`;
+  main.appendChild(navHead);
+
+  const navBox = document.createElement("div");
+  navBox.id = "nav-edit-list";
+  main.appendChild(navBox);
+
+  function renderNavList(){
+    navBox.innerHTML = "";
+    m.nav.forEach((item, idx) => {
+      const orig = pageById("menu").nav[idx];
+      const changed = !orig || orig.label !== item.label || orig.href !== item.href
+                     || JSON.stringify(orig.children) !== JSON.stringify(item.children);
+      const el = document.createElement("div");
+      el.className = "menu-item" + (changed ? " changed" : "");
+      const head = document.createElement("div");
+      head.className = "menu-item-head";
+      head.innerHTML = `
+        <input type="text" class="title" placeholder="메뉴명">
+        <input type="text" class="href" placeholder="/path">
+        <button class="menu-btn up">↑</button>
+        <button class="menu-btn down">↓</button>
+        <button class="menu-btn del">삭제</button>
+      `;
+      const ti = head.querySelector("input.title"); ti.value = item.label;
+      const hi = head.querySelector("input.href"); hi.value = item.href;
+      ti.oninput = () => { item.label = ti.value; setMenu(m); el.classList.add("changed"); };
+      hi.oninput = () => { item.href = hi.value; setMenu(m); el.classList.add("changed"); };
+      head.querySelector(".up").onclick = () => { if (idx>0){ [m.nav[idx-1], m.nav[idx]] = [m.nav[idx], m.nav[idx-1]]; setMenu(m); renderNavList(); } };
+      head.querySelector(".down").onclick = () => { if (idx<m.nav.length-1){ [m.nav[idx+1], m.nav[idx]] = [m.nav[idx], m.nav[idx+1]]; setMenu(m); renderNavList(); } };
+      head.querySelector(".del").onclick = () => { if (confirm(`"${item.label}" 메뉴를 삭제할까요?`)){ m.nav.splice(idx,1); setMenu(m); renderNavList(); } };
+      el.appendChild(head);
+
+      // 서브
+      const subWrap = document.createElement("div");
+      subWrap.className = "submenu-list";
+      (item.children || []).forEach((sub, si) => {
+        const row = document.createElement("div");
+        row.className = "submenu-item";
+        row.innerHTML = `
+          <input type="text" class="title" placeholder="하위 메뉴명">
+          <input type="text" class="href" placeholder="/path">
+          <button class="menu-btn up">↑</button>
+          <button class="menu-btn down">↓</button>
+          <button class="menu-btn del">×</button>
+        `;
+        const sti = row.querySelector(".title"); sti.value = sub.label;
+        const shi = row.querySelector(".href"); shi.value = sub.href;
+        sti.oninput = () => { sub.label = sti.value; setMenu(m); el.classList.add("changed"); };
+        shi.oninput = () => { sub.href = shi.value; setMenu(m); el.classList.add("changed"); };
+        row.querySelector(".up").onclick = () => { if (si>0){ [item.children[si-1], item.children[si]] = [item.children[si], item.children[si-1]]; setMenu(m); renderNavList(); } };
+        row.querySelector(".down").onclick = () => { if (si<item.children.length-1){ [item.children[si+1], item.children[si]] = [item.children[si], item.children[si+1]]; setMenu(m); renderNavList(); } };
+        row.querySelector(".del").onclick = () => { item.children.splice(si,1); setMenu(m); renderNavList(); };
+        subWrap.appendChild(row);
+      });
+      const addSub = document.createElement("button");
+      addSub.className = "add-submenu";
+      addSub.textContent = "+ 하위 메뉴 추가";
+      addSub.onclick = () => {
+        if (!item.children) item.children = [];
+        item.children.push({ label: "새 하위 메뉴", href: "/" });
+        setMenu(m); renderNavList();
+      };
+      subWrap.appendChild(addSub);
+      el.appendChild(subWrap);
+
+      navBox.appendChild(el);
+    });
+    const addBtn = document.createElement("button");
+    addBtn.className = "add-top";
+    addBtn.textContent = "+ 새 메뉴 추가";
+    addBtn.onclick = () => { m.nav.push({ label: "새 메뉴", href: "/", children: [] }); setMenu(m); renderNavList(); };
+    navBox.appendChild(addBtn);
+  }
+  renderNavList();
+
+  brand.querySelector("#brand-ko").oninput = (e) => { m.brand.ko = e.target.value; setMenu(m); };
+  brand.querySelector("#brand-en").oninput = (e) => { m.brand.en = e.target.value; setMenu(m); };
+  cta.querySelector("#cta-label").oninput = (e) => { m.cta.label = e.target.value; setMenu(m); };
+  cta.querySelector("#cta-href").oninput = (e) => { m.cta.href = e.target.value; setMenu(m); };
+}
+
+// ============================================================
+//  내보내기 / 불러오기 / 요약
+// ============================================================
+function collectEdits(){
+  const result = {
+    version: 1,
+    generatedAt: new Date().toISOString(),
+    summary: { textChanges: 0, imageChanges: 0, comments: 0, menuChanged: !!state.menuEdits },
+    pages: {},
+    menu: state.menuEdits || null,
+  };
+
+  CATALOG.pages.forEach(page => {
+    if (!page.sections) return;
+    const pageEdits = [];
+    page.sections.forEach(section => {
+      section.items.forEach(it => {
+        const e = state.edits[it.id];
+        if (!e) return;
+        const entry = { id: it.id, section: section.title, label: it.label, type: it.type, original: it.original };
+        if (it.type === "image"){
+          if (e.imgData){
+            entry.newImage = { name: e.imgName, type: e.imgType, size: e.imgSize, dataUrl: e.imgData };
+            result.summary.imageChanges++;
+          }
+        } else {
+          if (e.value && e.value !== it.original){
+            entry.newValue = e.value;
+            result.summary.textChanges++;
+          }
+        }
+        if (e.comment){
+          entry.comment = e.comment;
+          result.summary.comments++;
+        }
+        if (entry.newValue || entry.newImage || entry.comment){
+          pageEdits.push(entry);
+        }
+      });
+    });
+    if (pageEdits.length) result.pages[page.id] = { title: page.title, file: page.file, edits: pageEdits };
+  });
+
+  return result;
+}
+
+function doExport(){
+  const data = collectEdits();
+  const total = data.summary.textChanges + data.summary.imageChanges + data.summary.comments + (data.summary.menuChanged?1:0);
+  if (total === 0){
+    if (!confirm("변경 사항이 없습니다. 그래도 빈 파일을 저장할까요?")) return;
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const today = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `church-edits-${today}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("JSON 파일이 저장되었습니다. 담당자에게 보내주세요.");
+}
+
+function showSummary(){
+  const data = collectEdits();
+  const c = document.getElementById("summary-content");
+  const s = data.summary;
+  const total = s.textChanges + s.imageChanges + s.comments + (s.menuChanged?1:0);
+  if (total === 0){
+    c.innerHTML = `<p style="color:var(--mute)">아직 변경한 항목이 없습니다.</p>`;
+  } else {
+    let html = `
+      <p>총 <strong>${total}건</strong>의 변경 — 글자 ${s.textChanges} · 사진 ${s.imageChanges} · 코멘트 ${s.comments}${s.menuChanged?' · 메뉴 변경':''}</p>
+    `;
+    Object.entries(data.pages).forEach(([pid, p]) => {
+      html += `<h4 style="margin:14px 0 6px;color:var(--accent)">${p.title} (${p.edits.length}건)</h4><ul style="margin:0;padding-left:20px;font-size:13px">`;
+      p.edits.slice(0, 30).forEach(e => {
+        const what = e.newImage ? `🖼 ${e.newImage.name}` : (e.newValue ? `"${e.newValue.slice(0,40)}${e.newValue.length>40?'…':''}"` : "");
+        const cmt = e.comment ? ` 💬 ${e.comment.slice(0,40)}` : "";
+        html += `<li><b>${e.label}</b> — ${what}${cmt}</li>`;
+      });
+      if (p.edits.length > 30) html += `<li>… 그 외 ${p.edits.length-30}건</li>`;
+      html += `</ul>`;
+    });
+    if (s.menuChanged){
+      html += `<h4 style="margin:14px 0 6px;color:var(--accent)">상단 메뉴 변경됨</h4>`;
+    }
+    c.innerHTML = html;
+  }
+  openModal("modal-summary");
+}
+
+function doImport(){
+  const txt = document.getElementById("import-text").value.trim();
+  if (!txt) return;
+  try {
+    const data = JSON.parse(txt);
+    if (data.version !== 1) throw new Error("형식이 맞지 않습니다");
+    // 기존 상태에 덮어쓰기
+    state.edits = {};
+    state.menuEdits = data.menu || null;
+    Object.values(data.pages || {}).forEach(p => {
+      p.edits.forEach(e => {
+        const cur = {};
+        if (e.newValue) cur.value = e.newValue;
+        if (e.comment) cur.comment = e.comment;
+        if (e.newImage){
+          cur.imgData = e.newImage.dataUrl;
+          cur.imgName = e.newImage.name;
+          cur.imgType = e.newImage.type;
+          cur.imgSize = e.newImage.size;
+        }
+        if (Object.keys(cur).length) state.edits[e.id] = cur;
+      });
+    });
+    saveState();
+    closeModal("modal-import");
+    renderAll();
+    toast("불러왔습니다");
+  } catch(e){
+    alert("불러오기 실패: " + e.message);
+  }
+}
+
+function resetAll(){
+  if (!confirm("작업하신 모든 변경 사항을 지웁니다. 정말 진행할까요?")) return;
+  state = defaultState();
+  saveState();
+  renderAll();
+  toast("모두 초기화되었습니다");
+}
+
+// ============================================================
+//  유틸
+// ============================================================
+let saveTimer;
+function debouncedSave(){ clearTimeout(saveTimer); saveTimer = setTimeout(saveState, 400); }
+function openModal(id){ document.getElementById(id).classList.add("show"); }
+function closeModal(id){ document.getElementById(id).classList.remove("show"); }
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+document.getElementById("btn-export").onclick = doExport;
+document.getElementById("btn-summary").onclick = showSummary;
+document.getElementById("btn-import").onclick = () => { document.getElementById("import-text").value = ""; openModal("modal-import"); };
+document.getElementById("btn-reset-all").onclick = resetAll;
+
+renderAll();
+</script>
+</body>
+</html>

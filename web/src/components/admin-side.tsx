@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 const items = [
   { href: "/admin", label: "대시보드" },
+  { href: "/admin/this-week", label: "금주 정보" },
   { href: "/admin/notices", label: "공지사항" },
   { href: "/admin/boards", label: "게시판 관리" },
   { href: "/admin/board", label: "게시글 관리" },

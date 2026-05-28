@@ -12,8 +12,8 @@ const history = [
 export default function Page() {
   return (
     <>
-      <PageHeader title="교회 연혁" eyebrow="HISTORY" subtitle="걸어온 발자취" />
-      <section className="block">
+      <PageHeader title="교회 연혁" eyebrow="HISTORY" subtitle="걸어온 발자취" editSection="history" />
+      <section className="block" data-edit-section="history.timeline">
         <div className="wrap" style={{ maxWidth: 880 }}>
           <div className="prose-box" style={{ padding: "48px 56px" }}>
             {history.map((h, i, arr) => (

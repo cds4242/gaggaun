@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { SITE_PHOTOS, PHOTO_BUILDING_EXTERIOR } from "@/lib/site-photos";
+import { getThisWeekSettings } from "@/lib/site-settings";
 import { SermonPlayer } from "@/components/sermon-player";
 import { AdminCorner } from "@/components/admin-corner";
 
@@ -95,9 +96,10 @@ const galleryCaptions = [
 ];
 
 export default async function Home() {
-  const [fetched, fetchedSermons] = await Promise.all([
+  const [fetched, fetchedSermons, thisWeek] = await Promise.all([
     getRecentNotices(),
     getRecentSermons(),
+    getThisWeekSettings(),
   ]);
   const usingDummy = fetched.length === 0;
   const notices = usingDummy ? dummyNotices : fetched;
@@ -106,7 +108,7 @@ export default async function Home() {
   return (
     <>
       {/* ============ Hero ============ */}
-      <section className="hero">
+      <section className="hero" data-edit-section="home.hero">
         <div
           className="hero-bg"
           style={PHOTO_BUILDING_EXTERIOR ? {
@@ -159,24 +161,24 @@ export default async function Home() {
             </blockquote>
             <div className="hero-ctas">
               <Link className="btn-gold" href="/worship/sunday">예배 시간 안내</Link>
-              <Link className="btn-line" href="/new-member">처음 오시는 분</Link>
+              <Link className="btn-line" href="/new-member">처음 방문하시는 분</Link>
               <Link className="btn-line" href="/notices">이번 주 공지</Link>
             </div>
           </div>
         </div>
 
-        <div className="hero-strip">
+        <div className="hero-strip" data-edit-section="home.strip">
           <div className="hero-strip-inner">
-            <div className="col"><span className="k">금주 주일</span><span className="v">2026. 5. 24 (주일)</span></div>
-            <div className="col"><span className="k">주일 예배</span><span className="v">오전 9:00 · 11:00</span></div>
-            <div className="col"><span className="k">설교 본문</span><span className="v">요한복음 13:34-36</span></div>
-            <div className="col"><span className="k">설교자</span><span className="v">김요한 담임목사</span></div>
+            <div className="col"><span className="k">금주 주일</span><span className="v">{thisWeek["home.strip.date"]}</span></div>
+            <div className="col"><span className="k">주일 예배</span><span className="v">{thisWeek["home.strip.worship"]}</span></div>
+            <div className="col"><span className="k">설교 본문</span><span className="v">{thisWeek["home.strip.text"]}</span></div>
+            <div className="col"><span className="k">설교자</span><span className="v">{thisWeek["home.strip.preacher"]}</span></div>
           </div>
         </div>
       </section>
 
       {/* ============ Quick access ============ */}
-      <section className="quick">
+      <section className="quick" data-edit-section="home.quick">
         <div className="wrap">
           <div className="quick-grid">
             <Link className="quick-card" href="/worship/sunday">
@@ -216,7 +218,7 @@ export default async function Home() {
       </section>
 
       {/* ============ Worship schedule ============ */}
-      <section className="block worship-block">
+      <section className="block worship-block" data-edit-section="home.worship">
         <div className="wrap">
           <div className="sec-title">
             <span className="eyebrow">Worship Service</span>
@@ -254,7 +256,7 @@ export default async function Home() {
       </section>
 
       {/* ============ Pastor greeting ============ */}
-      <section className="pastor-block">
+      <section className="pastor-block" data-edit-section="home.pastor">
         <div className="wrap">
           <div className="pastor-grid">
             <div className="pastor-photo">
@@ -289,7 +291,7 @@ export default async function Home() {
       </section>
 
       {/* ============ Sermons ============ */}
-      <section className="block sermons-block">
+      <section className="block sermons-block" data-edit-section="home.sermons">
         <div className="wrap">
           <div className="sermons-head">
             <div className="title-side">
@@ -313,7 +315,7 @@ export default async function Home() {
       </section>
 
       {/* ============ Notices + Weekly ============ */}
-      <section className="block">
+      <section className="block" data-edit-section="home.notices">
         <div className="wrap">
           <div className="info-grid">
             <div className="panel">
@@ -359,7 +361,7 @@ export default async function Home() {
       </section>
 
       {/* ============ Gallery ============ */}
-      <section className="block gallery-block">
+      <section className="block gallery-block" data-edit-section="home.gallery">
         <div className="wrap">
           <div className="sec-title">
             <span className="eyebrow">Photo Gallery</span>
@@ -385,7 +387,7 @@ export default async function Home() {
       </section>
 
       {/* ============ Location ============ */}
-      <section className="block loc-block">
+      <section className="block loc-block" data-edit-section="home.loc">
         <div className="wrap">
           <div className="sec-title">
             <span className="eyebrow">Visit Us</span>
@@ -424,7 +426,7 @@ export default async function Home() {
                 <dt>주소</dt>
                 <dd>경기 김포시 김포한강11로 234<span className="small">김포한강신도시 운양동</span></dd>
                 <dt>전화</dt>
-                <dd>031 — 000 — 0000<span className="small">평일 오전 9:00 – 오후 6:00</span></dd>
+                <dd>031-999-9999<span className="small">평일 오전 9:00 – 오후 6:00</span></dd>
                 <dt>이메일</dt>
                 <dd>office@nearchurch.kr</dd>
                 <dt>대중교통</dt>
