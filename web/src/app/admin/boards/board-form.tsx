@@ -126,20 +126,20 @@ export function BoardForm({ mode, boardId, initial }: Props) {
 
       <div className="form-row">
         <label>게시판 옵션</label>
-        <div style={{ display: "grid", gap: 8 }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>
+        <div className="checks">
+          <label>
             <input type="checkbox" checked={v.comment_enabled} onChange={(e) => set("comment_enabled", e.target.checked)} />
             댓글 사용
           </label>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>
+          <label>
             <input type="checkbox" checked={v.secret_enabled} onChange={(e) => set("secret_enabled", e.target.checked)} />
-            비밀글 허용 <span style={{ color: "var(--mute)", fontSize: 12 }}>(다음 PR에서 실제 마스킹 적용)</span>
+            비밀글 허용 <span className="hint">(다음 PR에서 실제 마스킹 적용)</span>
           </label>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>
+          <label>
             <input type="checkbox" checked={v.image_upload_enabled} onChange={(e) => set("image_upload_enabled", e.target.checked)} />
             이미지 첨부 허용
           </label>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>
+          <label>
             <input type="checkbox" checked={v.is_active} onChange={(e) => set("is_active", e.target.checked)} />
             활성 (목록·메뉴에 노출)
           </label>

@@ -6,12 +6,14 @@ import { usePathname } from "next/navigation";
 const items = [
   { href: "/admin", label: "대시보드" },
   { href: "/admin/this-week", label: "금주 정보" },
+  { href: "/admin/nav", label: "상단 메뉴" },
   { href: "/admin/notices", label: "공지사항" },
   { href: "/admin/boards", label: "게시판 관리" },
   { href: "/admin/board", label: "게시글 관리" },
   { href: "/admin/sermons", label: "설교 영상" },
   { href: "/admin/gallery", label: "갤러리" },
   { href: "/admin/new-members", label: "새가족 등록" },
+  { href: "/admin/feedback-tool", label: "피드백 도구" },
 ];
 
 export function AdminSide() {

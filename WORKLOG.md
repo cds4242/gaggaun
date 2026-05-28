@@ -4,6 +4,55 @@
 
 ---
 
+## 2026-05-28 (4) — 상단 메뉴 어드민 + 피드백 도구를 어드민 안으로
+
+### 한 줄 요약
+
+상단 메뉴를 `site_settings.nav.tree`(JSON)로 옮겨 `/admin/nav`에서 직접 편집하게
+하고, 정적 편집기를 `web/public/edit-tool/`로 옮겨 `/admin/feedback-tool`에서
+iframe으로 임베드. 게시판 옵션 폼 정렬 깨짐 수정.
+
+### 변경
+
+- **상단 메뉴 어드민**
+  - `site_settings`에 `key='nav.tree'` 시드 (JSON 직렬화된 NavItem[])
+  - `lib/nav.ts`에 `getNavFromDb()` 추가 — 파싱 실패 시 정적 NAV로 fallback
+  - `lib/boards-nav.ts`의 `buildNav()`가 baseNav를 DB에서 먼저 가져와 보드 자동
+    주입과 머지. 정적 NAV는 fallback only.
+  - `/admin/nav` 페이지 + 클라이언트 `NavEditor` 컴포넌트 + 서버 액션
+    (`updateNavTree`, `resetNavToDefault`). 저장 시
+    `revalidatePath('/', 'layout')`로 헤더 즉시 갱신.
+
+- **피드백 도구 위치 이동**
+  - `edit/` 폴더 통째로 `web/public/edit-tool/`로 이동. `/edit-tool/`로 접근.
+  - `/admin/feedback-tool` 페이지 신설 — 안내 + iframe 전체화면 임베드.
+    `admin-side`에 "피드백 도구" 메뉴 추가.
+  - 카탈로그의 `menu` 페이지는 어드민 안내 카드로 교체 — "상단 메뉴 편집은
+    관리자 페이지에서". `type: "menu"` 분기는 비활성화.
+
+- **대시보드 카드 정비**
+  - `/admin` 하단에 "금주 정보 / 상단 메뉴 / 피드백 도구" 3-카드 행 추가.
+
+- **게시판 옵션 정렬 버그 수정**
+  - `.form-row label`이 `border-left: gold + padding-left + font-weight:700`을
+    갖고 있어서 옵션 그룹의 `<label>`도 동일 스타일을 받아 우측 정렬돼 보였음.
+  - `.form-row .checks` + `.form-row .checks label` 변형을 추가해 라벨 스타일
+    리셋. `board-form.tsx`의 게시판 옵션 영역을 인라인 스타일에서 클래스 기반
+    으로 정리.
+
+### 추적되지 않는 의도
+
+- **NavEditor가 클라이언트 컴포넌트인 이유**: 트리 상태(추가/삭제/순서)를
+  편하게 다루려고. 서버 액션은 form data로 JSON 문자열만 받아 검증 후 upsert.
+- **JSON 직렬화 방식 선택**: 정규화된 `nav_items` 테이블은 조회/렌더 명부어수
+  비용 대비 메뉴라는 도메인의 가벼움에 맞지 않음. `site_settings` 한 테이블에
+  group_key로 묶는 패턴을 그대로 확장.
+- **public/edit-tool/은 정적**: Next 라우터를 거치지 않고 그대로 서빙됨.
+  iframe 안에서는 file:// 일 때와 동일하게 localStorage가 동작 (origin은
+  vercel.app 도메인 기준 1개라 안전).
+
+---
+
 ## 2026-05-28 (3) — 관리자 피드백 도구(edit/) + 금주 정보 어드민
 
 ### 한 줄 요약

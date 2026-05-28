@@ -404,6 +404,8 @@ node scripts/image-cycle-10.mjs # 이미지 업로드 + 게시글 사이클 10�
 | `/admin/board` | `board_posts` + `boards` (filter) | 보드 셀렉터로 필터링 |
 | `/admin/notices` | `notices` (CRUD) | — |
 | `/admin/this-week` | `site_settings` (group_key=this_week) | 시드 안 됐으면 안내 |
+| `/admin/nav` | `site_settings` (key=nav.tree, JSON) | 코드 정적 NAV로 fallback |
+| `/admin/feedback-tool` | (없음 — `/edit-tool/` iframe 임베드) | — |
 | `/admin/new-members` | `new_members` | — |
 | 인증 | Supabase Auth | `isAdminEmail`로 관리자 판별 |
 
@@ -427,17 +429,25 @@ RLS: select public / modify is_admin. fetcher (`lib/site-settings.ts`)는 DB 실
 
 확장 후보: 연락처(전화·이메일·주소), 소셜 링크.
 
+#### 현재 그룹
+
+| group_key | 키 | 용도 |
+| --- | --- | --- |
+| `this_week` | `home.strip.date`, `home.strip.worship`, `home.strip.text`, `home.strip.preacher` | 홈 히어로 띠 금주 정보 |
+| `navigation` | `nav.tree` | 상단 메뉴 트리 (JSON 직렬화) |
+
 ---
 
-## 9. 관리자 피드백 도구 (`edit/`)
+## 9. 관리자 피드백 도구 (`web/public/edit-tool/`)
 
-비개발자(교회 관리자)가 홈페이지의 텍스트/이미지/메뉴 변경 요청을 정확히 전달하기 위한
-정적 편집 도구. Next.js 앱과 분리되어 있으며 빌드 산출물이 아님.
+비개발자(교회 관리자)가 홈페이지의 텍스트/이미지 변경 요청을 정확히 전달하기 위한
+정적 편집 도구. Next.js 라우터를 거치지 않는 정적 자산.
 
 | 항목 | 값 |
 | --- | --- |
-| 위치 | `edit/index.html` (단일 파일) + `edit/README.md` (사용법) |
-| 실행 | 브라우저로 파일 직접 열기 (서버 불필요, 인터넷 불필요) |
+| 정적 위치 | `web/public/edit-tool/index.html` + `README.md` |
+| 직접 URL | `https://gaggaun.vercel.app/edit-tool/` |
+| 어드민 임베드 | `/admin/feedback-tool` — iframe으로 풀스크린 임베드 + 안내 |
 | 출력 | `church-edits-YYYY-MM-DD.json` 다운로드 |
 | 라이브 URL 점프 | 카드의 "↗ 사이트에서 위치 보기" → `https://gaggaun.vercel.app/path?edit=ID` |
 
@@ -445,6 +455,10 @@ RLS: select public / modify is_admin. fetcher (`lib/site-settings.ts`)는 DB 실
 - `data-edit-section="ID"` 속성을 섹션 단위로 부여 (개별 텍스트마다 X)
 - `web/src/components/edit-highlight.tsx` 가 `?edit=ID` 쿼리를 읽어 해당 섹션을
   스크롤 + 강조 + 토스트 안내
-- 카탈로그 ID는 `edit/index.html` 내부 `CATALOG` 상수가 단일 출처
+- 카탈로그 ID는 `web/public/edit-tool/index.html` 내부 `CATALOG` 상수가 단일 출처
 
-JSON을 Claude Code에 던지면 카탈로그 ID로 코드 위치를 찾아 텍스트/이미지/메뉴를 수정.
+상단 메뉴와 금주 정보는 편집기에서 빼고 어드민 페이지(`/admin/nav`,
+`/admin/this-week`)에서 직접 DB로 관리한다. 편집기는 "코드 수정이 필요한 진짜 피드백"
+(어감 다듬기, 단락 변경, 이미지 교체, 섹션 순서 등)에 집중.
+
+JSON을 Claude Code에 던지면 카탈로그 ID로 코드 위치를 찾아 텍스트/이미지를 수정.

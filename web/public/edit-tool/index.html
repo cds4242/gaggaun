@@ -233,46 +233,14 @@
 const LIVE_SITE = "https://gaggaun.vercel.app";
 const CATALOG = {
   pages: [
-    /* ============ 상단 메뉴 ============ */
+    /* ============ 상단 메뉴 (관리자 페이지에서 관리) ============ */
     {
-      id: "menu", title: "상단 메뉴", desc: "사이트 상단의 네비게이션 메뉴와 하위 메뉴를 편집합니다.",
-      file: "web/src/lib/nav.ts + web/src/components/site-header.tsx",
-      path: "/", noPreview: true,
-      type: "menu",
-      brand: {
-        ko: "가까운교회",
-        en: "The Near Church · Gimpo",
-      },
-      cta: { label: "새가족 등록", href: "/new-member" },
-      nav: [
-        { label: "교회소개", href: "/about", children: [
-          { label: "인사말", href: "/about/greeting" },
-          { label: "비전과 사명", href: "/about/vision" },
-          { label: "교회 연혁", href: "/about/history" },
-          { label: "오시는 길", href: "/about/location" },
-        ]},
-        { label: "예배안내", href: "/worship", children: [
-          { label: "주일예배", href: "/worship/sunday" },
-          { label: "수요예배", href: "/worship/wednesday" },
-          { label: "새벽예배", href: "/worship/dawn" },
-          { label: "금요철야", href: "/worship/friday" },
-        ]},
-        { label: "설교말씀", href: "/media/sermon", children: [
-          { label: "설교 영상", href: "/media/sermon" },
-          { label: "갤러리", href: "/media/gallery" },
-        ]},
-        { label: "교회소식", href: "/notices", children: [
-          { label: "공지사항", href: "/notices" },
-          { label: "자유게시판", href: "/board" },
-          { label: "갤러리", href: "/media/gallery" },
-        ]},
-        { label: "공동체", href: "/community", children: [
-          { label: "구역모임", href: "/community/cell" },
-          { label: "남선교회", href: "/community/men" },
-          { label: "여전도회", href: "/community/women" },
-          { label: "청년부", href: "/ministry/youth" },
-          { label: "주일학교", href: "/ministry/children" },
-        ]},
+      id: "menu", title: "상단 메뉴", desc: "사이트 상단의 네비게이션 메뉴는 관리자 페이지에서 직접 편집하실 수 있습니다.",
+      file: "관리자 페이지", path: "/admin/nav",
+      sections: [
+        { id: "info", title: "상단 메뉴 편집", managedByAdmin: "/admin/nav",
+          managedNote: "상단 메뉴(교회소개·예배안내 등) 추가/삭제, 이름 변경, 순서 변경, 하위 메뉴 편집은 모두 관리자 페이지에서 바로 하실 수 있습니다. 저장하면 사이트가 즉시 갱신됩니다.",
+          items: [] },
       ],
     },
 
@@ -599,7 +567,8 @@ function pageById(id){ return CATALOG.pages.find(p => p.id === id); }
 
 function countChanges(pageId){
   let n = 0;
-  if (pageId === "menu") return state.menuEdits ? 1 : 0;
+  // 메뉴 페이지는 이제 어드민에서 관리 — 변경 카운트 없음
+  if (pageId === "menu") return 0;
   const page = pageById(pageId);
   if (!page || !page.sections) return 0;
   page.sections.forEach(s => s.items.forEach(it => {

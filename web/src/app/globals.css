@@ -1650,6 +1650,18 @@ section.block{ padding:100px 0; position:relative }
   border:0; padding:0; font-family:var(--serif); font-size:15px; font-weight:400; color:var(--ink);
   display:inline-flex; align-items:center; gap:6px;
 }
+/* 체크박스 옵션 그룹 (게시판 옵션 등) — 상위 .form-row label 스타일을 리셋 */
+.form-row .checks{ display:flex; flex-direction:column; gap:10px; padding-top:6px }
+.form-row .checks label{
+  border:0; padding:0; margin:0;
+  font-family:var(--serif); font-size:14px; font-weight:400; color:var(--ink);
+  display:flex; align-items:center; gap:10px;
+  white-space:normal;
+}
+.form-row .checks label .hint{ color:var(--mute); font-size:12px; margin-left:2px }
+.form-row .checks input[type=checkbox]{
+  width:auto; padding:0; margin:0; flex:0 0 auto;
+}
 .form-actions{ text-align:center; margin-top:24px }
 
 /* ============ Board list (text-style) ============ */
@@ -2536,6 +2548,42 @@ section.block{ padding:100px 0; position:relative }
 .muted{ color:var(--mute) }
 .line-clamp-1{ display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden }
 .line-clamp-2{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden }
+
+/* /admin/nav 메뉴 트리 편집기 */
+.nav-editor{ display:flex; flex-direction:column; gap:12px }
+.nav-edit-item{
+  border:1px solid var(--line); border-radius:8px; padding:12px 14px; background:var(--ivory, #fbfaf7);
+}
+.nav-edit-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap }
+.nav-edit-input{
+  padding:8px 10px; border:1px solid var(--line); background:#fff; font-family:var(--sans);
+  font-size:14px; color:var(--ink); border-radius:4px;
+}
+.nav-edit-input.title{ flex:1 1 180px; font-weight:600 }
+.nav-edit-input.href{ flex:1 1 200px; font-family:'Courier New', monospace; font-size:13px }
+.nav-edit-input.sm{ font-size:13px; padding:6px 9px }
+.nav-edit-btn{
+  padding:6px 10px; border:1px solid var(--line); background:#fff; cursor:pointer;
+  font-family:var(--sans); font-size:12px; border-radius:4px; color:var(--ink);
+}
+.nav-edit-btn:hover{ background:var(--ivory, #f3efe7) }
+.nav-edit-btn.del{ color:var(--burgundy, #b00020); border-color:#e6c4c4 }
+.nav-edit-btn.sm{ font-size:11px; padding:4px 8px }
+.nav-edit-children{ margin-top:10px; margin-left:14px; padding-left:12px; border-left:2px solid var(--line) }
+.nav-edit-subrow{ display:flex; gap:8px; align-items:center; margin-bottom:6px; flex-wrap:wrap }
+.nav-edit-add-sub{
+  margin-top:4px; font-size:12px; background:none; border:1px dashed var(--line);
+  padding:6px 10px; border-radius:4px; cursor:pointer; color:var(--mute);
+  font-family:var(--sans);
+}
+.nav-edit-add-sub:hover{ color:var(--navy); border-color:var(--navy) }
+.nav-edit-add-top{
+  width:100%; padding:12px; border:1px dashed var(--line); background:none; border-radius:6px;
+  cursor:pointer; color:var(--mute); font-family:var(--sans); font-size:14px;
+}
+.nav-edit-add-top:hover{ color:var(--navy); border-color:var(--navy) }
+.nav-edit-actions{ margin-top:8px; display:flex; justify-content:flex-end }
+.nav-edit-error{ color:var(--burgundy, #b00020); font-size:13px; padding:8px 10px; background:#fff3f3; border-radius:4px }
 
 /* 편집 도구에서 ?edit=ID 로 진입했을 때 해당 섹션을 잠시 강조 */
 @keyframes editHighlightPulse {

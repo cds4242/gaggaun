@@ -293,6 +293,14 @@ insert into public.site_settings (key, value, label, description, group_key, sor
   ('home.strip.preacher',  '김요한 담임목사',     '설교자',       '히어로 띠 4열',                'this_week', 40)
 on conflict (key) do nothing;
 
+-- 상단 메뉴 트리 (JSON). 어드민 /admin/nav 에서 편집.
+-- 값은 NavItem[] JSON 문자열. 보드 자동 주입은 buildNav에서 별도로 머지.
+-- 시드 값은 lib/nav.ts의 정적 NAV와 동일.
+insert into public.site_settings (key, value, label, description, group_key, sort_order) values
+  ('nav.tree', '[{"label":"교회소개","href":"/about","children":[{"label":"인사말","href":"/about/greeting"},{"label":"비전과 사명","href":"/about/vision"},{"label":"교회 연혁","href":"/about/history"},{"label":"오시는 길","href":"/about/location"}]},{"label":"예배안내","href":"/worship","children":[{"label":"주일예배","href":"/worship/sunday"},{"label":"수요예배","href":"/worship/wednesday"},{"label":"새벽예배","href":"/worship/dawn"},{"label":"금요철야","href":"/worship/friday"}]},{"label":"설교말씀","href":"/media/sermon","children":[{"label":"설교 영상","href":"/media/sermon"},{"label":"갤러리","href":"/media/gallery"}]},{"label":"교회소식","href":"/notices","children":[{"label":"공지사항","href":"/notices"},{"label":"갤러리","href":"/media/gallery"}]},{"label":"공동체","href":"/community","children":[{"label":"구역모임","href":"/community/cell"},{"label":"남선교회","href":"/community/men"},{"label":"여전도회","href":"/community/women"},{"label":"청년부","href":"/ministry/youth"},{"label":"주일학교","href":"/ministry/children"}]}]',
+   '상단 메뉴', '사이트 헤더의 메인메뉴와 하위메뉴 트리 (JSON)', 'navigation', 10)
+on conflict (key) do nothing;
+
 -- ───────────────────────────────────────────────────────────────
 -- Storage 버킷
 -- 대시보드에서 "board-images", "gallery" 버킷을 public 으로 만들어두세요.

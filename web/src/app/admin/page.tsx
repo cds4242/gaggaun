@@ -63,17 +63,47 @@ export default async function AdminHome() {
         <StatCard label="THIS WEEK" value={mc7 ?? 0} sub="최근 7일 신규" href="/admin/new-members" />
       </div>
 
-      <div className="admin-card" style={{ marginTop: 20 }}>
-        <div className="ac-head">
-          <h3>홈 화면 — 금주 정보</h3>
-          <Link href="/admin/this-week" style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--navy)" }}>
-            편집 →
-          </Link>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20, marginTop: 20 }}>
+        <div className="admin-card">
+          <div className="ac-head">
+            <h3>홈 화면 — 금주 정보</h3>
+            <Link href="/admin/this-week" style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--navy)" }}>
+              편집 →
+            </Link>
+          </div>
+          <div className="ac-body">
+            <p style={{ margin: 0, fontSize: 13, color: "var(--mute)" }}>
+              금주 주일·예배 시간·설교 본문·설교자를 코드 수정 없이 바로 바꿀 수 있습니다.
+            </p>
+          </div>
         </div>
-        <div className="ac-body">
-          <p style={{ margin: 0, fontSize: 13, color: "var(--mute)" }}>
-            홈 히어로 띠에 표시되는 금주 주일·예배 시간·설교 본문·설교자를 코드 수정 없이 바로 바꿀 수 있습니다.
-          </p>
+
+        <div className="admin-card">
+          <div className="ac-head">
+            <h3>상단 메뉴</h3>
+            <Link href="/admin/nav" style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--navy)" }}>
+              편집 →
+            </Link>
+          </div>
+          <div className="ac-body">
+            <p style={{ margin: 0, fontSize: 13, color: "var(--mute)" }}>
+              사이트 상단 네비게이션 메뉴를 추가/삭제·순서 변경하실 수 있습니다.
+            </p>
+          </div>
+        </div>
+
+        <div className="admin-card">
+          <div className="ac-head">
+            <h3>피드백 도구</h3>
+            <Link href="/admin/feedback-tool" style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--navy)" }}>
+              열기 →
+            </Link>
+          </div>
+          <div className="ac-body">
+            <p style={{ margin: 0, fontSize: 13, color: "var(--mute)" }}>
+              홈페이지 글자·사진·문구 변경 요청을 정리해서 담당자에게 전달합니다.
+            </p>
+          </div>
         </div>
       </div>
 

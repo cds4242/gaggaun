@@ -1,3 +1,5 @@
+import { createPublicClient } from "@/lib/supabase/public";
+
 export type NavItem = {
   label: string;
   href: string;
@@ -65,3 +67,25 @@ export const NAV: NavItem[] = [
     ],
   },
 ];
+
+// site_settings의 nav.tree(JSON 문자열) → NavItem[].
+// DB가 없거나 키가 없거나 파싱 실패하면 정적 NAV로 fallback.
+export async function getNavFromDb(): Promise<NavItem[]> {
+  try {
+    const supabase = createPublicClient();
+    const { data, error } = await supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "nav.tree")
+      .maybeSingle();
+    if (error || !data) return NAV;
+    const parsed = JSON.parse((data as { value: string }).value);
+    if (!Array.isArray(parsed)) return NAV;
+    // 최소 검증 — 각 항목이 label/href를 가지는지
+    const valid = parsed.every((x) => x && typeof x.label === "string" && typeof x.href === "string");
+    if (!valid) return NAV;
+    return parsed as NavItem[];
+  } catch {
+    return NAV;
+  }
+}
