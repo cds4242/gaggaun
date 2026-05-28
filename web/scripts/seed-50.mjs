@@ -136,7 +136,7 @@ async function seedBoard() {
   // 시드 글은 모두 '자유게시판' 보드(slug=free)로 넣는다. 보드가 없으면 만든다.
   let { data: board } = await sb.from("boards").select("id").eq("slug", "free").maybeSingle();
   if (!board) {
-    const ins = await sb.from("boards").insert({ slug: "free", name: "자유게시판", description: "성도들의 따뜻한 나눔 공간", category: "소식", sort_order: 0 }).select("id").single();
+    const ins = await sb.from("boards").insert({ slug: "free", name: "자유게시판", description: "성도들의 따뜻한 나눔 공간", category: "교회소식", sort_order: 0 }).select("id").single();
     if (ins.error) throw ins.error;
     board = ins.data;
   }

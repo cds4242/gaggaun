@@ -6,8 +6,9 @@ import { UtilBar } from "@/components/util-bar";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { FlashMessage } from "@/components/flash-message";
+import type { NavItem } from "@/lib/nav";
 
-export function SiteShell({ children }: { children: React.ReactNode }) {
+export function SiteShell({ nav, children }: { nav: NavItem[]; children: React.ReactNode }) {
   const pathname = usePathname() ?? "/";
   const bare = pathname.startsWith("/admin") || pathname.startsWith("/login");
 
@@ -24,7 +25,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
     <>
       <Suspense fallback={null}><FlashMessage /></Suspense>
       <UtilBar />
-      <SiteHeader />
+      <SiteHeader nav={nav} />
       <main>{children}</main>
       <SiteFooter />
     </>

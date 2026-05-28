@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createBoard, updateBoard, type BoardInput } from "./actions";
+import { TOP_CATEGORIES } from "@/lib/nav";
 
 type Props = {
   mode: "create" | "edit";
@@ -89,14 +90,21 @@ export function BoardForm({ mode, boardId, initial }: Props) {
       </div>
 
       <div className="form-row">
-        <label htmlFor="category">메뉴 분류</label>
-        <input
+        <label htmlFor="category">메뉴 위치</label>
+        <select
           id="category"
           value={v.category}
           onChange={(e) => set("category", e.target.value)}
-          maxLength={20}
-          placeholder="예) 소식, 공동체 (메뉴 동적화 시 사용)"
-        />
+          style={{ padding: "10px 12px", border: "1px solid var(--line)", background: "var(--white)", fontSize: 14 }}
+        >
+          <option value="">(메뉴에 표시하지 않음)</option>
+          {TOP_CATEGORIES.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+        <small style={{ color: "var(--mute)", fontSize: 12, marginTop: 6, display: "block" }}>
+          선택한 상위 메뉴의 드롭다운에 이 게시판이 자동으로 추가됩니다. ‘메뉴에 표시하지 않음’을 고르면 URL로만 접근 가능합니다.
+        </small>
       </div>
 
       <div className="form-row">

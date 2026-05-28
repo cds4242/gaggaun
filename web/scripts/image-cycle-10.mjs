@@ -28,7 +28,7 @@ const SITE = process.env.SITE_BASE || "http://localhost:3000";
 // 시드 글이 들어갈 기본 보드 (없으면 만든다)
 let { data: defaultBoard } = await sb.from("boards").select("id, slug").eq("slug", "free").maybeSingle();
 if (!defaultBoard) {
-  const ins = await sb.from("boards").insert({ slug: "free", name: "자유게시판", description: "성도들의 따뜻한 나눔 공간", category: "소식", sort_order: 0 }).select("id, slug").single();
+  const ins = await sb.from("boards").insert({ slug: "free", name: "자유게시판", description: "성도들의 따뜻한 나눔 공간", category: "교회소식", sort_order: 0 }).select("id, slug").single();
   if (ins.error) { console.error(ins.error); process.exit(1); }
   defaultBoard = ins.data;
 }

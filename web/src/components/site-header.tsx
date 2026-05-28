@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { NAV } from "@/lib/nav";
+import { NAV, type NavItem } from "@/lib/nav";
 
-export function SiteHeader() {
+export function SiteHeader({ nav }: { nav?: NavItem[] }) {
+  const items = nav ?? NAV;
   const [open, setOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
@@ -62,7 +63,7 @@ export function SiteHeader() {
         </Link>
 
         <ul className="mainmenu" role="menubar">
-          {NAV.map((item) => (
+          {items.map((item) => (
             <li key={item.href}>
               <Link href={item.href}>{item.label}</Link>
               {item.children && (
@@ -93,7 +94,7 @@ export function SiteHeader() {
 
       <div className={"mobile-menu" + (open ? " open" : "")}>
         <div className="inner">
-          {NAV.map((item) => (
+          {items.map((item) => (
             <div className="grp" key={item.href}>
               <Link href={item.href} onClick={() => setOpen(false)}>{item.label}</Link>
               {item.children && (

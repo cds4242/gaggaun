@@ -4,6 +4,21 @@
 
 ---
 
+## 2026-05-28 (2) — NAV 동적화: 보드를 상단 메뉴에 자동 노출
+
+- `boards.category`가 `TOP_CATEGORIES` 라벨(교회소개/예배안내/설교말씀/교회소식/공동체)과
+  정확히 일치하면 해당 드롭다운에 자동 추가. 일치 안 하면 메뉴에서 숨김.
+- `lib/boards-nav.ts:buildNav()` server 헬퍼 추가. `app/layout.tsx`가 fetch해서
+  SiteShell → SiteHeader에 prop으로 전달. NAV 정적 배열은 baseline으로 유지.
+- 정적 NAV에 박혀있던 "교회소식 > 자유게시판" 항목 제거 (이제 동적으로 들어옴).
+- `/admin/boards` 폼의 category 입력을 자유 텍스트 → 셀렉터로 교체. 오타로 메뉴에서
+  사라지는 사고 방지.
+- 라이브 DB 자유게시판 row category '소식' → '교회소식'으로 정정 (Supabase SQL Editor).
+- layout `revalidate = 60`. 보드 CRUD action은 `revalidatePath('/', 'layout')` 추가로
+  즉시 메뉴 갱신.
+
+---
+
 ## 2026-05-28 — 멀티 보드 1차 (마이그레이션 + 관리자 CRUD + 라우트 이동)
 
 ### 한 줄 요약

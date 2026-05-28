@@ -4,6 +4,17 @@ export type NavItem = {
   children?: { label: string; href: string }[];
 };
 
+// 상위 메뉴 라벨 목록. boards.category가 이 중 하나와 정확히 일치할 때만
+// 해당 드롭다운에 보드가 자동 노출된다. /admin/boards 폼의 셀렉터에서도 같은 값 사용.
+export const TOP_CATEGORIES = [
+  "교회소개",
+  "예배안내",
+  "설교말씀",
+  "교회소식",
+  "공동체",
+] as const;
+export type TopCategory = typeof TOP_CATEGORIES[number];
+
 export const NAV: NavItem[] = [
   {
     label: "교회소개",
@@ -38,8 +49,8 @@ export const NAV: NavItem[] = [
     href: "/notices",
     children: [
       { label: "공지사항", href: "/notices" },
-      { label: "자유게시판", href: "/board" },
       { label: "갤러리", href: "/media/gallery" },
+      // 자유게시판 등 게시판은 boards 테이블에서 동적으로 주입됨 (lib/boards-nav.ts).
     ],
   },
   {

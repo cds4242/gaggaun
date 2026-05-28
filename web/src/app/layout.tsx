@@ -3,6 +3,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SiteShell } from "@/components/site-shell";
+import { buildNav } from "@/lib/boards-nav";
 import pwa from "@/lib/pwa-assets.json";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gaggaun.vercel.app";
@@ -60,7 +61,12 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+// boards 테이블이 NAV에 동적으로 들어가므로 layout(전체 페이지의 header)을
+// 60초마다 재생성한다. 보드 추가/삭제는 최대 60초 안에 메뉴에 반영된다.
+export const revalidate = 60;
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const nav = await buildNav();
   return (
     <html lang="ko">
       <head>
@@ -72,7 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <SiteShell>{children}</SiteShell>
+        <SiteShell nav={nav}>{children}</SiteShell>
         <Analytics />
         <SpeedInsights />
       </body>

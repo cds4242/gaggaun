@@ -58,8 +58,10 @@ create table if not exists public.boards (
 create index if not exists boards_sort_idx on public.boards (sort_order, id);
 
 -- 기본 보드 시드 (자유게시판 1건). 없을 때만 삽입.
+-- 기본 보드 시드 (자유게시판). category는 NAV 상위 메뉴 이름과 정확히 일치해야
+-- 해당 드롭다운에 자동 노출된다 (보드 → 메뉴 매핑 정책).
 insert into public.boards (slug, name, description, category, sort_order)
-select 'free', '자유게시판', '성도들의 따뜻한 나눔 공간', '소식', 0
+select 'free', '자유게시판', '성도들의 따뜻한 나눔 공간', '교회소식', 0
 where not exists (select 1 from public.boards where slug = 'free');
 
 create table if not exists public.board_posts (

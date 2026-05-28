@@ -66,6 +66,7 @@ export async function createBoard(input: BoardInput) {
   }
   revalidatePath("/admin/boards");
   revalidatePath("/board");
+  revalidatePath("/", "layout"); // NAV 동적 주입을 위해 layout 캐시 무효화
   redirect("/admin/boards");
 }
 
@@ -97,6 +98,7 @@ export async function updateBoard(id: number, input: BoardInput) {
   revalidatePath("/admin/boards");
   revalidatePath("/board");
   revalidatePath(`/board/${v.slug}`);
+  revalidatePath("/", "layout");
   redirect("/admin/boards");
 }
 
@@ -115,4 +117,5 @@ export async function deleteBoard(id: number) {
   if (error) throw new Error(error.message);
   revalidatePath("/admin/boards");
   revalidatePath("/board");
+  revalidatePath("/", "layout");
 }

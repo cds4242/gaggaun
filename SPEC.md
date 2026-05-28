@@ -235,12 +235,23 @@ Playwright 결과물(`.playwright-mcp/`, `playwright-report/`, `test-results/`)�
 
 ### 게시판 멀티 보드 모델
 - `boards` 테이블이 게시판 마스터. 각 보드는 `slug` (URL 식별자), `name`, `description`,
-  `category` (메뉴 분류 — 메뉴 동적화 시 사용), `write_permission` (anyone/member/admin),
+  `category` (NAV 상위 메뉴 라벨), `write_permission` (anyone/member/admin),
   `comment_enabled`, `secret_enabled`, `image_upload_enabled`, `sort_order`, `is_active`를 갖는다.
 - `board_posts.board_id`는 `boards(id)` FK (NOT NULL, ON DELETE CASCADE).
 - 1차 도입에서는 `write_permission='anyone'`과 `comment_enabled`, `image_upload_enabled`만 실제 동작.
   `member`/`admin` 권한과 `secret_enabled` 비밀글은 다음 PR에서 적용 예정.
 - 활성 보드(`is_active=true`)만 `/board` 인덱스에 표시되고 sitemap에도 들어간다.
+
+### 보드 → 상단 메뉴 자동 주입
+- `boards.category`가 `TOP_CATEGORIES` (`lib/nav.ts` — 교회소개/예배안내/설교말씀/
+  교회소식/공동체) 중 하나와 **정확히 일치**하면 해당 드롭다운 children 끝에
+  `{ label: board.name, href: '/board/[slug]' }`로 자동 추가된다.
+- 일치하지 않거나 비어있으면 메뉴에 노출되지 않고 URL로만 접근 가능.
+- 구현: `lib/boards-nav.ts:buildNav()`가 server에서 활성 보드를 합쳐 `NavItem[]`을 만들고,
+  `app/layout.tsx`가 SiteShell → SiteHeader에 prop으로 전달.
+- 캐시: layout `revalidate = 60`. 보드 CRUD server action은 `revalidatePath('/', 'layout')`로
+  즉시 갱신.
+- `/admin/boards` 폼은 category 입력을 셀렉터로 제공해 오타로 메뉴에서 사라지는 사고를 막는다.
 
 ### 게시판 인덱스 (`/board`)
 - 활성 보드들을 카드형 그리드로 표시. 카드 한 장당 name·category·description.
