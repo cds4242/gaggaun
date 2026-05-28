@@ -109,10 +109,11 @@ Playwright 결과물(`.playwright-mcp/`, `playwright-report/`, `test-results/`)�
 | 공동체 | `/community`, `/community/cell`, `/community/men`, `/community/women` | |
 | 미디어 | `/media`, `/media/sermon`, `/media/gallery` | |
 | 공지 | `/notices`, `/notices/[id]` | Supabase `notices` 테이블에서 로드, 데이터 없으면 더미 6건 표시 |
-| 게시판 | `/board`, `/board/[id]`, `/board/new` | |
+| 게시판 인덱스 | `/board` | 활성 보드 카드 목록 (활성 보드가 1개면 그 보드로 자동 리다이렉트) |
+| 게시판 보드 | `/board/[slug]`, `/board/[slug]/new`, `/board/[slug]/[id]`, `/board/[slug]/[id]/edit` | slug는 `boards.slug` (예: `free`, `qna`, `prayer`) |
 | 새가족 | `/new-member`, `/new-member/thanks` | |
 | 인증 | `/login`, `/logout` | bare 레이아웃 (헤더/푸터 미표시) |
-| 관리 | `/admin`, `/admin/board`, `/admin/new-members`, `/admin/notices`, `/admin/notices/new`, `/admin/notices/[id]/edit` | `isAdminEmail`로 인증된 사용자에게만 진입 허용 (예정), bare 레이아웃 |
+| 관리 | `/admin`, `/admin/boards`, `/admin/boards/new`, `/admin/boards/[id]/edit`, `/admin/board`, `/admin/new-members`, `/admin/notices`, `/admin/notices/new`, `/admin/notices/[id]/edit` | `isAdminEmail`로 인증된 사용자에게만 진입 허용 (예정), bare 레이아웃. `/admin/boards`는 게시판 마스터 CRUD, `/admin/board`는 게시글 관리(보드 필터 지원). |
 
 레이아웃 결정은 `web/src/components/site-shell.tsx`에서 `pathname`이
 `/admin` 또는 `/login`으로 시작하면 헤더·푸터·유틸바를 숨긴다.
@@ -225,21 +226,39 @@ Playwright 결과물(`.playwright-mcp/`, `playwright-report/`, `test-results/`)�
 | `/` | 60 | 홈 — 공지 6건 폴백 포함 |
 | `/notices` | 60 | revalidatePath로 작성·수정·삭제 후 즉시 갱신 |
 | `/notices/[id]` | 0 | 매 요청 fetch (read by id, 1회만) |
-| `/board` | 30 | revalidatePath로 작성·삭제 후 즉시 갱신 |
-| `/board/[id]` | 동적 | 조회수 증가 + 인접 글 fetch |
+| `/board` | 60 | 보드 인덱스 — 활성 보드 카드 |
+| `/board/[slug]` | 30 | revalidatePath로 작성·삭제 후 즉시 갱신 |
+| `/board/[slug]/[id]` | 동적 | 조회수 증가 + 인접 글 fetch |
 | 그 외 정적 페이지 | 빌드 시점 | 정적 콘텐츠만 |
 
 ## 7.7 게시판 / 새가족 폼 정책
 
-### 게시판 글쓰기 (`/board/new`)
+### 게시판 멀티 보드 모델
+- `boards` 테이블이 게시판 마스터. 각 보드는 `slug` (URL 식별자), `name`, `description`,
+  `category` (메뉴 분류 — 메뉴 동적화 시 사용), `write_permission` (anyone/member/admin),
+  `comment_enabled`, `secret_enabled`, `image_upload_enabled`, `sort_order`, `is_active`를 갖는다.
+- `board_posts.board_id`는 `boards(id)` FK (NOT NULL, ON DELETE CASCADE).
+- 1차 도입에서는 `write_permission='anyone'`과 `comment_enabled`, `image_upload_enabled`만 실제 동작.
+  `member`/`admin` 권한과 `secret_enabled` 비밀글은 다음 PR에서 적용 예정.
+- 활성 보드(`is_active=true`)만 `/board` 인덱스에 표시되고 sitemap에도 들어간다.
+
+### 게시판 인덱스 (`/board`)
+- 활성 보드들을 카드형 그리드로 표시. 카드 한 장당 name·category·description.
+- 활성 보드가 1개뿐이면 `/board/[slug]`로 즉시 redirect (인덱스 한 단계 스킵).
+
+### 게시판 글쓰기 (`/board/[slug]/new`)
 - 작성자 최대 20자, 제목 최대 120자, 본문 최대 5000자.
 - 본문 라벨 우측에 실시간 글자수 표시.
-- 이미지 첨부: Supabase Storage `board-images` 버킷에 업로드, public URL 저장.
+- 이미지 첨부: 보드의 `image_upload_enabled`가 true일 때만 노출.
+  Supabase Storage `board-images` 버킷에 업로드, public URL 저장.
+- 비활성 보드(`is_active=false`)는 글쓰기 거부.
 
-### 게시판 상세 (`/board/[id]`)
+### 게시판 상세 (`/board/[slug]/[id]`)
 - 진입 시 `incrementBoardView`를 fire-and-forget로 호출(응답 지연 없음).
-- 본문 하단에 이전/다음 글 네비게이션(created_at 기준 인접 글).
-- 하단 액션바: 목록 / 글쓰기 / (관리자만) 삭제.
+- post.board_id가 현재 slug와 다르면 정상 slug 경로로 redirect (호환성).
+- 본문 하단에 이전/다음 글 네비게이션 (같은 보드 안에서 created_at 기준 인접 글).
+- 댓글은 보드의 `comment_enabled`가 true일 때만 노출.
+- 하단 액션바: 목록 / 글쓰기 / 수정 / (관리자만) 삭제.
 
 ### 새가족 등록 (`/new-member`)
 - 필수: 이름, 연락처.
@@ -268,7 +287,7 @@ Playwright 결과물(`.playwright-mcp/`, `playwright-report/`, `test-results/`)�
 | 페이지 | 검색 컬럼 (ilike) |
 | --- | --- |
 | `/notices`, `/admin/notices` | title |
-| `/board`, `/admin/board`(어드민은 author_name까지) | title (어드민은 title \| author_name) |
+| `/board/[slug]`, `/admin/board`(어드민은 author_name까지) | title (어드민은 title \| author_name) — 어드민은 추가로 보드 셀렉터로 필터링 |
 | `/admin/new-members` | name \| phone \| invited_by |
 
 ### 빈 상태
@@ -352,7 +371,7 @@ node scripts/image-cycle-10.mjs # 이미지 업로드 + 게시글 사이클 10�
 - OpenGraph: type=website, ko_KR, siteName "가까운교회"
 - Twitter card: summary
 - robots: index=true, follow=true
-- `/board/[id]`, `/notices/[id]`는 `generateMetadata`로 동적 title + 본문 80자 description
+- `/board/[slug]/[id]`, `/notices/[id]`는 `generateMetadata`로 동적 title + 본문 80자 description
 
 ## 7.14 접근성
 
@@ -368,7 +387,10 @@ node scripts/image-cycle-10.mjs # 이미지 업로드 + 게시글 사이클 10�
 | --- | --- | --- |
 | `/` | `notices` (id, title, created_at, pinned) | 폴백 더미 6건 |
 | `/notices`, `/notices/[id]` | `notices` | 비어 있으면 "등록된 공지가 없습니다." |
-| `/board`, `/board/[id]`, `/board/new` | `board` (예정/현행 구현 참조) | 비어 있으면 "아직 등록된 게시글이 없습니다." |
+| `/board` | `boards` (활성 보드 목록) | 보드 0건이면 안내 |
+| `/board/[slug]`, `/board/[slug]/[id]`, `/board/[slug]/new` | `boards` + `board_posts` (board_id FK) | 비어 있으면 "아직 등록된 게시글이 없습니다." |
+| `/admin/boards` | `boards` (CRUD) | 게시판 마스터 관리 |
+| `/admin/board` | `board_posts` + `boards` (filter) | 보드 셀렉터로 필터링 |
 | `/admin/notices` | `notices` (CRUD) | — |
 | `/admin/new-members` | `new_members` | — |
 | 인증 | Supabase Auth | `isAdminEmail`로 관리자 판별 |

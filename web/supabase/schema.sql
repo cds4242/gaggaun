@@ -37,7 +37,31 @@ create table if not exists public.notices (
 
 create index if not exists notices_created_at_idx on public.notices (created_at desc);
 
--- 3) 자유 게시판
+-- 3) 게시판 (멀티 보드 마스터 + 게시글)
+create table if not exists public.boards (
+  id bigserial primary key,
+  slug text unique not null,                                       -- URL 식별자 (free, qna, prayer ...)
+  name text not null,                                              -- 표시명
+  description text,                                                -- 안내 문구
+  category text,                                                   -- 메뉴 분류 (예: '소식', '공동체')
+  write_permission text not null default 'anyone'
+    check (write_permission in ('anyone','member','admin')),       -- 1차 PR에서는 컬럼만 두고 anyone 만 적용
+  comment_enabled boolean not null default true,
+  secret_enabled boolean not null default false,
+  image_upload_enabled boolean not null default true,
+  sort_order integer not null default 0,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists boards_sort_idx on public.boards (sort_order, id);
+
+-- 기본 보드 시드 (자유게시판 1건). 없을 때만 삽입.
+insert into public.boards (slug, name, description, category, sort_order)
+select 'free', '자유게시판', '성도들의 따뜻한 나눔 공간', '소식', 0
+where not exists (select 1 from public.boards where slug = 'free');
+
 create table if not exists public.board_posts (
   id bigserial primary key,
   title text not null,
@@ -51,8 +75,18 @@ create table if not exists public.board_posts (
   updated_at timestamptz not null default now()
 );
 alter table public.board_posts add column if not exists password_hash text;
+alter table public.board_posts add column if not exists board_id bigint references public.boards(id) on delete cascade;
+
+-- 기존 게시글 일괄 이관: board_id가 비어있으면 자유게시판으로
+update public.board_posts
+   set board_id = (select id from public.boards where slug = 'free')
+ where board_id is null;
+
+-- 이관 완료 후 NOT NULL 강제. 이미 NOT NULL이면 ALTER는 no-op.
+alter table public.board_posts alter column board_id set not null;
 
 create index if not exists board_posts_created_at_idx on public.board_posts (created_at desc);
+create index if not exists board_posts_board_idx on public.board_posts (board_id, created_at desc);
 
 -- 4) 새가족 등록
 create table if not exists public.new_members (
@@ -78,8 +112,17 @@ create index if not exists new_members_created_at_idx on public.new_members (cre
 -- ───────────────────────────────────────────────────────────────
 alter table public.admins enable row level security;
 alter table public.notices enable row level security;
+alter table public.boards enable row level security;
 alter table public.board_posts enable row level security;
 alter table public.new_members enable row level security;
+
+-- boards: 누구나 조회, 작성/수정/삭제는 관리자만
+drop policy if exists boards_select on public.boards;
+create policy boards_select on public.boards for select using (true);
+
+drop policy if exists boards_modify on public.boards;
+create policy boards_modify on public.boards
+  for all using (public.is_admin()) with check (public.is_admin());
 
 -- admins: 본인이 admin일 때만 조회 가능
 drop policy if exists admins_select on public.admins;

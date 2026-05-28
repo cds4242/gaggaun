@@ -29,7 +29,6 @@ const STATIC_ROUTES: Array<{ path: string; changeFrequency: MetadataRoute.Sitema
   { path: "/media/gallery", changeFrequency: "weekly", priority: 0.6 },
   { path: "/notices", changeFrequency: "daily", priority: 0.9 },
   { path: "/board", changeFrequency: "daily", priority: 0.8 },
-  { path: "/board/new", changeFrequency: "yearly", priority: 0.4 },
   { path: "/new-member", changeFrequency: "monthly", priority: 0.8 },
 ];
 
@@ -45,11 +44,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const dynamicEntries: MetadataRoute.Sitemap = [];
   try {
     const sb = createPublicClient();
-    const [notices, posts, sermons] = await Promise.all([
+    const [notices, posts, sermons, boards] = await Promise.all([
       sb.from("notices").select("id, updated_at, created_at").order("created_at", { ascending: false }).limit(500),
-      sb.from("board_posts").select("id, updated_at, created_at").order("created_at", { ascending: false }).limit(500),
+      sb.from("board_posts").select("id, board_id, updated_at, created_at").order("created_at", { ascending: false }).limit(500),
       sb.from("sermons").select("id, updated_at, created_at").order("created_at", { ascending: false }).limit(500),
+      sb.from("boards").select("id, slug, is_active"),
     ]);
+    const boardRows = (boards.data as Array<{ id: number; slug: string; is_active: boolean }> | null) ?? [];
+    const slugByBoardId = new Map(boardRows.map((b) => [b.id, b.slug] as const));
+    for (const b of boardRows.filter((x) => x.is_active)) {
+      dynamicEntries.push({
+        url: `${SITE_URL}/board/${b.slug}`,
+        lastModified: now,
+        changeFrequency: "daily",
+        priority: 0.6,
+      });
+    }
     for (const n of (notices.data ?? []) as Array<{ id: number; updated_at: string | null; created_at: string }>) {
       dynamicEntries.push({
         url: `${SITE_URL}/notices/${n.id}`,
@@ -58,9 +68,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.6,
       });
     }
-    for (const p of (posts.data ?? []) as Array<{ id: number; updated_at: string | null; created_at: string }>) {
+    for (const p of (posts.data ?? []) as Array<{ id: number; board_id: number; updated_at: string | null; created_at: string }>) {
+      const slug = slugByBoardId.get(p.board_id);
+      if (!slug) continue;
       dynamicEntries.push({
-        url: `${SITE_URL}/board/${p.id}`,
+        url: `${SITE_URL}/board/${slug}/${p.id}`,
         lastModified: new Date(p.updated_at ?? p.created_at),
         changeFrequency: "weekly",
         priority: 0.5,

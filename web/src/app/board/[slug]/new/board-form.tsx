@@ -4,13 +4,21 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { FilePicker } from "@/components/file-picker";
-import { createBoardPost } from "../actions";
+import { createBoardPost } from "@/app/board/actions";
 
 const BUCKET = "board-images";
-const DRAFT_KEY = "board-draft-v1";
 
-export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: string; defaultEmail?: string }) {
+type Props = {
+  boardSlug: string;
+  boardName: string;
+  imageUploadEnabled: boolean;
+  defaultAuthor?: string;
+  defaultEmail?: string;
+};
+
+export function BoardForm({ boardSlug, boardName, imageUploadEnabled, defaultAuthor, defaultEmail }: Props) {
   const router = useRouter();
+  const DRAFT_KEY = `board-draft-v1:${boardSlug}`;
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [authorName, setAuthorName] = useState(defaultAuthor ?? "");
@@ -25,7 +33,6 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
   type Draft = { title?: string; content?: string; authorName?: string; ts?: number };
   const [pendingDraft, setPendingDraft] = useState<Draft | null>(null);
 
-  // 마운트 시 임시저장 발견 → confirm 대신 상단 카드로 노출
   useEffect(() => {
     if (restoredRef.current) return;
     restoredRef.current = true;
@@ -35,7 +42,7 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
       const d = JSON.parse(raw) as Draft;
       if (d.title || d.content || d.authorName) setPendingDraft(d);
     } catch {}
-  }, []);
+  }, [DRAFT_KEY]);
 
   function restoreDraft() {
     if (!pendingDraft) return;
@@ -51,7 +58,6 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
     setDraftMsg("임시 글을 비웠습니다.");
   }
 
-  // 자동 저장
   useEffect(() => {
     const id = setTimeout(() => {
       try {
@@ -62,7 +68,7 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
       } catch {}
     }, 800);
     return () => clearTimeout(id);
-  }, [title, content, authorName]);
+  }, [title, content, authorName, DRAFT_KEY]);
 
   async function onUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
@@ -110,6 +116,7 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
     }
     try {
       await createBoardPost({
+        board_slug: boardSlug,
         title,
         content,
         author_name: authorName,
@@ -148,74 +155,79 @@ export function BoardForm({ defaultAuthor, defaultEmail }: { defaultAuthor?: str
         </div>
       )}
       <form onSubmit={onSubmit} className="form-card">
-      <div className="form-row">
-        <label htmlFor="author">작성자<span className="req">*</span></label>
-        <input id="author" value={authorName} onChange={(e) => setAuthorName(e.target.value)} required maxLength={20} placeholder="이름 또는 닉네임" />
-      </div>
-      <div className="form-row">
-        <label htmlFor="password">비밀번호 (숫자 4자리)<span className="req">*</span></label>
-        <input
-          id="password"
-          type="password"
-          inputMode="numeric"
-          pattern="\d{4}"
-          maxLength={4}
-          value={password}
-          onChange={(e) => setPassword(e.target.value.replace(/\D/g, "").slice(0, 4))}
-          required
-          placeholder="예) 1234"
-          style={{ letterSpacing: ".4em" }}
-        />
-        <small style={{ color: "var(--mute)", fontSize: 12, marginTop: 6, display: "block" }}>
-          글 수정·삭제 시 사용됩니다. 비밀번호는 안전하게 암호화되어 저장됩니다.
-        </small>
-      </div>
-      <div className="form-row">
-        <label htmlFor="title">제목<span className="req">*</span></label>
-        <input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required maxLength={120} placeholder="제목을 입력하세요 (최대 120자)" />
-      </div>
-      <div className="form-row">
-        <label htmlFor="content">
-          내용<span className="req">*</span>
-          <span style={{ float: "right", fontSize: 12, color: "var(--mute)", fontWeight: 400 }}>{content.length}자</span>
-        </label>
-        <textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} rows={12} required maxLength={5000} placeholder="이웃에게 따뜻한 마음을 나누어 보세요." />
-      </div>
-      <div className="form-row">
-        <label>이미지 첨부 (선택)</label>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <FilePicker
-            onChange={onUpload}
-            multiple
-            accept="image/*"
-            disabled={uploading}
-            label="이미지 파일 선택"
-            hint={uploading ? "업로드 중..." : "여러 장 한 번에 선택 가능"}
-          />
-          {images.length > 0 && (
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
-              {images.map((img) => (
-                <li key={img.path} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", border: "1px solid var(--line)", background: "var(--ivory)" }}>
-                  <span style={{ fontSize: 13, color: "var(--ink)" }}>📎 {img.name}</span>
-                  <button type="button" onClick={() => removeImage(img.path)} style={{ color: "var(--burgundy)", fontSize: 13 }}>
-                    제거
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+        <div style={{ fontSize: 13, color: "var(--mute)", marginBottom: 6 }}>
+          <strong style={{ color: "var(--navy)" }}>{boardName}</strong>에 글을 작성합니다.
         </div>
-      </div>
-      {err && <p style={{ color: "var(--burgundy)", fontSize: 13 }}>{err}</p>}
-      {draftMsg && <p style={{ color: "var(--mute)", fontSize: 12, textAlign: "right" }}>{draftMsg}</p>}
-      <div className="form-actions" style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-        <button type="submit" disabled={submitting || uploading} className="btn-primary">
-          {submitting ? "등록 중..." : "등록"}
-        </button>
-        <button type="button" className="more-link" onClick={() => router.back()}>취소</button>
-        <button type="button" className="more-link" onClick={clearDraft} style={{ borderColor: "var(--burgundy)", color: "var(--burgundy)" }}>임시 글 비우기</button>
-      </div>
-    </form>
+        <div className="form-row">
+          <label htmlFor="author">작성자<span className="req">*</span></label>
+          <input id="author" value={authorName} onChange={(e) => setAuthorName(e.target.value)} required maxLength={20} placeholder="이름 또는 닉네임" />
+        </div>
+        <div className="form-row">
+          <label htmlFor="password">비밀번호 (숫자 4자리)<span className="req">*</span></label>
+          <input
+            id="password"
+            type="password"
+            inputMode="numeric"
+            pattern="\d{4}"
+            maxLength={4}
+            value={password}
+            onChange={(e) => setPassword(e.target.value.replace(/\D/g, "").slice(0, 4))}
+            required
+            placeholder="예) 1234"
+            style={{ letterSpacing: ".4em" }}
+          />
+          <small style={{ color: "var(--mute)", fontSize: 12, marginTop: 6, display: "block" }}>
+            글 수정·삭제 시 사용됩니다. 비밀번호는 안전하게 암호화되어 저장됩니다.
+          </small>
+        </div>
+        <div className="form-row">
+          <label htmlFor="title">제목<span className="req">*</span></label>
+          <input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required maxLength={120} placeholder="제목을 입력하세요 (최대 120자)" />
+        </div>
+        <div className="form-row">
+          <label htmlFor="content">
+            내용<span className="req">*</span>
+            <span style={{ float: "right", fontSize: 12, color: "var(--mute)", fontWeight: 400 }}>{content.length}자</span>
+          </label>
+          <textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} rows={12} required maxLength={5000} placeholder="이웃에게 따뜻한 마음을 나누어 보세요." />
+        </div>
+        {imageUploadEnabled && (
+          <div className="form-row">
+            <label>이미지 첨부 (선택)</label>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <FilePicker
+                onChange={onUpload}
+                multiple
+                accept="image/*"
+                disabled={uploading}
+                label="이미지 파일 선택"
+                hint={uploading ? "업로드 중..." : "여러 장 한 번에 선택 가능"}
+              />
+              {images.length > 0 && (
+                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
+                  {images.map((img) => (
+                    <li key={img.path} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", border: "1px solid var(--line)", background: "var(--ivory)" }}>
+                      <span style={{ fontSize: 13, color: "var(--ink)" }}>📎 {img.name}</span>
+                      <button type="button" onClick={() => removeImage(img.path)} style={{ color: "var(--burgundy)", fontSize: 13 }}>
+                        제거
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        )}
+        {err && <p style={{ color: "var(--burgundy)", fontSize: 13 }}>{err}</p>}
+        {draftMsg && <p style={{ color: "var(--mute)", fontSize: 12, textAlign: "right" }}>{draftMsg}</p>}
+        <div className="form-actions" style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+          <button type="submit" disabled={submitting || uploading} className="btn-primary">
+            {submitting ? "등록 중..." : "등록"}
+          </button>
+          <button type="button" className="more-link" onClick={() => router.back()}>취소</button>
+          <button type="button" className="more-link" onClick={clearDraft} style={{ borderColor: "var(--burgundy)", color: "var(--burgundy)" }}>임시 글 비우기</button>
+        </div>
+      </form>
     </>
   );
 }

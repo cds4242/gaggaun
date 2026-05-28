@@ -16,7 +16,7 @@ async function isCurrentUserAdmin(): Promise<boolean> {
   }
 }
 
-// 관리자 전용: 비번 없이 삭제
+// 관리자 전용: 비번 없이 삭제 (어드민/게시글 관리에서 호출)
 export async function deleteBoardPost(id: number) {
   await requireAdmin(`/admin/board`);
   const supabase = await createClient();
@@ -27,7 +27,7 @@ export async function deleteBoardPost(id: number) {
 }
 
 // 사이트 측 detail에서 본인 비번 삭제 + 관리자도 호출 가능 (비번 입력은 무시)
-export async function deleteBoardPostWithPassword(id: number, password: string) {
+export async function deleteBoardPostWithPassword(slug: string, id: number, password: string) {
   const admin = await isCurrentUserAdmin();
   const supabase = await createClient();
   if (!admin) {
@@ -43,15 +43,15 @@ export async function deleteBoardPostWithPassword(id: number, password: string) 
   }
   const { error } = await supabase.from("board_posts").delete().eq("id", id);
   if (error) throw new Error(error.message);
-  revalidatePath("/board");
-  revalidatePath(`/board/${id}`);
-  redirect("/board");
+  revalidatePath(`/board/${slug}`);
+  revalidatePath(`/board/${slug}/${id}`);
+  redirect(`/board/${slug}`);
 }
 
-// 기존 관리자 detail 삭제 (남겨두기)
-export async function deleteBoardPostAndGoList(id: number) {
+// 상세 페이지의 관리자 삭제 + 목록으로 이동
+export async function deleteBoardPostAndGoList(slug: string, id: number) {
   await deleteBoardPost(id);
-  redirect("/board");
+  redirect(`/board/${slug}`);
 }
 
 export async function createBoardComment(input: {
@@ -60,6 +60,7 @@ export async function createBoardComment(input: {
   author_name: string;
   content: string;
   password: string;
+  board_slug: string;
 }) {
   const author = input.author_name.trim();
   const body = input.content.trim();
@@ -77,20 +78,16 @@ export async function createBoardComment(input: {
     password_hash,
   });
   if (error) throw new Error(error.message);
-  revalidatePath(`/board/${input.post_id}`);
-}
-
-// 관리자 전용 (기존)
-export async function deleteBoardComment(comment_id: number, post_id: number) {
-  await requireAdmin(`/board/${post_id}`);
-  const supabase = await createClient();
-  const { error } = await supabase.from("board_comments").delete().eq("id", comment_id);
-  if (error) throw new Error(error.message);
-  revalidatePath(`/board/${post_id}`);
+  revalidatePath(`/board/${input.board_slug}/${input.post_id}`);
 }
 
 // 본인 비번 삭제 (관리자도 호출 가능 — 비번 입력은 우회)
-export async function deleteBoardCommentWithPassword(comment_id: number, post_id: number, password: string) {
+export async function deleteBoardCommentWithPassword(
+  comment_id: number,
+  post_id: number,
+  board_slug: string,
+  password: string,
+) {
   const admin = await isCurrentUserAdmin();
   const supabase = await createClient();
   if (!admin) {
@@ -106,5 +103,5 @@ export async function deleteBoardCommentWithPassword(comment_id: number, post_id
   }
   const { error } = await supabase.from("board_comments").delete().eq("id", comment_id);
   if (error) throw new Error(error.message);
-  revalidatePath(`/board/${post_id}`);
+  revalidatePath(`/board/${board_slug}/${post_id}`);
 }

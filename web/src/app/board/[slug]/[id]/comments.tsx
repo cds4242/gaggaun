@@ -16,11 +16,12 @@ export type CommentNode = {
 
 type Props = {
   postId: number;
+  boardSlug: string;
   comments: CommentNode[];
   admin: boolean;
 };
 
-export function Comments({ postId, comments, admin }: Props) {
+export function Comments({ postId, boardSlug, comments, admin }: Props) {
   const roots = comments.filter((c) => c.parent_id == null);
   const childrenMap = new Map<number, CommentNode[]>();
   for (const c of comments) {
@@ -42,26 +43,26 @@ export function Comments({ postId, comments, admin }: Props) {
       ) : (
         <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 14 }}>
           {roots.map((c) => (
-            <CommentItem key={c.id} comment={c} replies={childrenMap.get(c.id) ?? []} postId={postId} admin={admin} />
+            <CommentItem key={c.id} comment={c} replies={childrenMap.get(c.id) ?? []} postId={postId} boardSlug={boardSlug} admin={admin} />
           ))}
         </ul>
       )}
 
       <div style={{ marginTop: 24 }}>
-        <CommentForm postId={postId} />
+        <CommentForm postId={postId} boardSlug={boardSlug} />
       </div>
     </section>
   );
 }
 
-function DeleteCommentBtn({ commentId, postId, admin, label = "삭제" }: { commentId: number; postId: number; admin: boolean; label?: string }) {
+function DeleteCommentBtn({ commentId, postId, boardSlug, admin, label = "삭제" }: { commentId: number; postId: number; boardSlug: string; admin: boolean; label?: string }) {
   const [pending, start] = useTransition();
   function onClick() {
     if (pending) return;
     if (admin) {
       if (!window.confirm("이 댓글을 삭제하시겠습니까? (관리자)")) return;
       start(async () => {
-        try { await deleteBoardCommentWithPassword(commentId, postId, ""); }
+        try { await deleteBoardCommentWithPassword(commentId, postId, boardSlug, ""); }
         catch (e: unknown) { window.alert(e instanceof Error ? e.message : "삭제 실패"); }
       });
       return;
@@ -73,7 +74,7 @@ function DeleteCommentBtn({ commentId, postId, admin, label = "삭제" }: { comm
       return;
     }
     start(async () => {
-      try { await deleteBoardCommentWithPassword(commentId, postId, pw.trim()); }
+      try { await deleteBoardCommentWithPassword(commentId, postId, boardSlug, pw.trim()); }
       catch (e: unknown) { window.alert(e instanceof Error ? e.message : "삭제 실패"); }
     });
   }
@@ -84,7 +85,7 @@ function DeleteCommentBtn({ commentId, postId, admin, label = "삭제" }: { comm
   );
 }
 
-function CommentItem({ comment, replies, postId, admin }: { comment: CommentNode; replies: CommentNode[]; postId: number; admin: boolean }) {
+function CommentItem({ comment, replies, postId, boardSlug, admin }: { comment: CommentNode; replies: CommentNode[]; postId: number; boardSlug: string; admin: boolean }) {
   const [replyOpen, setReplyOpen] = useState(false);
 
   return (
@@ -97,7 +98,7 @@ function CommentItem({ comment, replies, postId, admin }: { comment: CommentNode
             <button type="button" onClick={() => setReplyOpen((v) => !v)} style={{ fontSize: 12, color: "var(--navy)" }}>
               {replyOpen ? "취소" : "답글"}
             </button>
-            <DeleteCommentBtn commentId={comment.id} postId={postId} admin={admin} />
+            <DeleteCommentBtn commentId={comment.id} postId={postId} boardSlug={boardSlug} admin={admin} />
           </div>
         </div>
         <RichText text={comment.content} className="comment-body" />
@@ -105,7 +106,7 @@ function CommentItem({ comment, replies, postId, admin }: { comment: CommentNode
 
       {replyOpen && (
         <div style={{ background: "var(--ivory)", padding: "12px 16px", borderTop: "1px solid var(--line)" }}>
-          <CommentForm postId={postId} parentId={comment.id} compact onDone={() => setReplyOpen(false)} />
+          <CommentForm postId={postId} boardSlug={boardSlug} parentId={comment.id} compact onDone={() => setReplyOpen(false)} />
         </div>
       )}
 
@@ -118,7 +119,7 @@ function CommentItem({ comment, replies, postId, admin }: { comment: CommentNode
                 <strong style={{ color: "var(--navy)", fontSize: 14 }}>{r.author_name}</strong>
                 <span style={{ color: "var(--mute)", fontSize: 12, fontFamily: "var(--sans)" }}>{formatDateTime(r.created_at)}</span>
                 <div style={{ marginLeft: "auto" }}>
-                  <DeleteCommentBtn commentId={r.id} postId={postId} admin={admin} />
+                  <DeleteCommentBtn commentId={r.id} postId={postId} boardSlug={boardSlug} admin={admin} />
                 </div>
               </div>
               <RichText text={r.content} className="comment-body" />
@@ -130,7 +131,7 @@ function CommentItem({ comment, replies, postId, admin }: { comment: CommentNode
   );
 }
 
-function CommentForm({ postId, parentId, compact = false, onDone }: { postId: number; parentId?: number; compact?: boolean; onDone?: () => void }) {
+function CommentForm({ postId, boardSlug, parentId, compact = false, onDone }: { postId: number; boardSlug: string; parentId?: number; compact?: boolean; onDone?: () => void }) {
   const [author, setAuthor] = useState("");
   const [content, setContent] = useState("");
   const [password, setPassword] = useState("");
@@ -146,7 +147,7 @@ function CommentForm({ postId, parentId, compact = false, onDone }: { postId: nu
     }
     start(async () => {
       try {
-        await createBoardComment({ post_id: postId, parent_id: parentId ?? null, author_name: author, content, password });
+        await createBoardComment({ post_id: postId, parent_id: parentId ?? null, author_name: author, content, password, board_slug: boardSlug });
         setAuthor(""); setContent(""); setPassword("");
         onDone?.();
       } catch (e: unknown) {

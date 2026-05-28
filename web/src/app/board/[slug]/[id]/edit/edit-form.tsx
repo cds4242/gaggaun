@@ -11,11 +11,15 @@ const BUCKET = "board-images";
 type ImageItem = { url: string; path?: string; name: string };
 
 export function BoardEditForm({
+  boardSlug,
+  imageUploadEnabled,
   postId,
   initialTitle,
   initialContent,
   initialImageUrls,
 }: {
+  boardSlug: string;
+  imageUploadEnabled: boolean;
   postId: number;
   initialTitle: string;
   initialContent: string;
@@ -79,6 +83,7 @@ export function BoardEditForm({
     setSubmitting(true);
     try {
       await updateBoardPost(postId, {
+        board_slug: boardSlug,
         title,
         content,
         image_urls: images.map((i) => i.url),
@@ -103,29 +108,31 @@ export function BoardEditForm({
         </label>
         <textarea id="content" value={content} onChange={(e) => setContent(e.target.value)} rows={12} required maxLength={5000} />
       </div>
-      <div className="form-row">
-        <label>이미지 첨부 (선택)</label>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <FilePicker
-            onChange={onUpload}
-            multiple
-            accept="image/*"
-            disabled={uploading}
-            label="이미지 파일 추가"
-            hint={uploading ? "업로드 중..." : "기존 이미지는 그대로 유지됩니다"}
-          />
-          {images.length > 0 && (
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
-              {images.map((img) => (
-                <li key={img.url} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", border: "1px solid var(--line)", background: "var(--ivory)" }}>
-                  <span style={{ fontSize: 13, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>📎 {img.name}</span>
-                  <button type="button" onClick={() => removeImage(img)} style={{ color: "var(--burgundy)", fontSize: 13 }}>제거</button>
-                </li>
-              ))}
-            </ul>
-          )}
+      {imageUploadEnabled && (
+        <div className="form-row">
+          <label>이미지 첨부 (선택)</label>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <FilePicker
+              onChange={onUpload}
+              multiple
+              accept="image/*"
+              disabled={uploading}
+              label="이미지 파일 추가"
+              hint={uploading ? "업로드 중..." : "기존 이미지는 그대로 유지됩니다"}
+            />
+            {images.length > 0 && (
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
+                {images.map((img) => (
+                  <li key={img.url} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", border: "1px solid var(--line)", background: "var(--ivory)" }}>
+                    <span style={{ fontSize: 13, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>📎 {img.name}</span>
+                    <button type="button" onClick={() => removeImage(img)} style={{ color: "var(--burgundy)", fontSize: 13 }}>제거</button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
-      </div>
+      )}
       <div className="form-row">
         <label htmlFor="password">비밀번호 (숫자 4자리)<span className="req">*</span></label>
         <input

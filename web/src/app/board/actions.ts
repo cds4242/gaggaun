@@ -16,6 +16,7 @@ async function isCurrentUserAdmin(): Promise<boolean> {
 }
 
 export async function createBoardPost(input: {
+  board_slug: string;
   title: string;
   content: string;
   author_name: string;
@@ -23,30 +24,41 @@ export async function createBoardPost(input: {
   image_urls: string[];
   password: string;
 }) {
-  const { title, content, author_name } = input;
+  const { title, content, author_name, board_slug } = input;
   if (!title.trim() || !content.trim() || !author_name.trim()) {
     throw new Error("제목/내용/작성자는 필수입니다.");
   }
-  const password_hash = await hashPassword(input.password);
   const supabase = await createClient();
+  const { data: board, error: boardErr } = await supabase
+    .from("boards")
+    .select("id, is_active, image_upload_enabled")
+    .eq("slug", board_slug)
+    .maybeSingle();
+  if (boardErr) throw new Error(boardErr.message);
+  if (!board) throw new Error("존재하지 않는 게시판입니다.");
+  if (!board.is_active) throw new Error("비활성화된 게시판에는 글을 작성할 수 없습니다.");
+  const images = board.image_upload_enabled ? input.image_urls : [];
+  const password_hash = await hashPassword(input.password);
   const { data, error } = await supabase
     .from("board_posts")
     .insert({
+      board_id: board.id,
       title: title.trim(),
       content,
       author_name: author_name.trim(),
       author_email: input.author_email ?? null,
-      image_urls: input.image_urls,
+      image_urls: images,
       password_hash,
     })
     .select("id")
     .single();
   if (error) throw new Error(error.message);
-  revalidatePath("/board");
-  redirect(`/board/${data.id}`);
+  revalidatePath(`/board/${board_slug}`);
+  redirect(`/board/${board_slug}/${data.id}`);
 }
 
 export async function updateBoardPost(id: number, input: {
+  board_slug: string;
   title: string;
   content: string;
   image_urls: string[];
@@ -78,9 +90,9 @@ export async function updateBoardPost(id: number, input: {
     })
     .eq("id", id);
   if (error) throw new Error(error.message);
-  revalidatePath("/board");
-  revalidatePath(`/board/${id}`);
-  redirect(`/board/${id}`);
+  revalidatePath(`/board/${input.board_slug}`);
+  revalidatePath(`/board/${input.board_slug}/${id}`);
+  redirect(`/board/${input.board_slug}/${id}`);
 }
 
 export async function incrementBoardView(id: number) {

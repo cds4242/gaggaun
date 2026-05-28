@@ -8,7 +8,7 @@ export const metadata = { title: "통합 검색 | 가까운교회" };
 export const revalidate = 60;
 
 type Notice = { id: number; title: string; created_at: string; pinned: boolean };
-type Post = { id: number; title: string; author_name: string; created_at: string };
+type Post = { id: number; title: string; author_name: string; created_at: string; board_id: number; boards: { slug: string; name: string } | { slug: string; name: string }[] | null };
 type Sermon = { id: number; title: string; preacher: string; verse: string | null; preached_at: string | null; created_at: string };
 
 export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
@@ -25,7 +25,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       const like = `%${q}%`;
       const [nRes, pRes, sRes] = await Promise.all([
         sb.from("notices").select("id, title, created_at, pinned").ilike("title", like).order("created_at", { ascending: false }).limit(20),
-        sb.from("board_posts").select("id, title, author_name, created_at").or(`title.ilike.${like},author_name.ilike.${like}`).order("created_at", { ascending: false }).limit(20),
+        sb.from("board_posts").select("id, title, author_name, created_at, board_id, boards(slug, name)").or(`title.ilike.${like},author_name.ilike.${like}`).order("created_at", { ascending: false }).limit(20),
         sb.from("sermons").select("id, title, preacher, verse, preached_at, created_at").or(`title.ilike.${like},preacher.ilike.${like},verse.ilike.${like}`).order("preached_at", { ascending: false, nullsFirst: false }).order("created_at", { ascending: false }).limit(20),
       ]);
       notices = (nRes.data as Notice[]) ?? [];
@@ -80,22 +80,31 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
               </SearchSection>
 
               <SearchSection
-                title="자유 게시판"
+                title="게시판"
                 count={posts.length}
-                seeAllHref={`/board?q=${encodeURIComponent(q)}`}
+                seeAllHref={`/board`}
               >
                 {posts.length === 0 ? (
                   <p className="search-empty">해당 게시글이 없습니다.</p>
                 ) : (
                   <ul className="search-list">
-                    {posts.map((p) => (
-                      <li key={p.id}>
-                        <Link href={`/board/${p.id}`}>
-                          <span className="tt">{highlight(p.title, q)}</span>
-                          <span className="meta">{p.author_name} · {formatDate(p.created_at)}</span>
-                        </Link>
-                      </li>
-                    ))}
+                    {posts.map((p) => {
+                      const b = Array.isArray(p.boards) ? (p.boards[0] ?? null) : p.boards;
+                      const slug = b?.slug;
+                      const href = slug ? `/board/${slug}/${p.id}` : `/board`;
+                      const boardName = b?.name;
+                      return (
+                        <li key={p.id}>
+                          <Link href={href}>
+                            <span className="tt">
+                              {boardName && <span className="tag" style={{ marginRight: 8, fontSize: 12, color: "var(--gold)" }}>{boardName}</span>}
+                              {highlight(p.title, q)}
+                            </span>
+                            <span className="meta">{p.author_name} · {formatDate(p.created_at)}</span>
+                          </Link>
+                        </li>
+                      );
+                    })}
                   </ul>
                 )}
               </SearchSection>

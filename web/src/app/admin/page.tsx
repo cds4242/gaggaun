@@ -21,7 +21,7 @@ export default async function AdminHome() {
     supabase.from("gallery_photos").select("*", { count: "exact", head: true }),
     supabase.from("sermons").select("*", { count: "exact", head: true }),
     supabase.from("notices").select("id, title, pinned, created_at").order("created_at", { ascending: false }).limit(5),
-    supabase.from("board_posts").select("id, title, author_name, created_at").order("created_at", { ascending: false }).limit(5),
+    supabase.from("board_posts").select("id, title, author_name, created_at, board_id, boards(slug, name)").order("created_at", { ascending: false }).limit(5),
     supabase.from("new_members").select("id, name, phone, created_at").order("created_at", { ascending: false }).limit(5),
     // 등록 후 7일 이상 지났는데 아직 pending인 새가족
     supabase
@@ -36,7 +36,11 @@ export default async function AdminHome() {
   const sc = scRes.error ? 0 : (scRes.count ?? 0);
 
   const notices = (latestNotices.data as Recent[]) ?? [];
-  const board = (latestBoard.data as (Recent & { author_name: string })[]) ?? [];
+  const boardRaw = (latestBoard.data as (Recent & { author_name: string; board_id: number; boards: { slug: string; name: string } | { slug: string; name: string }[] | null })[]) ?? [];
+  const board = boardRaw.map((p) => ({
+    ...p,
+    boards: Array.isArray(p.boards) ? (p.boards[0] ?? null) : p.boards,
+  }));
   const members = (latestMembers.data as { id: number; name: string; phone: string; created_at: string }[]) ?? [];
   const pendingMembers = (pendingMembersRes.data as Pending[]) ?? [];
 
@@ -111,13 +115,22 @@ export default async function AdminHome() {
           ) : (
             <table className="admin-table">
               <tbody>
-                {board.map((p) => (
-                  <tr key={p.id}>
-                    <td><Link href={`/board/${p.id}`} className="a-link">{p.title}</Link></td>
-                    <td className="muted" style={{ width: 90 }}>{p.author_name}</td>
-                    <td className="muted" style={{ width: 100, textAlign: "right" }}>{formatDate(p.created_at)}</td>
-                  </tr>
-                ))}
+                {board.map((p) => {
+                  const slug = p.boards?.slug;
+                  return (
+                    <tr key={p.id}>
+                      <td>
+                        {slug ? (
+                          <Link href={`/board/${slug}/${p.id}`} className="a-link">{p.title}</Link>
+                        ) : (
+                          <span>{p.title}</span>
+                        )}
+                      </td>
+                      <td className="muted" style={{ width: 90 }}>{p.author_name}</td>
+                      <td className="muted" style={{ width: 100, textAlign: "right" }}>{formatDate(p.created_at)}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}

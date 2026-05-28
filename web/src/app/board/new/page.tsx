@@ -1,25 +1,12 @@
-import { createClient } from "@/lib/supabase/server";
-import { PageHeader } from "@/components/page-header";
-import { BoardForm } from "./board-form";
+import { redirect } from "next/navigation";
+import { listActiveBoards } from "@/lib/boards";
 
-export const metadata = { title: "글쓰기 | 가까운교회 게시판" };
+// 호환 라우트: 기존 /board/new 링크는 활성 보드 인덱스로 보냅니다.
+// 보드가 1개면 그 보드의 글쓰기, 여러개면 인덱스로.
+export const dynamic = "force-dynamic";
 
-export default async function Page() {
-  let email: string | undefined;
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase.auth.getUser();
-    email = data.user?.email ?? undefined;
-  } catch {}
-
-  return (
-    <>
-      <PageHeader title="글쓰기" eyebrow="NEW POST" subtitle="자유 게시판에 글을 남깁니다" />
-      <section className="block">
-        <div className="wrap" style={{ maxWidth: 880 }}>
-          <BoardForm defaultAuthor={email?.split("@")[0]} defaultEmail={email} />
-        </div>
-      </section>
-    </>
-  );
+export default async function LegacyNewPostRedirect() {
+  const boards = await listActiveBoards();
+  if (boards.length === 1) redirect(`/board/${boards[0].slug}/new`);
+  redirect("/board");
 }

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createClient, isAdminEmail } from "@/lib/supabase/server";
 import { formatDateTime } from "@/lib/utils";
-import { incrementBoardView } from "../actions";
-import { deleteBoardPostAndGoList, deleteBoardPostWithPassword } from "./actions";
+import { getBoardBySlug } from "@/lib/boards";
+import { incrementBoardView } from "@/app/board/actions";
+import { deleteBoardPostAndGoList, deleteBoardPostWithPassword } from "@/app/board/[slug]/[id]/actions";
 import { Comments } from "./comments";
 import { DeleteButton } from "@/components/delete-button";
 import { PasswordDeleteButton } from "@/components/password-delete-button";
@@ -13,21 +14,25 @@ import { RichText } from "@/components/rich-text";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const { id } = await params;
+export async function generateMetadata({ params }: { params: Promise<{ slug: string; id: string }> }): Promise<Metadata> {
+  const { slug, id } = await params;
   try {
     const supabase = await createClient();
     const { data } = await supabase.from("board_posts").select("title, content").eq("id", id).maybeSingle();
     if (data) {
+      const board = await getBoardBySlug(slug);
       const desc = (data.content ?? "").toString().replace(/\s+/g, " ").slice(0, 80);
-      return { title: `${data.title} | 가까운교회 게시판`, description: desc };
+      return { title: `${data.title} | 가까운교회 ${board?.name ?? "게시판"}`, description: desc };
     }
   } catch {}
   return { title: "게시글 | 가까운교회" };
 }
 
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function Page({ params }: { params: Promise<{ slug: string; id: string }> }) {
+  const { slug, id } = await params;
+  const board = await getBoardBySlug(slug);
+  if (!board) notFound();
+
   const supabase = await createClient();
   const { data: post } = await supabase
     .from("board_posts")
@@ -36,16 +41,25 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     .maybeSingle();
   if (!post) notFound();
 
+  // 다른 보드의 글에 접근하면 정상 slug로 리다이렉트
+  if (post.board_id !== board.id) {
+    const { data: realBoard } = await supabase.from("boards").select("slug").eq("id", post.board_id).maybeSingle();
+    if (realBoard?.slug) redirect(`/board/${realBoard.slug}/${post.id}`);
+    notFound();
+  }
+
   incrementBoardView(Number(id)).catch(() => null);
 
   const { data: userData } = await supabase.auth.getUser();
   const admin = await isAdminEmail(userData.user?.email);
   const postId = post.id;
+  const basePath = `/board/${board.slug}`;
 
-  const [{ data: prevRow }, { data: nextRow }, { data: commentRows }] = await Promise.all([
+  const [{ data: prevRow }, { data: nextRow }, commentRes] = await Promise.all([
     supabase
       .from("board_posts")
       .select("id, title")
+      .eq("board_id", board.id)
       .lt("created_at", post.created_at)
       .order("created_at", { ascending: false })
       .limit(1)
@@ -53,23 +67,26 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     supabase
       .from("board_posts")
       .select("id, title")
+      .eq("board_id", board.id)
       .gt("created_at", post.created_at)
       .order("created_at", { ascending: true })
       .limit(1)
       .maybeSingle(),
-    supabase
-      .from("board_comments")
-      .select("id, post_id, parent_id, author_name, content, created_at")
-      .eq("post_id", postId)
-      .order("created_at", { ascending: true }),
+    board.comment_enabled
+      ? supabase
+          .from("board_comments")
+          .select("id, post_id, parent_id, author_name, content, created_at")
+          .eq("post_id", postId)
+          .order("created_at", { ascending: true })
+      : Promise.resolve({ data: [] }),
   ]);
-  const comments = commentRows ?? [];
+  const comments = commentRes.data ?? [];
 
   return (
     <section className="block">
       <div className="wrap" style={{ maxWidth: 920 }}>
-        <Link href="/board" style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--mute)" }}>
-          ← 게시판 목록
+        <Link href={basePath} style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--mute)" }}>
+          ← {board.name} 목록
         </Link>
         <div className="prose-box" style={{ marginTop: 24 }}>
           <h2 style={{ marginBottom: 16 }}>{post.title}</h2>
@@ -97,14 +114,20 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
             </div>
           )}
 
-          <Comments postId={postId} comments={comments} admin={admin} />
+          {board.comment_enabled ? (
+            <Comments postId={postId} boardSlug={board.slug} comments={comments} admin={admin} />
+          ) : (
+            <p style={{ marginTop: 40, paddingTop: 28, borderTop: "1px solid var(--line)", color: "var(--mute)", fontSize: 13 }}>
+              이 게시판은 댓글 기능이 꺼져 있습니다.
+            </p>
+          )}
 
           <nav style={{ marginTop: 40, borderTop: "1px solid var(--line)" }} aria-label="이전·다음 글">
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
               <li style={{ display: "grid", gridTemplateColumns: "80px 1fr", padding: "14px 4px", borderBottom: "1px solid var(--line)", alignItems: "center", gap: 12 }}>
                 <span style={{ fontSize: 12, color: "var(--mute)", fontFamily: "var(--sans)", letterSpacing: ".05em" }}>↑ 다음 글</span>
                 {nextRow ? (
-                  <Link href={`/board/${nextRow.id}`} className="a-link" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nextRow.title}</Link>
+                  <Link href={`${basePath}/${nextRow.id}`} className="a-link" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nextRow.title}</Link>
                 ) : (
                   <span style={{ color: "var(--mute)" }}>최신 글입니다.</span>
                 )}
@@ -112,7 +135,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
               <li style={{ display: "grid", gridTemplateColumns: "80px 1fr", padding: "14px 4px", alignItems: "center", gap: 12 }}>
                 <span style={{ fontSize: 12, color: "var(--mute)", fontFamily: "var(--sans)", letterSpacing: ".05em" }}>↓ 이전 글</span>
                 {prevRow ? (
-                  <Link href={`/board/${prevRow.id}`} className="a-link" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prevRow.title}</Link>
+                  <Link href={`${basePath}/${prevRow.id}`} className="a-link" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prevRow.title}</Link>
                 ) : (
                   <span style={{ color: "var(--mute)" }}>가장 오래된 글입니다.</span>
                 )}
@@ -121,20 +144,20 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           </nav>
 
           <div style={{ marginTop: 24, paddingTop: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <Link href="/board" className="more-link">목록</Link>
-            <Link href="/board/new" className="more-link">글쓰기</Link>
-            <Link href={`/board/${postId}/edit`} className="more-link">수정</Link>
+            <Link href={basePath} className="more-link">목록</Link>
+            <Link href={`${basePath}/new`} className="more-link">글쓰기</Link>
+            <Link href={`${basePath}/${postId}/edit`} className="more-link">수정</Link>
             <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
               {admin ? (
                 <DeleteButton
-                  action={async () => { "use server"; await deleteBoardPostAndGoList(postId); }}
+                  action={async () => { "use server"; await deleteBoardPostAndGoList(board.slug, postId); }}
                   confirmMessage="이 게시글을 정말 삭제하시겠습니까? (관리자)"
                   className="more-link"
                   style={{ borderColor: "var(--burgundy)", color: "var(--burgundy)", background: "transparent" }}
                 />
               ) : (
                 <PasswordDeleteButton
-                  action={async (pw) => { "use server"; await deleteBoardPostWithPassword(postId, pw); }}
+                  action={async (pw) => { "use server"; await deleteBoardPostWithPassword(board.slug, postId, pw); }}
                   label="삭제"
                   promptMessage="글 삭제: 작성 시 입력한 비밀번호 4자리"
                   className="more-link"

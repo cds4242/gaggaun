@@ -4,6 +4,59 @@
 
 ---
 
+## 2026-05-28 — 멀티 보드 1차 (마이그레이션 + 관리자 CRUD + 라우트 이동)
+
+### 한 줄 요약
+
+단일 `board_posts`만 있던 게시판을 멀티 보드 구조로 전환. `boards` 마스터 테이블
+도입, `/admin/boards` CRUD UI 추가, 공개 라우트를 `/board/[slug]/...`로 이동.
+권한·비밀글·메뉴 동적화는 다음 PR로 미룸.
+
+### 스키마 (`web/supabase/schema.sql`)
+
+- `boards` 신규 테이블: `slug` (unique), `name`, `description`, `category`,
+  `write_permission` (anyone/member/admin), `comment_enabled`, `secret_enabled`,
+  `image_upload_enabled`, `sort_order`, `is_active`.
+- `boards`에 RLS — 누구나 select, `is_admin()`만 insert/update/delete.
+- 시드: `slug='free'` 자유게시판 1건 자동 삽입.
+- `board_posts.board_id` (FK, NOT NULL) 추가. 기존 글은 `free` 보드로 일괄 이관.
+- 인덱스: `board_posts (board_id, created_at desc)` 추가.
+
+### 관리자 UI
+
+- `/admin/boards` — 보드 목록(글 수 카운트 포함), 옵션 표시(댓글/비밀글/이미지).
+- `/admin/boards/new`, `/admin/boards/[id]/edit` — 공용 `BoardForm` 사용.
+- 글 있는 보드 삭제 차단 (사용자 데이터 보호).
+- `/admin/board`는 "게시글 관리"로 의미 변경 + 보드 셀렉터 필터 추가.
+- `AdminSide` 메뉴: "게시판 관리" / "게시글 관리" 2개로 분리.
+
+### 공개 라우트
+
+- `/board` → 활성 보드 카드 인덱스 (보드 1개면 자동 redirect).
+- `/board/[slug]` → 보드별 글 목록 (기존 글 목록 로직 이관).
+- `/board/[slug]/[id]` → 상세. 다른 slug로 진입 시 정상 slug로 redirect.
+  댓글은 `comment_enabled=true` 보드만 노출.
+- `/board/[slug]/new`, `/board/[slug]/[id]/edit` — 새 위치.
+- `/board/new` → 활성 보드 1개면 그 보드 글쓰기로, 다수면 인덱스로.
+- 기존 `/board/[id]` 폴더는 삭제 (`[slug]`와 동적 segment 충돌 — Next.js 16
+  ambiguous route 에러). 옛 ID 링크 호환은 다음 PR에서 미들웨어로 처리.
+
+### 부수 변경
+
+- `sitemap.ts`: 활성 보드 + 글에 slug 포함한 URL 생성.
+- `search/page.tsx`, `admin/page.tsx`: `boards(slug, name)` 조인으로 링크 갱신.
+- `scripts/seed-50.mjs`, `scripts/image-cycle-10.mjs`: board_id 기본값 자동 세팅.
+- `lib/boards.ts` 신규 — `getBoardBySlug`, `listActiveBoards` 헬퍼.
+
+### 다음 PR 예정
+
+- `write_permission='member'/'admin'` 실제 동작.
+- 비밀글(`secret_enabled`) — 목록 마스킹 + 비번 prompt + 세션 캐시.
+- NAV 동적화 — `category` 기반으로 "교회소식" 드롭다운에 활성 보드 자동 노출.
+- 기존 `/board/[id]` 미들웨어 redirect (필요 시).
+
+---
+
 ## 2026-05-21 (7) — 1차 프로젝트 종료 (헤더/검색/관리자 UX 마무리 + 상품화 검토)
 
 ### 한 줄 요약

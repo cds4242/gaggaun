@@ -25,6 +25,14 @@ const sb = createClient(url, key, { auth: { persistSession: false } });
 const BUCKET = "board-images";
 const SITE = process.env.SITE_BASE || "http://localhost:3000";
 
+// 시드 글이 들어갈 기본 보드 (없으면 만든다)
+let { data: defaultBoard } = await sb.from("boards").select("id, slug").eq("slug", "free").maybeSingle();
+if (!defaultBoard) {
+  const ins = await sb.from("boards").insert({ slug: "free", name: "자유게시판", description: "성도들의 따뜻한 나눔 공간", category: "소식", sort_order: 0 }).select("id, slug").single();
+  if (ins.error) { console.error(ins.error); process.exit(1); }
+  defaultBoard = ins.data;
+}
+
 // 색상이 다른 100×100 PNG를 동적으로 만들고 싶지만, 의존성을 안 쓰려고
 // 가장 작은 유효 PNG(1x1 빨강) 바이너리 사용. 매번 동일.
 const RED_1x1_PNG = Buffer.from(
@@ -52,6 +60,7 @@ for (let i = 1; i <= 10; i++) {
   const { data: post, error: insErr } = await sb
     .from("board_posts")
     .insert({
+      board_id: defaultBoard.id,
       title: `[이미지테스트] 사이클 #${String(i).padStart(2, "0")}`,
       content: `자동 이미지 업로드 사이클 #${i} — ${new Date().toISOString()}`,
       author_name: "이미지테스터",
@@ -78,7 +87,7 @@ for (let i = 1; i <= 10; i++) {
   // 4) 사이트 detail 페이지 GET (조회수 증가 + 이미지 렌더 HTML 포함)
   let pageStatus = 0, pageBytes = 0, hasImgTag = false;
   try {
-    const r = await fetch(`${SITE}/board/${post.id}?nocache=${Date.now()}`);
+    const r = await fetch(`${SITE}/board/${defaultBoard.slug}/${post.id}?nocache=${Date.now()}`);
     pageStatus = r.status;
     const html = await r.text();
     pageBytes = html.length;
