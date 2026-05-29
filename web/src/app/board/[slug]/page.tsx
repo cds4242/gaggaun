@@ -128,6 +128,7 @@ export default async function BoardListPage({
                     <span>{formatDateTime(p.created_at)}</span>
                     <span className="dot">·</span>
                     <span>조회 {p.views}</span>
+                    <span className="meta-no">#{total - from - i}</span>
                   </div>
                 </div>
               );
