@@ -462,3 +462,35 @@ RLS: select public / modify is_admin. fetcher (`lib/site-settings.ts`)는 DB 실
 (어감 다듬기, 단락 변경, 이미지 교체, 섹션 순서 등)에 집중.
 
 JSON을 Claude Code에 던지면 카탈로그 ID로 코드 위치를 찾아 텍스트/이미지를 수정.
+
+## 10. 관리자 운영매뉴얼 (`web/public/manual/`)
+
+비개발자(담임목사·사무 담당자)가 직접 보고 따라 할 수 있는 운영매뉴얼. Next.js 라우터를
+거치지 않는 정적 HTML + 이미지로 배포한다.
+
+| 항목 | 값 |
+| --- | --- |
+| 정적 위치 | `web/public/manual/index.html` + `web/public/manual/assets/*.png` |
+| 직접 URL | `https://gaggaun.vercel.app/manual/` |
+| 어드민 진입 | 사이드바 맨 아래 "운영 매뉴얼" → 새 창(`target="_blank"`) |
+| 원본 | 루트 `ADMIN_GUIDE.html` (편집용). 배포 시 `web/public/manual/index.html`에 복사하고 이미지 경로 `manual-assets/` → `assets/` 치환 |
+| 캡쳐 자산 원본 | 루트 `manual-assets/` (어드민 15장 + 사이트 9장) |
+| 캡쳐 재현 | `scripts/capture-admin.mjs`, `scripts/capture-public.mjs` (Playwright 헤드리스, 1440×900, 모바일 412 추가) |
+
+구성: 13장(시작 안내 / 로그인 / 대시보드 / 금주 정보 / 공지 / 게시판 / 게시글 /
+설교 / 갤러리 / 새가족 / 상단 메뉴 / 피드백 도구 / FAQ). 각 화면은 **어드민 ↔ 사이트
+2장 짝**으로 보여주고, 빨간 번호 박스로 영역별 사용법을 설명한다.
+
+사이드바 라우팅 정책: `AdminSide`의 `items[]`에서 `external: true`면 `<a target="_blank">`,
+그 외엔 `<Link>`. 외부 링크는 사이드바 활성 상태 계산에서 제외.
+
+## 11. 푸터 관리자 진입 (`AdminCorner` in `SiteFooter`)
+
+모든 페이지 푸터의 '바로가기' 컬럼 맨 아래에 위치. 로그인 여부에 따라:
+
+- 비로그인: `관리자` (→ `/login`)
+- 로그인: `관리자 · 로그아웃`
+
+스타일: `.foot-col .admin-corner`로 범위 한정. 가는 골드 구분선(top border 1px,
+`rgba(199,158,95,0.18)`) + 어두운 푸터 톤(흰색 55% alpha, 골드 호버). 메인 페이지에서
+외따로 떠 있던 인스턴스는 제거됨.

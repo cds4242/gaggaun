@@ -4,6 +4,52 @@
 
 ---
 
+## 2026-05-30 — 관리자 운영매뉴얼(목사님용) + 푸터 관리자 진입 통합
+
+### 한 줄 요약
+
+비개발자(담임목사님)도 보고 따라 할 수 있는 운영매뉴얼 HTML을 만들어 `web/public/manual/`에 정적 배포, 어드민 사이드바에 "운영 매뉴얼" 항목 추가(새 창 열림). 메인 페이지에 외따로 떠 있던 관리자 코너를 사이트 푸터 '바로가기' 컬럼 맨 아래로 옮겨 자연스럽게 통합.
+
+### 변경
+
+- `web/public/manual/index.html` — 13장 운영매뉴얼(로그인 / 대시보드 / 금주 정보 / 공지 / 게시판 / 게시글 / 설교 / 갤러리 / 새가족 / 상단 메뉴 / 피드백 도구 / FAQ). 각 화면을 **어드민 ↔ 사이트 2장 짝**으로 보여주고, 빨간 번호 박스로 영역 설명.
+- `web/public/manual/assets/` — 캡쳐 24장 (어드민 15 + 사이트 9). Playwright 헤드리스로 라이브 사이트에서 자동 수집.
+- `web/src/components/admin-side.tsx` — 사이드바에 "운영 매뉴얼"(`/manual/`, target=_blank) 추가. 외부 링크는 `<a>`, 내부는 `<Link>`로 분기.
+- `web/src/components/site-footer.tsx` — '바로가기' 컬럼 맨 아래에 `<AdminCorner />` 추가.
+- `web/src/app/page.tsx` — 홈에서 외따로 렌더되던 `<AdminCorner />` 제거(import도 제거).
+- `web/src/app/globals.css` — `.admin-corner` 스타일 푸터 톤(네이비 배경 + 골드 호버 + 가는 구분선)으로 재작성. 셀렉터는 `.foot-col .admin-corner`로 범위 한정.
+- `scripts/capture-admin.mjs`, `scripts/capture-public.mjs` — 매뉴얼 캡쳐 재현용 (admin/admin1234로 로그인 후 데스크탑 1440×900, 홈은 모바일 412 추가).
+- `scripts/seed-for-manual.mjs`, `scripts/site-settings.sql` — 운영 DB에 매뉴얼 캡쳐용 시드(금주 정보 site_settings, 기도제목 보드). site_settings 테이블은 운영 Supabase에서 SQL Editor로 1회 생성.
+- `manual-assets/` — 매뉴얼 원본 자산(루트). 배포에는 `web/public/manual/assets/` 사본 사용.
+- `ADMIN_GUIDE.html` — 루트의 매뉴얼 원본(편집용). 배포본은 `web/public/manual/index.html`.
+
+### 운영 DB 변경
+
+- `site_settings` 테이블 신규 생성(스키마는 `web/supabase/schema.sql`의 7) 블록과 동일)
+- `boards` 테이블에 `prayer` 슬러그 1건 추가
+- `site_settings` 금주 정보 4행(`home.strip.*`) 시드
+
+### 한 줄 요약
+
+보드 리스트(`/board/[slug]`)의 모바일(≤560px) 카드 레이아웃을 손봤다. 제목 폰트와 패딩을 키우고, 우측 상단 큰 번호를 메타 줄 끝의 `#N`(작은 회색)으로 옮겨 제목 가독성을 확보. 데스크탑/태블릿 레이아웃은 손대지 않음.
+
+### 변경
+
+- `web/src/app/globals.css` — `@media (max-width:560px)` 블록 재작성
+  - 그리드(`1fr auto`, areas `title/no/meta`) → `display:block` 단순 스택
+  - 패딩 14/16 → 18/18
+  - 제목 `a` 폰트 15px/1.4 → **16px/1.5**, 자간 `-0.01em`
+  - `.c-no` 숨김(우측 상단 큰 번호 제거)
+  - `.c-meta-mobile` 12px → 13px, line-height 1.4
+  - `.c-meta-mobile .meta-no { margin-left:auto; font-size:12px; opacity:.75; tabular-nums }` 추가 — 메타 줄 우측 끝에 `#N`
+- `web/src/app/board/[slug]/page.tsx` — `c-meta-mobile`에 `<span className="meta-no">#{total - from - i}</span>` 한 줄 추가
+
+### 배포
+
+- `83ee896` `main` 푸시 완료. Vercel 빌드 후 라이브에서 `meta-no` 클래스 40회(20글 × 2) 마크업·CSS 모두 반영 확인.
+
+---
+
 ## 2026-05-28 (4) — 상단 메뉴 어드민 + 피드백 도구를 어드민 안으로
 
 ### 한 줄 요약
