@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const items = [
+type Item = { href: string; label: string; external?: boolean };
+
+const items: Item[] = [
   { href: "/admin", label: "대시보드" },
   { href: "/admin/this-week", label: "금주 정보" },
   { href: "/admin/nav", label: "상단 메뉴" },
@@ -14,6 +16,7 @@ const items = [
   { href: "/admin/gallery", label: "갤러리" },
   { href: "/admin/new-members", label: "새가족 등록" },
   { href: "/admin/feedback-tool", label: "피드백 도구" },
+  { href: "/manual/", label: "운영 매뉴얼", external: true },
 ];
 
 export function AdminSide() {
@@ -28,12 +31,19 @@ export function AdminSide() {
     <nav className="admin-side" aria-label="관리자 메뉴">
       <div className="group">
         <div className="lbl">MENU</div>
-        {items.map((i) => (
-          <Link key={i.href} href={i.href} className={isActive(i.href) ? "active" : ""}>
-            <span className="ico">◆</span>
-            <span>{i.label}</span>
-          </Link>
-        ))}
+        {items.map((i) =>
+          i.external ? (
+            <a key={i.href} href={i.href} target="_blank" rel="noopener noreferrer">
+              <span className="ico">📖</span>
+              <span>{i.label}</span>
+            </a>
+          ) : (
+            <Link key={i.href} href={i.href} className={isActive(i.href) ? "active" : ""}>
+              <span className="ico">◆</span>
+              <span>{i.label}</span>
+            </Link>
+          ),
+        )}
       </div>
     </nav>
   );
