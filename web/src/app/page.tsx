@@ -4,7 +4,6 @@ import { formatDate } from "@/lib/utils";
 import { SITE_PHOTOS, PHOTO_BUILDING_EXTERIOR } from "@/lib/site-photos";
 import { getThisWeekSettings } from "@/lib/site-settings";
 import { SermonPlayer } from "@/components/sermon-player";
-import { AdminCorner } from "@/components/admin-corner";
 
 export const revalidate = 60;
 
@@ -441,7 +440,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-      <AdminCorner />
     </>
   );
 }

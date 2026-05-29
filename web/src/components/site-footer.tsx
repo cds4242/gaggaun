@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminCorner } from "@/components/admin-corner";
 
 export function SiteFooter() {
   return (
@@ -50,6 +51,7 @@ export function SiteFooter() {
               <li><Link href="/notices">공지사항</Link></li>
               <li><Link href="/new-member">새가족 등록</Link></li>
             </ul>
+            <AdminCorner />
           </div>
         </div>
 

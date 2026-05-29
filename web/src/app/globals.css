@@ -1,23 +1,28 @@
 @import "tailwindcss";
 /* mobile data card refresh - dark panel-head fix - theme toggle segmented - admin corner - naver search */
 
-/* 메인 페이지 우측 하단 관리자 링크 — 메인 페이지에만 사용 */
-.admin-corner{
-  display:flex; align-items:center; gap:6px;
-  justify-content:flex-end;
-  max-width:1240px; margin:0 auto;
-  padding:14px 32px 18px;
-  font-family:var(--sans); font-size:11px;
-  color:var(--mute);
+/* 푸터 '바로가기' 컬럼 맨 아래 — 관리자 진입 (작고 차분하게) */
+.foot-col .admin-corner{
+  margin-top:18px;
+  padding-top:14px;
+  border-top:1px solid rgba(199,158,95,0.18);
+  display:flex; align-items:center; gap:8px;
+  font-family:var(--sans);
+  font-size:12px;
+  letter-spacing:0.04em;
 }
-.admin-corner a{
-  color:var(--mute);
-  padding:4px 6px;
-  transition:color .15s;
+.foot-col .admin-corner a{
+  font-family:var(--sans);
+  font-size:12px;
+  color:rgba(255,255,255,0.55);
+  padding:2px 0;
+  letter-spacing:0.02em;
+  transition:color .18s;
 }
-.admin-corner a:hover{ color:var(--navy) }
-.admin-corner .dot{ color:var(--line) }
-@media (max-width:520px){ .admin-corner{padding:10px 20px 14px} }
+.foot-col .admin-corner a:hover{ color:var(--gold-2) }
+.foot-col .admin-corner .dot{
+  color:rgba(199,158,95,0.30);
+}
 
 :root{
   --paper:#f8f3e8;
