@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/page-header";
 
-export const metadata = { title: "주일예배 | 가까운교회" };
+export const metadata = { title: "주일예배 | 가까운 서광교회" };
 
 const rows = [
   { c: "1부 예배", t: "주일 오전 09:00", p: "본당 · 2층", n: "조용히 시작하는 이른 아침 예배" },

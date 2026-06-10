@@ -1,6 +1,6 @@
 import { requireAdmin } from "@/lib/auth";
 
-export const metadata = { title: "피드백 도구 | 가까운교회" };
+export const metadata = { title: "피드백 도구 | 가까운 서광교회" };
 
 export default async function Page() {
   await requireAdmin("/admin/feedback-tool");

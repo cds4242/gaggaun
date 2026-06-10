@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/page-header";
 
-export const metadata = { title: "주일학교 | 가까운교회" };
+export const metadata = { title: "주일학교 | 가까운 서광교회" };
 
 const grades = [
   { k: "유치부", a: "5 – 7세", t: "주일 11:00 · 교육관 1층", n: "찬양과 놀이로 만나는 첫 신앙 교육" },

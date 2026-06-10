@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/page-header";
 
-export const metadata = { title: "구역모임 | 가까운교회" };
+export const metadata = { title: "구역모임 | 가까운 서광교회" };
 
 const cells = [
   { n: "1구역", l: "운양동 한강아이파크 · 호반써밋",  t: "격주 금 19:30",  h: "한정원 권사 댁" },

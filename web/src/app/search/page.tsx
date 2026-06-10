@@ -4,7 +4,7 @@ import { SearchBar } from "@/components/search-bar";
 import { createPublicClient } from "@/lib/supabase/public";
 import { formatDate } from "@/lib/utils";
 
-export const metadata = { title: "통합 검색 | 가까운교회" };
+export const metadata = { title: "통합 검색 | 가까운 서광교회" };
 export const revalidate = 60;
 
 type Notice = { id: number; title: string; created_at: string; pinned: boolean };

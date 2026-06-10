@@ -24,8 +24,8 @@ type Post = {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const board = await getBoardBySlug(slug);
-  if (!board) return { title: "게시판 | 가까운교회" };
-  return { title: `${board.name} | 가까운교회` };
+  if (!board) return { title: "게시판 | 가까운 서광교회" };
+  return { title: `${board.name} | 가까운 서광교회` };
 }
 
 export default async function BoardListPage({

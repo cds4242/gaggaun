@@ -1,9 +1,9 @@
 import { PageHeader } from "@/components/page-header";
 
-export const metadata = { title: "교회 연혁 | 가까운교회" };
+export const metadata = { title: "교회 연혁 | 가까운 서광교회" };
 
 const history = [
-  { year: "2015", events: ["가까운교회 설립", "김포 운양동 임시 예배 시작"] },
+  { year: "2015", events: ["가까운 서광교회 설립", "김포 운양동 임시 예배 시작"] },
   { year: "2017", events: ["한강신도시 본당 입당", "주일학교 신설"] },
   { year: "2019", events: ["청년부 출범", "지역사회 섬김 사역 시작"] },
   { year: "2022", events: ["선교부 발족", "온라인 예배 시스템 구축"] },

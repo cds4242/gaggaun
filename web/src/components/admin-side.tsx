@@ -13,6 +13,8 @@ const items: Item[] = [
   { href: "/admin/boards", label: "게시판 관리" },
   { href: "/admin/board", label: "게시글 관리" },
   { href: "/admin/sermons", label: "설교 영상" },
+  { href: "/admin/choir/hallelujah", label: "할렐루야 성가대" },
+  { href: "/admin/choir/hosanna", label: "호산나 성가대" },
   { href: "/admin/gallery", label: "갤러리" },
   { href: "/admin/new-members", label: "새가족 등록" },
   { href: "/admin/feedback-tool", label: "피드백 도구" },

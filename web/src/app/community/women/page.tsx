@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/page-header";
 
-export const metadata = { title: "여전도회 | 가까운교회" };
+export const metadata = { title: "여전도회 | 가까운 서광교회" };
 
 const flow = [
   { d: "매월 25일 (또는 가까운 주중)", v: "월례 모임 · 교회 2층" },
@@ -19,7 +19,7 @@ export default function Page() {
             <h2>섬김과 기도로 교회를 떠받칩니다</h2>
             <div className="deco"><span className="line" /><span className="dot" /><span className="line" /></div>
             <p>
-              여전도회는 가까운교회의 청장년 자매들이 함께 모이는 공동체입니다.
+              여전도회는 가까운 서광교회의 청장년 자매들이 함께 모이는 공동체입니다.
               월례 모임에서 한 달의 기도 제목을 나누고 함께 식사합니다.
             </p>
             <p>

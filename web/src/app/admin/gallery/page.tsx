@@ -6,7 +6,7 @@ import { Pagination } from "@/components/pagination";
 import { DeleteButton } from "@/components/delete-button";
 import { deleteGalleryPhoto } from "./actions";
 
-export const metadata = { title: "갤러리 관리 | 가까운교회" };
+export const metadata = { title: "갤러리 관리 | 가까운 서광교회" };
 
 const PAGE_SIZE = 24;
 

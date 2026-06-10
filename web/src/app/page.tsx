@@ -155,8 +155,8 @@ export default async function Home() {
               <span className="gold">함께 걸어가는 교회</span>
             </h1>
             <blockquote className="verse">
-              “수고하고 무거운 짐 진 자들아 다 내게로 오라<br />내가 너희를 쉬게 하리라.”
-              <cite>— 마태복음 11:28</cite>
+              “하나님의 영광을 위하여 위대한 일을 시도하라.”
+              <cite>— 고린도전서 10:31</cite>
             </blockquote>
             <div className="hero-ctas">
               <Link className="btn-gold" href="/worship/sunday">예배 시간 안내</Link>
@@ -270,7 +270,7 @@ export default async function Home() {
                 다만, 우리 동네에서 가장 ‘가까운’ 교회가 되기를 기도합니다.”
               </p>
               <p>
-                가까운교회는 2015년, 김포 한강신도시 운양동의 작은 상가 한 칸에서 일곱 가정으로 시작되었습니다.
+                가까운 서광교회는 2015년, 김포 한강신도시 운양동의 작은 상가 한 칸에서 일곱 가정으로 시작되었습니다.
                 화려한 무대보다 한 사람의 영혼을 더 귀하게 여기며, 매주 예배 안에서 하나님과 가까이, 이웃과 가까이 살아가는 길을 함께 걷고자 합니다.
               </p>
               <p>
@@ -364,14 +364,14 @@ export default async function Home() {
         <div className="wrap">
           <div className="sec-title">
             <span className="eyebrow">Photo Gallery</span>
-            <h2>가까운교회의 순간들</h2>
+            <h2>가까운 서광교회의 순간들</h2>
             <div className="deco"><span className="line" /><span className="dot" /><span className="line" /></div>
             <p>함께 드린 예배, 함께 나눈 식탁, 함께 걸은 골목.<br />우리 교회의 작은 이야기를 담았습니다.</p>
           </div>
 
           <div className="gallery-grid">
             {SITE_PHOTOS.slice(0, 8).map((url, i) => {
-              const cap = galleryCaptions[i] ?? { t: "가까운교회", d: "" };
+              const cap = galleryCaptions[i] ?? { t: "가까운 서광교회", d: "" };
               return (
                 <div key={url} className={`gtile t${i + 1}`} style={{ backgroundImage: `url(${url})`, backgroundSize: "cover", backgroundPosition: "center" }}>
                   <div className="ovl">
@@ -398,7 +398,7 @@ export default async function Home() {
             <div className="map-wrap">
               <iframe
                 src={`https://www.google.com/maps?q=${encodeURIComponent("경기 김포시 김포한강11로 234")}&hl=ko&z=16&output=embed`}
-                title="가까운교회 지도"
+                title="가까운 서광교회 지도"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 allowFullScreen
@@ -419,7 +419,7 @@ export default async function Home() {
             </div>
             <div className="loc-info">
               <span className="eyebrow">Address &amp; Contact</span>
-              <h3>가까운교회</h3>
+              <h3>가까운 서광교회</h3>
               <div className="sub">경기 김포시 한강신도시 운양동</div>
               <dl>
                 <dt>주소</dt>

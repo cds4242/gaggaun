@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/page-header";
 
-export const metadata = { title: "비전과 사명 | 가까운교회" };
+export const metadata = { title: "비전과 사명 | 가까운 서광교회" };
 
 const items = [
   { n: "01", t: "예배하는 교회", en: "Worship", d: "신령과 진정으로 드리는 예배 안에서 하나님을 깊이 만나는 교회를 추구합니다." },
@@ -11,7 +11,7 @@ const items = [
 export default function Page() {
   return (
     <>
-      <PageHeader title="비전과 사명" eyebrow="OUR VISION" subtitle="가까운교회가 추구하는 세 가지 가치" editSection="vision" />
+      <PageHeader title="비전과 사명" eyebrow="OUR VISION" subtitle="가까운 서광교회가 추구하는 세 가지 가치" editSection="vision" />
       <section className="block" data-edit-section="vision.values">
         <div className="wrap">
           <div className="idx-grid">

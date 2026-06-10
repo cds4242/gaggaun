@@ -103,17 +103,20 @@ Playwright 결과물(`.playwright-mcp/`, `playwright-report/`, `test-results/`)�
 | 그룹 | 경로 | 비고 |
 | --- | --- | --- |
 | 홈 | `/` | 히어로, 빠른 진입, 예배 안내, 인사말, 최근 설교, 공지, 주간 일정, 갤러리, 오시는 길 종합 |
-| 교회소개 | `/about`, `/about/greeting`, `/about/history`, `/about/location`, `/about/vision` | 비전·사명은 3개 카드(`.idx-grid`) |
-| 예배 | `/worship`, `/worship/sunday`, `/worship/wednesday`, `/worship/friday`, `/worship/dawn` | |
-| 사역 | `/ministry`, `/ministry/children`, `/ministry/mission`, `/ministry/praise`, `/ministry/youth` | |
-| 공동체 | `/community`, `/community/cell`, `/community/men`, `/community/women` | |
-| 미디어 | `/media`, `/media/sermon`, `/media/gallery` | |
-| 공지 | `/notices`, `/notices/[id]` | Supabase `notices` 테이블에서 로드, 데이터 없으면 더미 6건 표시 |
+| 교회 소개 | `/about`, `/about/greeting`, `/about/vision`, `/about/history`, `/about/people`, `/about/location` | `/about/people`은 교역자/장로/안수집사·권사 표 |
+| 예배와 말씀 | `/worship`, `/worship/sunday`, `/worship/wednesday`(삼일 오전예배), `/worship/friday`(금요 기도회), `/worship/dawn` | 라우트는 그대로, 라벨만 갱신 |
+| 교회 소식 | `/notices`, `/notices/[id]`, `/notices/bulletin`(주보), `/notices/new-member`(새신자 소개) | 공지 본문 외 주보 목록·새가족 환영 페이지. 앨범은 `/media/gallery` 재사용 |
+| 선교봉사 | `/missions`, `/missions/domestic`, `/missions/global`, `/missions/local` | 인덱스 카드 + 협력교회/선교지/지역 섬김 표 |
+| 다음 세대 | `/next-gen`, `/next-gen/kindergarten`, `/next-gen/children`(유초등부), `/next-gen/youth`(중고등부), `/next-gen/college`(청년부) | |
+| 찬양 | `/praise`, `/praise/pistis` | 찬양팀 소개(소개형) |
+| 찬양 영상 게시판 | `/praise/hallelujah`, `/praise/hosanna` | `sermons` 테이블 `category` 컬럼으로 분기. YouTube 영상 카드 그리드 + 검색·페이지네이션. 영상 상세는 `/media/sermon/[id]` 공통 사용(카테고리에 따라 목록 링크/수정 링크 자동 분기) |
+| 미디어 | `/media`, `/media/sermon`, `/media/gallery` | `/media/sermon`은 `category IS NULL`만 노출(설교영상 전용) |
 | 게시판 인덱스 | `/board` | 활성 보드 카드 목록 (활성 보드가 1개면 그 보드로 자동 리다이렉트) |
 | 게시판 보드 | `/board/[slug]`, `/board/[slug]/new`, `/board/[slug]/[id]`, `/board/[slug]/[id]/edit` | slug는 `boards.slug` (예: `free`, `qna`, `prayer`) |
 | 새가족 | `/new-member`, `/new-member/thanks` | |
 | 인증 | `/login`, `/logout` | bare 레이아웃 (헤더/푸터 미표시) |
-| 관리 | `/admin`, `/admin/boards`, `/admin/boards/new`, `/admin/boards/[id]/edit`, `/admin/board`, `/admin/new-members`, `/admin/notices`, `/admin/notices/new`, `/admin/notices/[id]/edit` | `isAdminEmail`로 인증된 사용자에게만 진입 허용 (예정), bare 레이아웃. `/admin/boards`는 게시판 마스터 CRUD, `/admin/board`는 게시글 관리(보드 필터 지원). |
+| 관리 | `/admin`, `/admin/boards`, `/admin/boards/new`, `/admin/boards/[id]/edit`, `/admin/board`, `/admin/new-members`, `/admin/notices`, `/admin/notices/new`, `/admin/notices/[id]/edit`, `/admin/sermons`, `/admin/sermons/new`, `/admin/sermons/[id]/edit`, `/admin/choir/[choir]`, `/admin/choir/[choir]/new`, `/admin/choir/[choir]/[id]/edit` | `isAdminEmail` 인증 필요, bare 레이아웃. `/admin/choir/[choir]`는 `choir`가 `hallelujah`/`hosanna`만 허용(그 외 404). 폼은 `SermonForm`을 라벨 커스터마이즈로 재사용. |
+| 옛 라우트 (메뉴 미노출) | `/community/*`, `/ministry/*` | URL로는 살아있음. 메뉴에서는 6개 새 카테고리로 대체됨 |
 
 레이아웃 결정은 `web/src/components/site-shell.tsx`에서 `pathname`이
 `/admin` 또는 `/login`으로 시작하면 헤더·푸터·유틸바를 숨긴다.
@@ -243,9 +246,9 @@ Playwright 결과물(`.playwright-mcp/`, `playwright-report/`, `test-results/`)�
 - 활성 보드(`is_active=true`)만 `/board` 인덱스에 표시되고 sitemap에도 들어간다.
 
 ### 보드 → 상단 메뉴 자동 주입
-- `boards.category`가 `TOP_CATEGORIES` (`lib/nav.ts` — 교회소개/예배안내/설교말씀/
-  교회소식/공동체) 중 하나와 **정확히 일치**하면 해당 드롭다운 children 끝에
-  `{ label: board.name, href: '/board/[slug]' }`로 자동 추가된다.
+- `boards.category`가 `TOP_CATEGORIES` (`lib/nav.ts` — 교회 소개/예배와 말씀/
+  교회 소식/선교봉사/다음 세대/찬양) 중 하나와 **정확히 일치**하면 해당 드롭다운
+  children 끝에 `{ label: board.name, href: '/board/[slug]' }`로 자동 추가된다.
 - 일치하지 않거나 비어있으면 메뉴에 노출되지 않고 URL로만 접근 가능.
 - 구현: `lib/boards-nav.ts:buildNav()`가 server에서 활성 보드를 합쳐 `NavItem[]`을 만들고,
   `app/layout.tsx`가 SiteShell → SiteHeader에 prop으로 전달.
@@ -407,7 +410,16 @@ node scripts/image-cycle-10.mjs # 이미지 업로드 + 게시글 사이클 10�
 | `/admin/nav` | `site_settings` (key=nav.tree, JSON) | 코드 정적 NAV로 fallback |
 | `/admin/feedback-tool` | (없음 — `/edit-tool/` iframe 임베드) | — |
 | `/admin/new-members` | `new_members` | — |
+| `/media/sermon`, `/media/sermon/[id]` | `sermons` (`category IS NULL`) | 테이블 없으면 "준비 중" 안내 |
+| `/praise/hallelujah`, `/praise/hosanna` | `sermons` (`category='hallelujah'`/`'hosanna'`) | 동일 |
+| `/admin/sermons`, `/admin/choir/[choir]` | `sermons` (CRUD, 카테고리 필터로 분기) | — |
 | 인증 | Supabase Auth | `isAdminEmail`로 관리자 판별 |
+
+`sermons` 테이블의 `category` 컬럼은 nullable text. NULL이면 설교 영상,
+`'hallelujah'`/`'hosanna'`면 성가대 영상으로 분기된다. 같은 row 스키마/같은
+상세 페이지(`/media/sermon/[id]`)를 재사용하되, 목록/인접 탐색/어드민 진입
+링크만 카테고리에 따라 분기. 새 카테고리 추가 시 어드민 라우트의
+`CHOIR_META` 화이트리스트, 폼 라벨, `actions.ts`의 `CHOIR_CATEGORIES` 세 곳을 동기화.
 
 `createClient()` 호출이 실패하면 홈은 try/catch로 빈 배열을 반환하고
 폴백 데이터로 렌더링한다 (`web/src/app/page.tsx`).

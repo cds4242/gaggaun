@@ -6,7 +6,7 @@ import { Pagination } from "@/components/pagination";
 import { SearchBar } from "@/components/search-bar";
 import { StatusSelect } from "./status-select";
 
-export const metadata = { title: "새가족 관리 | 가까운교회" };
+export const metadata = { title: "새가족 관리 | 가까운 서광교회" };
 
 const PAGE_SIZE = 20;
 const STATUSES = [

@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/page-header";
 import { SectionGrid } from "@/components/section-grid";
 
-export const metadata = { title: "교회소개 | 가까운교회" };
+export const metadata = { title: "교회소개 | 가까운 서광교회" };
 
 const items = [
   { label: "인사말", en: "Greeting", href: "/about/greeting", desc: "담임목사가 드리는 짧은 편지" },
@@ -13,7 +13,7 @@ const items = [
 export default function Page() {
   return (
     <>
-      <PageHeader title="교회소개" eyebrow="ABOUT US" subtitle="가까운교회를 소개합니다" editSection="about" />
+      <PageHeader title="교회소개" eyebrow="ABOUT US" subtitle="가까운 서광교회를 소개합니다" editSection="about" />
       <section className="block" data-edit-section="about.items">
         <div className="wrap">
           <SectionGrid items={items} />

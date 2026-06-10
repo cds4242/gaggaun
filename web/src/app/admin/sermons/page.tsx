@@ -7,7 +7,7 @@ import { SearchBar } from "@/components/search-bar";
 import { DeleteButton } from "@/components/delete-button";
 import { deleteSermon } from "./actions";
 
-export const metadata = { title: "설교 관리 | 가까운교회" };
+export const metadata = { title: "설교 관리 | 가까운 서광교회" };
 
 const PAGE_SIZE = 20;
 
@@ -22,6 +22,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
   let qb = supabase
     .from("sermons")
     .select("id, title, preacher, badge, youtube_id, preached_at, created_at", { count: "exact" })
+    .is("category", null)
     .order("preached_at", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
   if (q) qb = qb.or(`title.ilike.%${q}%,preacher.ilike.%${q}%`);

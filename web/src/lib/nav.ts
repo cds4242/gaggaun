@@ -9,61 +9,73 @@ export type NavItem = {
 // 상위 메뉴 라벨 목록. boards.category가 이 중 하나와 정확히 일치할 때만
 // 해당 드롭다운에 보드가 자동 노출된다. /admin/boards 폼의 셀렉터에서도 같은 값 사용.
 export const TOP_CATEGORIES = [
-  "교회소개",
-  "예배안내",
-  "설교말씀",
-  "교회소식",
-  "공동체",
+  "교회 소개",
+  "예배와 말씀",
+  "교회 소식",
+  "선교봉사",
+  "다음 세대",
+  "찬양",
 ] as const;
 export type TopCategory = typeof TOP_CATEGORIES[number];
 
 export const NAV: NavItem[] = [
   {
-    label: "교회소개",
+    label: "교회 소개",
     href: "/about",
     children: [
       { label: "인사말", href: "/about/greeting" },
       { label: "비전과 사명", href: "/about/vision" },
-      { label: "교회 연혁", href: "/about/history" },
+      { label: "연혁", href: "/about/history" },
+      { label: "섬기는 사람들", href: "/about/people" },
       { label: "오시는 길", href: "/about/location" },
     ],
   },
   {
-    label: "예배안내",
+    label: "예배와 말씀",
     href: "/worship",
     children: [
-      { label: "주일예배", href: "/worship/sunday" },
-      { label: "수요예배", href: "/worship/wednesday" },
-      { label: "새벽예배", href: "/worship/dawn" },
-      { label: "금요철야", href: "/worship/friday" },
+      { label: "주일 예배", href: "/worship/sunday" },
+      { label: "삼일 오전예배", href: "/worship/wednesday" },
+      { label: "금요 기도회", href: "/worship/friday" },
+      { label: "새벽 예배", href: "/worship/dawn" },
     ],
   },
   {
-    label: "설교말씀",
-    href: "/media/sermon",
-    children: [
-      { label: "설교 영상", href: "/media/sermon" },
-      { label: "갤러리", href: "/media/gallery" },
-    ],
-  },
-  {
-    label: "교회소식",
+    label: "교회 소식",
     href: "/notices",
     children: [
       { label: "공지사항", href: "/notices" },
-      { label: "갤러리", href: "/media/gallery" },
-      // 자유게시판 등 게시판은 boards 테이블에서 동적으로 주입됨 (lib/boards-nav.ts).
+      { label: "주보", href: "/notices/bulletin" },
+      { label: "앨범", href: "/media/gallery" },
+      { label: "새신자 소개", href: "/notices/new-member" },
     ],
   },
   {
-    label: "공동체",
-    href: "/community",
+    label: "선교봉사",
+    href: "/missions",
     children: [
-      { label: "구역모임", href: "/community/cell" },
-      { label: "남선교회", href: "/community/men" },
-      { label: "여전도회", href: "/community/women" },
-      { label: "청년부", href: "/ministry/youth" },
-      { label: "주일학교", href: "/ministry/children" },
+      { label: "국내 선교", href: "/missions/domestic" },
+      { label: "해외 선교", href: "/missions/global" },
+      { label: "지역 섬김", href: "/missions/local" },
+    ],
+  },
+  {
+    label: "다음 세대",
+    href: "/next-gen",
+    children: [
+      { label: "유치부", href: "/next-gen/kindergarten" },
+      { label: "유초등부", href: "/next-gen/children" },
+      { label: "중고등부", href: "/next-gen/youth" },
+      { label: "청년부", href: "/next-gen/college" },
+    ],
+  },
+  {
+    label: "찬양",
+    href: "/praise",
+    children: [
+      { label: "할렐루야 성가대", href: "/praise/hallelujah" },
+      { label: "호산나 성가대", href: "/praise/hosanna" },
+      { label: "피스티스 찬양팀", href: "/praise/pistis" },
     ],
   },
 ];

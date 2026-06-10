@@ -8,7 +8,7 @@ import { DeleteButton } from "@/components/delete-button";
 import { deleteBoardPost } from "@/app/board/[slug]/[id]/actions";
 import { BoardFilter } from "./board-filter";
 
-export const metadata = { title: "게시글 관리 | 가까운교회" };
+export const metadata = { title: "게시글 관리 | 가까운 서광교회" };
 
 const PAGE_SIZE = 20;
 

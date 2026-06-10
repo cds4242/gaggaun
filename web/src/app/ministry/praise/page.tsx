@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/page-header";
 
-export const metadata = { title: "찬양대 | 가까운교회" };
+export const metadata = { title: "찬양대 | 가까운 서광교회" };
 
 const teams = [
   { n: "시온 찬양대",  t: "주일 1 · 2부 본 예배", r: "토 20:00 · 본당", a: "성인 누구나" },

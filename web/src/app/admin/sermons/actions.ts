@@ -81,3 +81,60 @@ export async function deleteSermon(id: number) {
   revalidatePath("/admin/sermons");
   revalidatePath("/");
 }
+
+// ─── 성가대 영상 (sermons 테이블 재사용, category 컬럼으로 구분) ───
+
+const CHOIR_CATEGORIES = ["hallelujah", "hosanna"] as const;
+type ChoirCategory = (typeof CHOIR_CATEGORIES)[number];
+
+function assertChoir(c: string): asserts c is ChoirCategory {
+  if (!(CHOIR_CATEGORIES as readonly string[]).includes(c)) {
+    throw new Error("올바르지 않은 성가대 카테고리입니다.");
+  }
+}
+
+function choirPublicPath(c: ChoirCategory) {
+  return `/praise/${c}`;
+}
+
+export async function createChoirVideo(category: string, formData: FormData) {
+  assertChoir(category);
+  await requireAdmin(`/admin/choir/${category}/new`);
+  const payload = parsePayload(formData);
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("sermons")
+    .insert({ ...payload, category })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+  revalidatePath(choirPublicPath(category));
+  revalidatePath(`/admin/choir/${category}`);
+  redirect(`/media/sermon/${data.id}`);
+}
+
+export async function updateChoirVideo(category: string, id: number, formData: FormData) {
+  assertChoir(category);
+  await requireAdmin(`/admin/choir/${category}/${id}/edit`);
+  const payload = parsePayload(formData);
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("sermons")
+    .update({ ...payload, category, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath(choirPublicPath(category));
+  revalidatePath(`/media/sermon/${id}`);
+  revalidatePath(`/admin/choir/${category}`);
+  redirect(`/media/sermon/${id}`);
+}
+
+export async function deleteChoirVideo(category: string, id: number) {
+  assertChoir(category);
+  await requireAdmin(`/admin/choir/${category}`);
+  const supabase = await createClient();
+  const { error } = await supabase.from("sermons").delete().eq("id", id).eq("category", category);
+  if (error) throw new Error(error.message);
+  revalidatePath(choirPublicPath(category));
+  revalidatePath(`/admin/choir/${category}`);
+}

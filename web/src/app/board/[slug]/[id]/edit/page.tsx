@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getBoardBySlug } from "@/lib/boards";
 import { BoardEditForm } from "./edit-form";
 
-export const metadata = { title: "글 수정 | 가까운교회 게시판" };
+export const metadata = { title: "글 수정 | 가까운 서광교회 게시판" };
 export const dynamic = "force-dynamic";
 
 export default async function Page({ params }: { params: Promise<{ slug: string; id: string }> }) {

@@ -3,7 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { SermonForm } from "../sermon-form";
 import { createSermon } from "../actions";
 
-export const metadata = { title: "설교 등록 | 가까운교회" };
+export const metadata = { title: "설교 등록 | 가까운 서광교회" };
 
 export default async function Page() {
   await requireAdmin("/admin/sermons/new");

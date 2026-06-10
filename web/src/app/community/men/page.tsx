@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/page-header";
 
-export const metadata = { title: "남선교회 | 가까운교회" };
+export const metadata = { title: "남선교회 | 가까운 서광교회" };
 
 const flow = [
   { d: "매월 첫째 주일", v: "예배 후 점심 · 정기 모임" },

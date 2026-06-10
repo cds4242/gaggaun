@@ -3,7 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { getSettingsByGroup } from "@/lib/site-settings";
 import { updateThisWeek } from "./actions";
 
-export const metadata = { title: "금주 정보 관리 | 가까운교회" };
+export const metadata = { title: "금주 정보 관리 | 가까운 서광교회" };
 export const dynamic = "force-dynamic";
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ saved?: string }> }) {

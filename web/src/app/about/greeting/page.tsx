@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/page-header";
 import { ProseSection } from "@/components/section-grid";
-export const metadata = { title: "인사말 | 가까운교회" };
+export const metadata = { title: "인사말 | 가까운 서광교회" };
 
 export default function Page() {
   return (
@@ -9,7 +9,7 @@ export default function Page() {
       <div data-edit-section="greeting.body"><ProseSection eyebrow="A Letter" title="가까운 교회, 가까운 마음">
         <p>주님의 평강이 함께 하시기를 기도합니다.</p>
         <p>
-          가까운교회는 김포 한강신도시 운양동에 위치한, 이웃과 가깝고 하나님과 가까운 공동체입니다.
+          가까운 서광교회는 김포 한강신도시 운양동에 위치한, 이웃과 가깝고 하나님과 가까운 공동체입니다.
           매주 새로운 한 주를 시작하기 전에 우리는 예배 안에서 하나님의 음성을 듣고,
           말씀을 통해 삶의 방향을 다시 잡습니다.
         </p>

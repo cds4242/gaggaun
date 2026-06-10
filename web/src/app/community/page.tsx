@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/page-header";
 import { SectionGrid } from "@/components/section-grid";
-export const metadata = { title: "공동체 | 가까운교회" };
+export const metadata = { title: "공동체 | 가까운 서광교회" };
 const items = [
   { label: "구역모임", en: "Cell", href: "/community/cell", desc: "지역별 작은 모임" },
   { label: "남선교회", en: "Men", href: "/community/men", desc: "남성 성도들의 모임" },

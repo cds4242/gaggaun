@@ -12,16 +12,16 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gaggaun.vercel.app
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "가까운교회 | 김포 한강신도시 운양동",
+    default: "가까운 서광교회 | 김포 한강신도시 운양동",
     template: "%s",
   },
   description:
-    "김포 한강신도시 운양동에 위치한 가까운교회 공식 홈페이지입니다. 매주 주일·수요·새벽 예배와 다음 세대 사역, 따뜻한 공동체를 소개합니다.",
-  applicationName: "가까운교회",
+    "김포 한강신도시 운양동에 위치한 가까운 서광교회 공식 홈페이지입니다. 매주 주일·수요·새벽 예배와 다음 세대 사역, 따뜻한 공동체를 소개합니다.",
+  applicationName: "가까운 서광교회",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "가까운교회",
+    title: "가까운 서광교회",
   },
   icons: {
     icon: [
@@ -33,9 +33,9 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    siteName: "가까운교회",
-    title: "가까운교회 | 김포 한강신도시 운양동",
-    description: "이웃과 가까이, 하나님과 가까이. 가까운교회 공식 홈페이지.",
+    siteName: "가까운 서광교회",
+    title: "가까운 서광교회 | 김포 한강신도시 운양동",
+    description: "이웃과 가까이, 하나님과 가까이. 가까운 서광교회 공식 홈페이지.",
     locale: "ko_KR",
     url: SITE_URL,
     images: [
@@ -43,14 +43,14 @@ export const metadata: Metadata = {
         url: pwa.ogImage,
         width: 1200,
         height: 630,
-        alt: "가까운교회 — 김포 한강신도시 운양동",
+        alt: "가까운 서광교회 — 김포 한강신도시 운양동",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "가까운교회",
-    description: "김포 한강신도시 운양동 가까운교회.",
+    title: "가까운 서광교회",
+    description: "김포 한강신도시 운양동 가까운 서광교회.",
     images: [pwa.ogImage],
   },
   robots: { index: true, follow: true },

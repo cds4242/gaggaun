@@ -3,9 +3,9 @@ import pwa from "@/lib/pwa-assets.json";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "가까운교회",
-    short_name: "가까운교회",
-    description: "김포 한강신도시 운양동 가까운교회 — 매주 예배, 공지, 게시판, 갤러리, 설교 영상",
+    name: "가까운 서광교회",
+    short_name: "가까운 서광교회",
+    description: "김포 한강신도시 운양동 가까운 서광교회 — 매주 예배, 공지, 게시판, 갤러리, 설교 영상",
     start_url: "/",
     display: "standalone",
     background_color: "#f8f3e8",

@@ -1,9 +1,9 @@
 import { PageHeader } from "@/components/page-header";
 
-export const metadata = { title: "오시는 길 | 가까운교회" };
+export const metadata = { title: "오시는 길 | 가까운 서광교회" };
 
 const ADDRESS = "경기 김포시 김포한강11로 234";
-const PLACE = "가까운교회";
+const PLACE = "가까운 서광교회";
 
 const naverMapUrl = `https://map.naver.com/p/search/${encodeURIComponent(ADDRESS)}`;
 const kakaoMapUrl = `https://map.kakao.com/?q=${encodeURIComponent(ADDRESS)}`;
@@ -43,7 +43,7 @@ export default function Page() {
 
             <div className="loc-info">
               <span className="eyebrow">Address &amp; Contact</span>
-              <h3>가까운교회</h3>
+              <h3>가까운 서광교회</h3>
               <div className="sub">경기 김포시 한강신도시 운양동</div>
               <dl>
                 <dt>주소</dt>

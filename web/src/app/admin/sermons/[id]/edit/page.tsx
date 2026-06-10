@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { SermonForm } from "../../sermon-form";
 import { updateSermon } from "../../actions";
 
-export const metadata = { title: "설교 수정 | 가까운교회" };
+export const metadata = { title: "설교 수정 | 가까운 서광교회" };
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id: rawId } = await params;

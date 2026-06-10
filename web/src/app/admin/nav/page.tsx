@@ -4,7 +4,7 @@ import { getNavFromDb } from "@/lib/nav";
 import { NavEditor } from "./nav-editor";
 import { resetNavToDefault } from "./actions";
 
-export const metadata = { title: "상단 메뉴 관리 | 가까운교회" };
+export const metadata = { title: "상단 메뉴 관리 | 가까운 서광교회" };
 export const dynamic = "force-dynamic";
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ saved?: string; reset?: string }> }) {

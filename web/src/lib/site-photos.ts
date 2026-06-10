@@ -1,4 +1,4 @@
-// 네이버 장소(가까운교회)에 등록된 사진을 Supabase Storage 'site' 버킷에 복제한 결과.
+// 네이버 장소(가까운 서광교회)에 등록된 사진을 Supabase Storage 'site' 버킷에 복제한 결과.
 // 출처: https://map.naver.com/p/search/.../place/1580416066 (장소 등록 사진)
 // 변경 가능 — 실제 사진을 사용하려면 src/lib/site-photos.json을 다시 시드하거나 여기를 직접 수정.
 

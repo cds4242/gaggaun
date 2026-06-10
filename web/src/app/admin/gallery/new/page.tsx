@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { GalleryUploadForm } from "./upload-form";
 
-export const metadata = { title: "사진 업로드 | 가까운교회" };
+export const metadata = { title: "사진 업로드 | 가까운 서광교회" };
 
 export default async function Page() {
   await requireAdmin("/admin/gallery/new");

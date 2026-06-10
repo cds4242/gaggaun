@@ -245,11 +245,15 @@ create table if not exists public.sermons (
   duration text,                     -- 'mm:ss' 형식
   summary text,
   preached_at date,                  -- 설교 일자
+  category text,                     -- null=설교영상 / 'hallelujah'=할렐루야 성가대 / 'hosanna'=호산나 성가대
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+-- 기존 배포 환경에 컬럼 없을 수 있어 idempotent하게 추가
+alter table public.sermons add column if not exists category text;
 create index if not exists sermons_preached_at_idx on public.sermons (preached_at desc);
 create index if not exists sermons_created_at_idx on public.sermons (created_at desc);
+create index if not exists sermons_category_idx on public.sermons (category, preached_at desc);
 
 alter table public.sermons enable row level security;
 

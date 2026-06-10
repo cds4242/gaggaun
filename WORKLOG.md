@@ -4,6 +4,69 @@
 
 ---
 
+## 2026-06-10 — 상단 메뉴 6개로 재구성 + 신규 페이지 16종 + 성가대 영상 게시판
+
+### 한 줄 요약
+
+목사님 요청에 따라 상단 메뉴를 5개(교회소개/예배안내/설교말씀/교회소식/공동체)에서 **6개(교회 소개/예배와 말씀/교회 소식/선교봉사/다음 세대/찬양)**로 재구성. 신규 카테고리에 해당하는 페이지 16개(카테고리 인덱스 3 + 하위 13)를 모두 채워 404 없이 동작. 그리고 `/praise/hallelujah`, `/praise/hosanna` 두 성가대 페이지는 YouTube URL 등록형 영상 게시판으로 만들어 어드민에서 운영 가능하게 했다.
+
+### 메뉴 구조 변경
+
+- `web/src/lib/nav.ts` — `TOP_CATEGORIES` 5→6 / `NAV` 트리 전면 교체. 옛 카테고리(설교말씀/공동체)는 메뉴에서 숨김, 라우트 자체는 유지(URL 접근 가능).
+- 어드민 boards 카테고리 셀렉터(`/admin/boards`)는 `TOP_CATEGORIES`를 참조하므로 자동 반영.
+- DB 우선 정책(`site_settings.nav.tree`) 그대로. DB에 옛 트리가 저장되어 있으면 어드민 `/admin/nav`에서 "기본값으로 되돌리기" 1회 필요.
+
+### 신규 페이지 (16개 라우트)
+
+- 카테고리 인덱스 3: `/missions`, `/next-gen`, `/praise` — `SectionGrid` 카드 그리드
+- 교회 소개 1: `/about/people` — 교역자/장로/안수집사·권사 표
+- 교회 소식 2: `/notices/bulletin`(주보 목록), `/notices/new-member`(새가족 환영 + 등록 CTA)
+- 선교봉사 3: `/missions/{domestic,global,local}` — 협력교회/선교지/지역 섬김 정기 프로그램 표
+- 다음 세대 4: `/next-gen/{kindergarten,children,youth,college}` — 부서 소개 + 시간/장소/담당 표
+- 찬양 3: `/praise/{hallelujah,hosanna,pistis}` — 처음에는 모두 소개 페이지로 만들었다가, 이어서 hallelujah·hosanna 두 곳은 영상 게시판으로 교체(아래).
+
+콘텐츠는 자리잡기용 샘플 데이터(인물명 익명 처리). 실제 정보는 운영자(목사님)가 어드민 또는 직접 수정.
+
+### 성가대 영상 게시판 (할렐루야 · 호산나)
+
+운영자가 어드민에서 YouTube URL을 등록하면 카드 그리드로 보여주는 영상 게시판. **`sermons` 테이블을 그대로 재사용**하고 `category` 컬럼으로 구분하는 방식 채택(설교영상=`null` / 성가대=`hallelujah`,`hosanna`). 별도 테이블 신설보다 어드민 폼·상세 페이지·YouTube ID 추출 로직을 모두 재사용할 수 있어 변경 폭이 작다.
+
+- `web/supabase/schema.sql` — `sermons.category text` 컬럼 + `sermons_category_idx (category, preached_at desc)` 인덱스 추가(idempotent ALTER). 운영 Supabase에는 Dashboard SQL Editor에서 동일 ALTER 1회 실행.
+- `web/src/lib/`/공개 페이지에서 카테고리 필터 추가:
+  - `/media/sermon` 목록·인접 탐색: `category IS NULL` 필터
+  - 신규 `/praise/hallelujah`, `/praise/hosanna`: `category='hallelujah'`/`'hosanna'` 필터
+- `web/src/components/video-board.tsx` — 카테고리별 영상 그리드 공용 컴포넌트(설교 목록 컴포넌트를 일반화). 검색바·페이지네이션·빈 상태 처리 포함.
+- 영상 상세 `/media/sermon/[id]`: 카테고리에 따라 ① 좌측 상단 "← 목록" 링크, ② 이전/다음 탐색 라벨, ③ 어드민용 수정 버튼 href가 자동 분기.
+- 어드민 영상 관리(설교영상 어드민과 동형 3쌍):
+  - 목록: `/admin/choir/[choir]` — `[choir]`는 `hallelujah`/`hosanna`만 허용(notFound 가드)
+  - 새로 등록: `/admin/choir/[choir]/new`
+  - 수정: `/admin/choir/[choir]/[id]/edit`
+  - 서버 액션: `createChoirVideo`/`updateChoirVideo`/`deleteChoirVideo` (`web/src/app/admin/sermons/actions.ts`에 추가, 카테고리 화이트리스트 검증).
+- `SermonForm` (`web/src/app/admin/sermons/sermon-form.tsx`) — 라벨을 prop으로 커스터마이즈 가능하도록 일반화. 성가대용으로는 "설교자→지휘자", "본문→곡목/본문", "설교일→공연일", badge 옵션도 부활절·성탄 칸타타 등으로 교체.
+- 어드민 사이드 메뉴(`admin-side.tsx`): "할렐루야 성가대" / "호산나 성가대" 항목 2개 추가(설교 영상 바로 아래).
+- `/admin/sermons` 목록도 `category IS NULL` 필터 적용 — 설교영상 어드민 화면에 성가대 영상이 섞이지 않도록.
+
+### 운영 DB 변경
+
+- 운영 Supabase에서 `alter table public.sermons add column if not exists category text;` + `create index if not exists sermons_category_idx on public.sermons (category, preached_at desc);` 실행 완료.
+- 기존 설교 row들은 모두 `category=NULL`로 남고 `/media/sermon`에 그대로 노출됨(검증: PostgREST `select=id,title,category` 호출로 확인).
+
+### 검증
+
+- 신규 16개 라우트 모두 로컬 `next dev`에서 200 OK
+- 어드민 라우트 4개(`/admin/choir/[hallelujah|hosanna]`, `/new`)는 비로그인 307(로그인 리다이렉트) — 정상
+- `npx tsc --noEmit` 통과
+- `/praise/hallelujah` 첫 진입 시 "전체 0편 / 등록된 영상이 없습니다" 빈 상태 메시지 정상 렌더
+
+### 잔여 사안 / 다음 세션 후보
+
+- 신규 페이지 콘텐츠가 자리잡기용 샘플 — 실제 운영 정보(교역자 명단, 선교지, 부서 시간 등)로 교체 필요. 어드민 인라인 편집기와 연동할지, 정적 코드 편집으로 받을지 정책 결정 필요.
+- 홈(`/`) 본문 카드 라벨에 옛 카테고리("예배안내", "설교말씀")가 남아있음 — 새 카테고리(예배와 말씀)로 정리 필요.
+- DB의 `site_settings.nav.tree`에 옛 트리가 남아 있을 경우 어드민에서 "기본값으로 되돌리기" 클릭 필요 (운영 매뉴얼 갱신 대상).
+- 옛 메뉴에서 사라진 라우트(`/community/*`, `/media/sermon` 외 `/ministry/{children,youth,praise,mission}`)는 URL로는 살아있음 — 정리 또는 redirect 결정 보류.
+
+---
+
 ## 2026-05-30 — 관리자 운영매뉴얼(목사님용) + 푸터 관리자 진입 통합
 
 ### 한 줄 요약

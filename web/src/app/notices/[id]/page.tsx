@@ -14,10 +14,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const { data } = await supabase.from("notices").select("title, content").eq("id", id).maybeSingle();
     if (data) {
       const desc = (data.content ?? "").toString().replace(/\s+/g, " ").slice(0, 80);
-      return { title: `${data.title} | 가까운교회 공지`, description: desc };
+      return { title: `${data.title} | 가까운 서광교회 공지`, description: desc };
     }
   } catch {}
-  return { title: "공지 | 가까운교회" };
+  return { title: "공지 | 가까운 서광교회" };
 }
 
 export default async function NoticeDetail({ params }: { params: Promise<{ id: string }> }) {

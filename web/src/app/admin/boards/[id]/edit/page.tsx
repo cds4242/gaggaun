@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { BoardForm } from "../../board-form";
 
-export const metadata = { title: "게시판 편집 | 가까운교회" };
+export const metadata = { title: "게시판 편집 | 가까운 서광교회" };
 export const dynamic = "force-dynamic";
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {

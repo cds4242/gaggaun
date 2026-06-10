@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { BoardForm } from "../board-form";
 
-export const metadata = { title: "새 게시판 만들기 | 가까운교회" };
+export const metadata = { title: "새 게시판 만들기 | 가까운 서광교회" };
 
 export default async function Page() {
   await requireAdmin("/admin/boards/new");

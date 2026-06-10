@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/page-header";
 
-export const metadata = { title: "선교부 | 가까운교회" };
+export const metadata = { title: "선교부 | 가까운 서광교회" };
 
 const fields = [
   { p: "동남아", n: "캄보디아 · 베트남", d: "현지 교회 개척 후원 및 단기팀 매년 1회 파송" },
@@ -19,7 +19,7 @@ export default function Page() {
             <h2>작은 교회가 함께 걷는 선교</h2>
             <div className="deco"><span className="line" /><span className="dot" /><span className="line" /></div>
             <p>
-              가까운교회 선교부는 큰 규모의 사역을 추구하지 않습니다.
+              가까운 서광교회 선교부는 큰 규모의 사역을 추구하지 않습니다.
               대신, 후원하는 한 가정 한 가정과 오래 관계를 이어가는 데 마음을 둡니다.
             </p>
             <p>

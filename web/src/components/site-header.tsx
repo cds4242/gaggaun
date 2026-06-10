@@ -54,11 +54,10 @@ export function SiteHeader({ nav }: { nav?: NavItem[] }) {
   return (
     <header className="header" ref={headerRef}>
       <div className="nav-row">
-        <Link className="brand" href="/" aria-label="가까운교회 홈">
+        <Link className="brand" href="/" aria-label="가까운 서광교회 홈">
           <span className="cross" aria-hidden />
           <span className="text">
-            <span className="ko">가까운교회</span>
-            <span className="en">The Near Church · Gimpo</span>
+            <span className="ko">가까운 서광교회</span>
           </span>
         </Link>
 
@@ -80,7 +79,7 @@ export function SiteHeader({ nav }: { nav?: NavItem[] }) {
         </ul>
 
         <div className="nav-actions">
-          <Link className="btn-primary" href="/new-member">새가족 등록</Link>
+          <Link className="btn-primary" href="/about/location">오시는 길</Link>
           <button
             className="burger"
             aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
@@ -109,8 +108,8 @@ export function SiteHeader({ nav }: { nav?: NavItem[] }) {
             </div>
           ))}
           <div className="cta">
-            <Link className="btn-primary" href="/new-member" onClick={() => setOpen(false)}>
-              새가족 등록
+            <Link className="btn-primary" href="/about/location" onClick={() => setOpen(false)}>
+              오시는 길
             </Link>
           </div>
         </div>

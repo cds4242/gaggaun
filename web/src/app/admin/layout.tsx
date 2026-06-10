@@ -10,7 +10,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="admin-shell">
       <header className="admin-topbar">
         <Link href="/admin" className="ab-brand">
-          가까운교회 <span className="tag">ADMIN</span>
+          가까운 서광교회 <span className="tag">ADMIN</span>
         </Link>
         <div className="ab-actions">
           <span className="who">{email}</span>

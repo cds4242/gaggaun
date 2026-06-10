@@ -7,7 +7,7 @@ import { SearchBar } from "@/components/search-bar";
 import { DeleteButton } from "@/components/delete-button";
 import { deleteNotice } from "./actions";
 
-export const metadata = { title: "공지사항 관리 | 가까운교회" };
+export const metadata = { title: "공지사항 관리 | 가까운 서광교회" };
 
 const PAGE_SIZE = 20;
 

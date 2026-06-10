@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { listActiveBoards } from "@/lib/boards";
 
-export const metadata = { title: "게시판 | 가까운교회" };
+export const metadata = { title: "게시판 | 가까운 서광교회" };
 export const revalidate = 60;
 
 export default async function BoardIndexPage() {

@@ -22,10 +22,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     if (data) {
       const board = await getBoardBySlug(slug);
       const desc = (data.content ?? "").toString().replace(/\s+/g, " ").slice(0, 80);
-      return { title: `${data.title} | 가까운교회 ${board?.name ?? "게시판"}`, description: desc };
+      return { title: `${data.title} | 가까운 서광교회 ${board?.name ?? "게시판"}`, description: desc };
     }
   } catch {}
-  return { title: "게시글 | 가까운교회" };
+  return { title: "게시글 | 가까운 서광교회" };
 }
 
 export default async function Page({ params }: { params: Promise<{ slug: string; id: string }> }) {

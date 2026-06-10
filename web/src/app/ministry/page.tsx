@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/page-header";
 import { SectionGrid } from "@/components/section-grid";
-export const metadata = { title: "사역 | 가까운교회" };
+export const metadata = { title: "사역 | 가까운 서광교회" };
 const items = [
   { label: "주일학교", en: "Children", href: "/ministry/children", desc: "다음세대를 위한 신앙교육" },
   { label: "청년부", en: "Youth", href: "/ministry/youth", desc: "청년들의 신앙 공동체" },

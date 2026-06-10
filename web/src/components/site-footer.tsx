@@ -10,8 +10,7 @@ export function SiteFooter() {
             <div className="foot-brand-row">
               <span className="cross-mini" aria-hidden />
               <div>
-                <div className="name-ko">가까운교회</div>
-                <span className="name-en">The Near Church · Gimpo</span>
+                <div className="name-ko">가까운 서광교회</div>
               </div>
             </div>
             <p>
@@ -56,7 +55,7 @@ export function SiteFooter() {
         </div>
 
         <div className="foot-bottom">
-          <div>© {new Date().getFullYear()} 가까운교회 · The Near Church. All rights reserved.</div>
+          <div>© {new Date().getFullYear()} 가까운 서광교회. All rights reserved.</div>
           <div className="verse">
             “너희가 서로 사랑하면 이로써 모든 사람이 너희가 내 제자인 줄 알리라” — 요 13:35
           </div>

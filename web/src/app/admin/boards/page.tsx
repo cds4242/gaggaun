@@ -5,7 +5,7 @@ import { formatDate } from "@/lib/utils";
 import { DeleteButton } from "@/components/delete-button";
 import { deleteBoard } from "./actions";
 
-export const metadata = { title: "게시판 관리 | 가까운교회" };
+export const metadata = { title: "게시판 관리 | 가까운 서광교회" };
 
 type Row = {
   id: number;

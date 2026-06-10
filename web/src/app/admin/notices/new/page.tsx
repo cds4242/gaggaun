@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { createNotice } from "../actions";
 
-export const metadata = { title: "공지 작성 | 가까운교회" };
+export const metadata = { title: "공지 작성 | 가까운 서광교회" };
 
 export default async function Page() {
   await requireAdmin("/admin/notices/new");

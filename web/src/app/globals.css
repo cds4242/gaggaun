@@ -1126,15 +1126,15 @@ section.block{ padding:100px 0; position:relative }
   grid-auto-rows:120px;
   gap:14px;
 }
+.gtile, .gtile *{
+  cursor:default !important;
+}
 .gtile{
   position:relative;
   overflow:hidden;
   background:var(--paper-2);
   border:1px solid var(--line);
-  transition: transform .25s;
-  cursor:pointer;
 }
-.gtile:hover{ transform:scale(1.01) }
 .gtile .ph{ position:absolute; inset:0 }
 .gtile .ovl{
   position:absolute; left:0; right:0; bottom:0;

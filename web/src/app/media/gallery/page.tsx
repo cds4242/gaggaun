@@ -4,7 +4,7 @@ import { Pagination } from "@/components/pagination";
 import { GalleryGrid } from "./gallery-grid";
 import { createPublicClient } from "@/lib/supabase/public";
 
-export const metadata = { title: "갤러리 | 가까운교회" };
+export const metadata = { title: "갤러리 | 가까운 서광교회" };
 export const revalidate = 60;
 
 const PAGE_SIZE = 12;
@@ -53,7 +53,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
 
   return (
     <>
-      <PageHeader title="갤러리" eyebrow="PHOTO GALLERY" subtitle="가까운교회의 순간들" editSection="gallery" />
+      <PageHeader title="갤러리" eyebrow="PHOTO GALLERY" subtitle="가까운 서광교회의 순간들" editSection="gallery" />
       <section className="block" style={{ background: "transparent" }} data-edit-section="gallery.filter">
         <div className="wrap">
           {tableMissing ? (

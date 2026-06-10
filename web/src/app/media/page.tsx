@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/page-header";
 import { SectionGrid } from "@/components/section-grid";
-export const metadata = { title: "미디어 | 가까운교회" };
+export const metadata = { title: "미디어 | 가까운 서광교회" };
 export default function Page() {
   return (
     <>

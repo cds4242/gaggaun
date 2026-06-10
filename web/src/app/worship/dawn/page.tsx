@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/page-header";
 
-export const metadata = { title: "새벽 기도회 | 가까운교회" };
+export const metadata = { title: "새벽 기도회 | 가까운 서광교회" };
 
 const weekly = [
   { d: "월", v: "시편 · 묵상" },

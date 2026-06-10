@@ -5,7 +5,7 @@ import { SearchBar } from "@/components/search-bar";
 import { createPublicClient } from "@/lib/supabase/public";
 import { formatDate } from "@/lib/utils";
 
-export const metadata = { title: "설교영상 | 가까운교회" };
+export const metadata = { title: "설교영상 | 가까운 서광교회" };
 export const revalidate = 60;
 
 const PAGE_SIZE = 9;
@@ -38,6 +38,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
     let qb = supabase
       .from("sermons")
       .select("id, title, preacher, verse, badge, youtube_id, duration, summary, preached_at, created_at", { count: "exact" })
+      .is("category", null)
       .order("preached_at", { ascending: false, nullsFirst: false })
       .order("created_at", { ascending: false });
     if (q) qb = qb.or(`title.ilike.%${q}%,preacher.ilike.%${q}%,verse.ilike.%${q}%`);

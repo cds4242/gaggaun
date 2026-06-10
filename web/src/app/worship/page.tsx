@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/page-header";
 import { SectionGrid } from "@/components/section-grid";
 
-export const metadata = { title: "예배안내 | 가까운교회" };
+export const metadata = { title: "예배안내 | 가까운 서광교회" };
 
 const items = [
   { label: "주일예배", en: "Sunday", href: "/worship/sunday", desc: "주일 1·2부 본당 예배" },
@@ -13,7 +13,7 @@ const items = [
 export default function Page() {
   return (
     <>
-      <PageHeader title="예배안내" eyebrow="WORSHIP SERVICE" subtitle="가까운교회의 예배" />
+      <PageHeader title="예배안내" eyebrow="WORSHIP SERVICE" subtitle="가까운 서광교회의 예배" />
       <section className="block">
         <div className="wrap">
           <SectionGrid items={items} />

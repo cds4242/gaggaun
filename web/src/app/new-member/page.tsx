@@ -2,12 +2,12 @@ import { PageHeader } from "@/components/page-header";
 import { PhoneInput } from "@/components/phone-input";
 import { registerNewMember } from "./actions";
 
-export const metadata = { title: "새가족 등록 | 가까운교회" };
+export const metadata = { title: "새가족 등록 | 가까운 서광교회" };
 
 export default function Page() {
   return (
     <>
-      <PageHeader title="새가족 등록" eyebrow="WELCOME · NEW FAMILY" subtitle="가까운교회에 오신 것을 환영합니다" />
+      <PageHeader title="새가족 등록" eyebrow="WELCOME · NEW FAMILY" subtitle="가까운 서광교회에 오신 것을 환영합니다" />
       <section className="block">
         <div className="wrap" style={{ maxWidth: 880 }}>
           <p style={{ textAlign: "center", color: "var(--mute)", marginBottom: 40, lineHeight: 1.9 }}>

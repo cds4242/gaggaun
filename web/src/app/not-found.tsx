@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export const metadata = { title: "페이지를 찾을 수 없습니다 | 가까운교회" };
+export const metadata = { title: "페이지를 찾을 수 없습니다 | 가까운 서광교회" };
 
 export default function NotFound() {
   return (

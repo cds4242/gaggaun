@@ -3,7 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 
-export const metadata = { title: "관리자 대시보드 | 가까운교회" };
+export const metadata = { title: "관리자 대시보드 | 가까운 서광교회" };
 
 type Recent = { id: number; title: string; created_at: string; pinned?: boolean };
 type Pending = { id: number; name: string; phone: string; created_at: string };
@@ -51,7 +51,7 @@ export default async function AdminHome() {
           <span className="eyebrow">Dashboard</span>
           <h1>관리자 대시보드</h1>
         </div>
-        <div className="meta">{formatDate(new Date())} · 가까운교회</div>
+        <div className="meta">{formatDate(new Date())} · 가까운 서광교회</div>
       </div>
 
       <div className="stat-grid">
